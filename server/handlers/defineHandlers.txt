@@ -1,0 +1,7 @@
+Tujuan Utama: Berisi Logika Bisnis (Business Logic). Ini adalah pengganti folder controllers.
+
+Analoginya: "Buku Resep" (Kumpulan instruksi langkah-demi-langkah).
+
+Apa Isinya: Kumpulan fungsi yang diekspor. Setiap fungsi bertanggung jawab untuk satu tugas spesifik (misal: "ambil semua produk", "buat produk baru"). Fungsi-fungsi ini menerima objek req (request) dan res (response) langsung dari router manual kita di index.js.
+
+PENTING: Karena kita tidak pakai Express, setiap fungsi di handler wajib secara manual mengakhiri respons menggunakan res.end().
