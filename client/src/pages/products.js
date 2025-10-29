@@ -1,6 +1,6 @@
 import ProductCard from '../components/productCard';
 
-// Data dummy (nanti diganti dari API)
+// Data dummy 
 const dummyProducts = [
   {
     id: 1,
@@ -27,7 +27,6 @@ const dummyProducts = [
 
 export default function ProductsPage() {
   return (
-    // 'pt-5' penting agar tidak tertutup navbar
     <div className="container my-5 pt-5"> 
       <h1 className="text-center mb-4">Katalog Kue Kami</h1>
       

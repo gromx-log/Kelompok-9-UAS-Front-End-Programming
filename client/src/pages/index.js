@@ -7,7 +7,7 @@ export default function Home() {
       <div
         className="container-fluid"
         style={{
-          backgroundColor: 'var(--color-primary)', // Menggunakan Blush Pink
+          backgroundColor: 'var(--color-primary)', 
           height: '100vh',
           display: 'flex',
           alignItems: 'center',
@@ -16,7 +16,6 @@ export default function Home() {
         }}
       >
         <div className="container text-center py-5">
-          {/* Teks sekarang menggunakan warna --color-text (Dark Chocolate) secara default */}
           <h1 className="display-4 fw-bold fade-in-up delay-1">
             Kue Kustom Sesuai Keinginan Anda
           </h1>
@@ -26,7 +25,6 @@ export default function Home() {
           </p>
           <div className="fade-in-up delay-3">
             <Link href="/products" legacyBehavior>
-              {/* Tombol akan menjadi 'btn-light' agar kontras di atas hero pink */}
               <a className="btn btn-light btn-lg mt-3">Lihat Katalog Kami</a>
             </Link>
           </div>
@@ -41,7 +39,6 @@ export default function Home() {
         <h2 className="text-center mb-4">Produk Unggulan</h2>
         <div className="row">
           <div className="col-md-4">
-            {/* Ganti bg-light dengan style card */}
             <div className="text-center p-5 rounded" style={{backgroundColor: 'var(--color-bg-light)', border: '1px solid #eee'}}>Produk Unggulan 1</div>
           </div>
           <div className="col-md-4">

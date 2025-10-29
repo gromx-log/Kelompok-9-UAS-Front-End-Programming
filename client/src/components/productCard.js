@@ -2,7 +2,6 @@ import Image from 'next/image';
 
 export default function ProductCard({ title, description, price, imageUrl }) {
   return (
-    // Gunakan warna bg-light dan pastikan card memiliki tinggi sama (h-100)
     <div 
       className="card h-100 shadow-sm border-0" 
       style={{ backgroundColor: 'var(--color-bg-light)' }}
@@ -22,8 +21,6 @@ export default function ProductCard({ title, description, price, imageUrl }) {
         </p>
         <h6 className="card-subtitle mb-2 fw-bold">{price}</h6>
         
-        {/* Tombol ini otomatis menggunakan style --color-accent (Soft Berry) */}
-        {/* 'mt-auto' mendorong tombol ke bagian bawah card */}
         <a href="#" className="btn btn-primary w-100 mt-auto">
           Pesan Sekarang
         </a>

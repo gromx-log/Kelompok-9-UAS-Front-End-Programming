@@ -28,9 +28,8 @@ export default function Navbar() {
     >
       <div className="container">
         <Link href="/" legacyBehavior>
-          {/* Logo Brand sekarang akan menggunakan warna pink primer */}
           <a className="navbar-brand" style={{ fontWeight: 700, color: 'var(--color-primary)' }}>
-            KueManis
+            KartiniAle
           </a>
         </Link>
         <button
