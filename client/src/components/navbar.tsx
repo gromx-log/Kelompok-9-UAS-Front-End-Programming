@@ -76,12 +76,42 @@ export default function Navbar() {
             </li>
             
             <li className="nav-item">
-              <Link href="/cart" legacyBehavior>
+              <Link href="/products" legacyBehavior>
                 <a 
-                  className={`nav-link ${router.pathname.startsWith('/cart') ? 'active' : ''}`}
-                  aria-current={router.pathname.startsWith('/cart') ? 'page' : undefined}
+                  className={`nav-link ${router.pathname.startsWith('/products') ? 'active' : ''}`}
                 >
-                  Keranjang
+                  Galeri
+                </a>
+              </Link>
+            </li>
+
+            {/* TAMBAHKAN INI */}
+            <li className="nav-item">
+              <Link href="/our-cakes" legacyBehavior>
+                <a 
+                  className={`nav-link ${router.pathname === '/our-cakes' ? 'active' : ''}`}
+                >
+                  Tentang Kue Kami
+                </a>
+              </Link>
+            </li>
+
+            {/* TAMBAHKAN INI JUGA */}
+            <li className="nav-item">
+              <Link href="/faq" legacyBehavior>
+                <a 
+                  className={`nav-link ${router.pathname === '/faq' ? 'active' : ''}`}
+                >
+                  FAQ
+                </a>
+              </Link>
+            </li>
+
+            {/* Tombol CTA Utama */}
+            <li className="nav-item ms-lg-3">
+              <Link href="/order" legacyBehavior>
+                <a className="btn btn-primary">
+                  Pesan Sekarang
                 </a>
               </Link>
             </li>
