@@ -7,8 +7,8 @@ export default function Layout({ children }) {
   return (
     <>
       <Head>
-        <title>Toko Kue Kustom</title>
-        <meta name="description" content="Jual beli kue kustom terbaik" />
+        <title>KartiniAle</title>
+        <meta name="description" content="kue kustom terbaik" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 

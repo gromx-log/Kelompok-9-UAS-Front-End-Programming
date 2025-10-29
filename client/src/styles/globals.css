@@ -43,15 +43,37 @@ a {
   color: var(--color-bg-light);
 }
 
-/* --- Transisi dan Animasi  --- */
-
 /* Transisi untuk Navbar */
 .navbar {
-  transition: background-color 0.4s ease-out, box-shadow 0.4s ease-out;
+  transition: background-color 0.4s ease-out, box-shadow 0.4s ease-out, padding 0.3s ease-in-out;
 }
 
 .navbar .nav-link {
   font-weight: 600;
+  position: relative;     
+  padding-bottom: 0.25rem;  
+}
+
+.navbar .nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--color-accent); 
+  
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.3s ease-out;
+}
+
+.navbar .nav-link:hover::after {
+  transform: scaleX(1); 
+}
+
+.navbar .nav-link.active::after {
+  transform: scaleX(1);
 }
 
 /* Navbar saat di-scroll */
@@ -67,6 +89,16 @@ a {
 .navbar:not(.scrolled) .nav-link,
 .navbar:not(.scrolled) .navbar-brand {
   color: var(--color-text) !important;
+}
+
+.navbar-large {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.navbar-small {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
 }
 
 /* Keyframes untuk animasi Fade In Up */

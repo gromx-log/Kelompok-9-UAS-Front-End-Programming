@@ -7,7 +7,7 @@ export default function Footer() {
     <footer className="footer-container" style={{ backgroundColor: 'var(--color-primary)' }}>
       <div className="container pt-5 pb-4">
         <div className="row g-4">
-          <div className="col-lg-3 col-md-6">
+          <div className="col-lg-4 col-md-6">
             <h5 className="footer-brand">
               KartiniAle
             </h5>
@@ -33,7 +33,7 @@ export default function Footer() {
           </div>
 
           {/* Kategori Kue */}
-          <div className="col-lg-3 col-md-6">
+          <div className="col-lg-4 col-md-6">
             <h6 className="footer-heading">Kategori Kue</h6>
             <ul className="footer-links-list">
               <li><Link href="/products/birthday">Kue Ulang Tahun</Link></li>
@@ -45,17 +45,16 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Toko Kami */}
-          <div className="col-lg-3 col-md-6">
-            <h6 className="footer-heading">Toko Kami</h6>
-            <div 
-              className="map-placeholder"
-              style={{ backgroundColor: '#E0E0E0', height: '100px', borderRadius: '8px' }}
-            ></div>
-            <ul className="footer-contact-list mt-3">
-              <li>Jl. Cendrawasih No. 123, Jakarta</li>
-              <li>+62 812 3456 7890</li>
-              <li>support@KartiniAle.id</li>
+          {/* Quick Links */}
+          <div className="col-lg-4 col-md-6">
+            <h6 className="footer-heading">Quick Links</h6>
+            <ul className="footer-links-list">
+              <li><Link href="/about">Tentang Kami</Link></li>
+              <li><Link href="/contact">Kontak</Link></li>
+              <li><Link href="/how-to-order">Cara Pesan</Link></li>
+              <li><Link href="/faq">FAQ</Link></li>
+              <li><Link href="/login">Login / Daftar</Link></li>
+              <li><Link href="/cart">Keranjang</Link></li>
             </ul>
           </div>
 
