@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import Layout from '../components/layout';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/globals.css';
+import '../styles/our-cakes.css'
 import React from 'react';
 
 function MyApp({ Component, pageProps }) {
