@@ -93,16 +93,16 @@ export default function Navbar() {
             </li>
 
             <li className="nav-item">
-              <Link href="/cart" legacyBehavior>
+              <Link href="/faq" legacyBehavior>
                 <a
                   className={`nav-link ${
-                    router.pathname.startsWith('/cart') ? 'active' : ''
+                    router.pathname.startsWith('/faq') ? 'active' : ''
                   }`}
                   aria-current={
-                    router.pathname.startsWith('/cart') ? 'page' : undefined
+                    router.pathname.startsWith('/faq') ? 'page' : undefined
                   }
                 >
-                  Keranjang
+                  FAQ
                 </a>
               </Link>
             </li>
