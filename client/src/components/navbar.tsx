@@ -1,9 +1,11 @@
 import Link from 'next/link';
 import React from 'react';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router'; 
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const router = useRouter(); 
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,7 +26,10 @@ export default function Navbar() {
     <nav
       className={`
         navbar navbar-expand-lg fixed-top navbar-light
-        ${isScrolled ? 'bg-light shadow-sm scrolled' : 'bg-transparent'}
+        ${isScrolled 
+          ? 'bg-light shadow-sm scrolled navbar-small' 
+          : 'bg-transparent navbar-large'
+        }
       `}
     >
       <div className="container">
@@ -46,21 +51,41 @@ export default function Navbar() {
         </button>
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto">
+            
+            {/* 3. Terapkan Logika Dinamis */}
             <li className="nav-item">
               <Link href="/" legacyBehavior>
-                <a className="nav-link active" aria-current="page">Home</a>
+                <a 
+                  className={`nav-link ${router.pathname === '/' ? 'active' : ''}`} 
+                  aria-current={router.pathname === '/' ? 'page' : undefined}
+                >
+                  Home
+                </a>
               </Link>
             </li>
+            
             <li className="nav-item">
               <Link href="/products" legacyBehavior>
-                <a className="nav-link">Produk</a>
+                <a 
+                  className={`nav-link ${router.pathname.startsWith('/products') ? 'active' : ''}`}
+                  aria-current={router.pathname.startsWith('/products') ? 'page' : undefined}
+                >
+                  Produk
+                </a>
               </Link>
             </li>
+            
             <li className="nav-item">
               <Link href="/cart" legacyBehavior>
-                <a className="nav-link">Keranjang</a>
+                <a 
+                  className={`nav-link ${router.pathname.startsWith('/cart') ? 'active' : ''}`}
+                  aria-current={router.pathname.startsWith('/cart') ? 'page' : undefined}
+                >
+                  Keranjang
+                </a>
               </Link>
             </li>
+            
           </ul>
         </div>
       </div>
