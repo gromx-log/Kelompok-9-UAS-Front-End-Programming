@@ -1,3 +1,4 @@
+import React from 'react';
 import ProductCard from '../components/productCard';
 
 // Data dummy 

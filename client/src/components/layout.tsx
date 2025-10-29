@@ -1,6 +1,7 @@
 import Navbar from './navbar';
 import Footer from './footer';
 import Head from 'next/head';
+import React from 'react';
 
 export default function Layout({ children }) {
   return (
