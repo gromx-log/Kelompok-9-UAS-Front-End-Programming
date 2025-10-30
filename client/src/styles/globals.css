@@ -229,3 +229,15 @@ a {
   border-top: 1px solid var(--color-accent); 
   opacity: 0.7;
 }
+
+/* Gaya link di dalam jawaban FAQ Accordion */
+.accordion-body a {
+  color: var(--color-accent); /* Menggunakan warna aksen tema Anda */
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px; /* Memberi sedikit jarak antara teks dan garis bawah */
+}
+
+.accordion-body a:hover {
+  text-decoration: none; /* Opsional: hilangkan underline saat di-hover */
+}

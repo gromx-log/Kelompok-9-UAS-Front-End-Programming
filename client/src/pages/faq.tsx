@@ -1,7 +1,7 @@
 import React from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import Image from 'next/image';
+import Image from 'next/image'; // Tetap di-import, meskipun tidak dipakai di Q&A baru
 
 export default function FaqPage() {
   return (
@@ -10,10 +10,10 @@ export default function FaqPage() {
         <title>FAQ - Pertanyaan Umum - KartiniAle</title>
       </Head>
 
-      {/* Style kustom untuk Bootstrap Accordion 
-        agar warnanya sesuai dengan tema Anda (pink/cokelat)
+      {/* Style kustom untuk Bootstrap Accordion & Banner Halaman Baru
       */}
       <style jsx>{`
+        /* == Gaya Accordion == */
         .accordion-button {
           font-weight: 600;
           color: var(--color-text);
@@ -30,16 +30,61 @@ export default function FaqPage() {
         }
         .accordion-body {
           color: var(--color-text-muted);
+          line-height: 1.7; /* Membuat teks jawaban lebih mudah dibaca */
         }
         .accordion-item {
           background-color: var(--color-bg-light);
           border-color: rgba(0, 0, 0, 0.05);
         }
+
+        /* == Gaya Banner Halaman Baru == */
+        .page-header {
+          background-color: var(--color-primary);
+          color: #fff;
+          padding-top: 9rem;
+          padding-bottom: 3rem;
+        }
+
+        /* Style untuk Breadcrumbs di atas banner */
+        .breadcrumb {
+          margin-bottom: 0.5rem;
+          font-weight: 500;
+        }
+        
+        :global(.breadcrumb-item a) {
+          color: #fff;
+          text-decoration: none;
+        }
+        :global(.breadcrumb-item a:hover) {
+          text-decoration: underline;
+        }
+        :global(.breadcrumb-item.active) {
+          color: rgba(255, 255, 255, 0.8);
+        }
+        :global(.breadcrumb-item + .breadcrumb-item::before) {
+          color: rgba(255, 255, 255, 0.8);
+        }
+        
+        /* == Mobile Friendly untuk Banner == */
+        @media (max-width: 768px) {
+          .page-header {
+            padding-top: 7rem;
+            padding-bottom: 2.5rem;
+          }
+        }
       `}</style>
 
-      <div className="container my-5 pt-5">
-        <h1 className="text-center mb-5">Pertanyaan Umum (FAQ)</h1>
+      {/* === Banner Halaman Baru === */}
+      <section className="page-header">
+        <div className="container text-center">
+          <h1 className="display-5 display-lg-4 fade-in-up fw-bold" style={{ color: 'var(--color-text)' }}>
+            Pertanyaan Umum (FAQ)
+          </h1>
+        </div>
+      </section>
 
+      {/* === Konten Accordion === */}
+      <div className="container py-5">
         <div className="row justify-content-center">
           <div className="col-lg-9">
             <div
@@ -47,7 +92,7 @@ export default function FaqPage() {
               id="faqAccordion"
               style={{ borderRadius: '0.5rem', overflow: 'hidden' }}
             >
-              {/* === Pertanyaan 1: Pricelist === */}
+              {/* === Pertanyaan 1: Pricelist === (KONTEN BARU) */}
               <div className="accordion-item">
                 <h2 className="accordion-header" id="headingOne">
                   <button
@@ -58,7 +103,7 @@ export default function FaqPage() {
                     aria-expanded="true"
                     aria-controls="collapseOne"
                   >
-                    Bagaimana cara mengetahui harga kue? Apakah ada pricelist?
+                    Boleh minta pricelist?
                   </button>
                 </h2>
                 <div
@@ -68,15 +113,14 @@ export default function FaqPage() {
                   data-bs-parent="#faqAccordion"
                 >
                   <div className="accordion-body">
-                    Harga kue kami bervariasi tergantung pada <strong>desain, ukuran, dan tingkat kerumitan</strong>. Karena setiap kue kustom itu unik, kami tidak memiliki pricelist tetap.
-                    <br />
-                    <br />
-                    Cara terbaik untuk mendapatkan harga adalah dengan mengunjungi halaman <Link href="/products">Produk</Link> kami untuk referensi atau <Link href="/contact">menghubungi kami</Link> langsung dengan konsep desain, jumlah porsi, dan tanggal acara Anda. Kami akan dengan senang hati memberikan penawaran harga.
+                    Semua kue kami bersifat <strong>custom</strong> (dibuat sesuai pesanan), sehingga kami tidak memiliki pricelist tetap. Harga ditentukan oleh ukuran, base cake, dan kerumitan desain.
+                    <br /><br />
+                    Untuk perkiraan harga, Anda bisa melihat halaman <Link href="/gallery">Galeri</Link> sebagai referensi. Silakan isi <Link href="/order">form pemesanan</Link> untuk mendapatkan penawaran harga.
                   </div>
                 </div>
               </div>
 
-              {/* === Pertanyaan 2: Model Kue === */}
+              {/* === Pertanyaan 2: Pengiriman === (KONTEN BARU) */}
               <div className="accordion-item">
                 <h2 className="accordion-header" id="headingTwo">
                   <button
@@ -87,7 +131,7 @@ export default function FaqPage() {
                     aria-expanded="false"
                     aria-controls="collapseTwo"
                   >
-                    Di mana saya bisa melihat contoh atau model kue?
+                    Pengiriman dari mana?
                   </button>
                 </h2>
                 <div
@@ -97,23 +141,12 @@ export default function FaqPage() {
                   data-bs-parent="#faqAccordion"
                 >
                   <div className="accordion-body">
-                    Anda dapat melihat portofolio lengkap kami di beberapa platform:
-                    <ul>
-                      <li>
-                        <strong>Website:</strong> Katalog utama kami tersedia di halaman <Link href="/products">Produk</Link>.
-                      </li>
-                      <li>
-                        <strong>Instagram:</strong> Untuk portofolio terbaru dan *behind-the-scenes*, ikuti kami di <a href="https://instagram.com/kartiniale" target="_blank" rel="noopener noreferrer">@KartiniAle</a>.
-                      </li>
-                      <li>
-                        <strong>TikTok:</strong> Lihat proses pembuatan kue kami di <a href="https://tiktok.com/@kartiniale" target="_blank" rel="noopener noreferrer">@KartiniAle</a>.
-                      </li>
-                    </ul>
+                    Pengiriman dari <strong>Jelambar, Jakarta Barat</strong>. Kami sangat menyarankan menggunakan jasa pengiriman khusus kue (mobil) agar kue aman sampai tujuan. Kami juga bisa membantu memesankannya.
                   </div>
                 </div>
               </div>
 
-              {/* === Pertanyaan 3: Pengiriman === */}
+              {/* === Pertanyaan 3: Pilihan Kue === (KONTEN BARU) */}
               <div className="accordion-item">
                 <h2 className="accordion-header" id="headingThree">
                   <button
@@ -124,7 +157,7 @@ export default function FaqPage() {
                     aria-expanded="false"
                     aria-controls="collapseThree"
                   >
-                    Dari mana lokasi pengiriman kuenya?
+                    Pilihan bagian dalam kue ada apa saja?
                   </button>
                 </h2>
                 <div
@@ -134,15 +167,14 @@ export default function FaqPage() {
                   data-bs-parent="#faqAccordion"
                 >
                   <div className="accordion-body">
-                    Semua pesanan kami dibuat dan dikirimkan dari <em>home kitchen</em> kami yang berlokasi di <strong>Jelambar, Jakarta Barat</strong>.
-                    <br />
-                    <br />
-                    Kami juga menyediakan opsi <em>self-pickup</em> (ambil sendiri) di lokasi ini. Harap konfirmasi jam pengambilan Anda setidaknya H-1.
+                    Kami menyediakan dua base cake premium: <strong>Ogura Cake</strong> (lembut) dan <strong>Lapis Surabaya Premium</strong> (padat & kaya rasa).
+                    <br /><br />
+                    Penjelasan detail dan foto potongan kue bisa dilihat di halaman <Link href="/our-cakes">Tentang Kue Kami</Link>.
                   </div>
                 </div>
               </div>
 
-              {/* === Pertanyaan 4: Potongan Kue === */}
+              {/* === Pertanyaan 4: Cara Pesan === (KONTEN BARU) */}
               <div className="accordion-item">
                 <h2 className="accordion-header" id="headingFour">
                   <button
@@ -153,7 +185,7 @@ export default function FaqPage() {
                     aria-expanded="false"
                     aria-controls="collapseFour"
                   >
-                    Apa saja pilihan rasa dan isian kuenya? (Bisa lihat foto potongan kue?)
+                    Bagaimana cara pesannya?
                   </button>
                 </h2>
                 <div
@@ -163,29 +195,7 @@ export default function FaqPage() {
                   data-bs-parent="#faqAccordion"
                 >
                   <div className="accordion-body">
-                    Kami menawarkan berbagai pilihan rasa dasar (base cake) dan <em>filling</em> premium. Pilihan populer kami meliputi:
-                    <ul>
-                      <li>Red Velvet dengan Cream Cheese</li>
-                      <li>Double Chocolate Fudge</li>
-                      <li>Vanilla Bean dengan Swiss Meringue</li>
-                      <li>(Tambahkan rasa andalan Anda di sini)</li>
-                    </ul>
-                    <br />
-                    Berikut adalah contoh potongan kue kami untuk menunjukkan tekstur dan lapisan di dalamnya:
-                    
-                    [Image of a cake slice with multiple layers]
-                    <Image
-                      src="/images/cake-slice-example.jpg" // GANTI DENGAN PATH GAMBAR ANDA
-                      alt="Potongan kue KartiniAle"
-                      width={400}
-                      height={300}
-                      className="img-fluid rounded mt-3"
-                      style={{
-                        objectFit: 'cover',
-                        width: '100%',
-                        maxHeight: '300px',
-                      }}
-                    />
+                    Silakan isi form di halaman <Link href="/order">Pesan Sekarang</Link>. Isi semua detail yang dibutuhkan. Setelah form dikirim, Anda akan langsung terhubung ke WhatsApp kami untuk konsultasi harga dan finalisasi.
                   </div>
                 </div>
               </div>
