@@ -1,12 +1,11 @@
 import Link from 'next/link';
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import Image from 'next/image'; // <-- 1. IMPORT NEXT/IMAGE
+import { useRouter } from 'next/router'; 
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const router = useRouter();
+  const router = useRouter(); 
 
   useEffect(() => {
     const handleScroll = () => {
@@ -27,27 +26,16 @@ export default function Navbar() {
     <nav
       className={`
         navbar navbar-expand-lg fixed-top navbar-light
-        ${
-          isScrolled
-            ? 'bg-light shadow-sm scrolled navbar-small'
-            : 'bg-transparent navbar-large'
+        ${isScrolled 
+          ? 'bg-light shadow-sm scrolled navbar-small' 
+          : 'bg-transparent navbar-large'
         }
       `}
     >
       <div className="container">
         <Link href="/" legacyBehavior>
-          <a className="navbar-brand d-flex align-items-center">
-            <Image
-              src="/KartiniAle.png" // 
-              alt="KartiniAle Logo"
-              width={90} 
-              height={90} 
-              className="me-2" 
-            />
-            <span style={{ fontWeight: 700, color: 'var(--color-text)' }}>
-              KartiniAle
-            </span>
-
+          <a className="navbar-brand" style={{ fontWeight: 700, color: 'var(--color-primary)' }}>
+            KartiniAle
           </a>
         </Link>
         <button
@@ -62,50 +50,70 @@ export default function Navbar() {
           <span className="navbar-toggler-icon"></span>
         </button>
         <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav ms-auto">
-            {/* 3. Terapkan Logika Dinamis */}
+          <ul className="navbar-nav ms-auto"
             <li className="nav-item">
               <Link href="/" legacyBehavior>
-                <a
-                  className={`nav-link ${
-                    router.pathname === '/' ? 'active' : ''
-                  }`}
+                <a 
+                  className={`nav-link ${router.pathname === '/' ? 'active' : ''}`} 
                   aria-current={router.pathname === '/' ? 'page' : undefined}
                 >
                   Home
                 </a>
               </Link>
             </li>
-
+            
             <li className="nav-item">
               <Link href="/products" legacyBehavior>
-                <a
-                  className={`nav-link ${
-                    router.pathname.startsWith('/products') ? 'active' : ''
-                  }`}
-                  aria-current={
-                    router.pathname.startsWith('/products') ? 'page' : undefined
-                  }
+                <a 
+                  className={`nav-link ${router.pathname.startsWith('/products') ? 'active' : ''}`}
+                  aria-current={router.pathname.startsWith('/products') ? 'page' : undefined}
                 >
                   Produk
                 </a>
               </Link>
             </li>
+            
+            <li className="nav-item">
+              <Link href="/products" legacyBehavior>
+                <a 
+                  className={`nav-link ${router.pathname.startsWith('/products') ? 'active' : ''}`}
+                >
+                  Galeri
+                </a>
+              </Link>
+            </li>
 
+            {/* Our Cake */}
+            <li className="nav-item">
+              <Link href="/our-cakes" legacyBehavior>
+                <a 
+                  className={`nav-link ${router.pathname === '/our-cakes' ? 'active' : ''}`}
+                >
+                  Tentang Kue Kami
+                </a>
+              </Link>
+            </li>
+
+            {/* FAQ */}
             <li className="nav-item">
               <Link href="/faq" legacyBehavior>
-                <a
-                  className={`nav-link ${
-                    router.pathname.startsWith('/faq') ? 'active' : ''
-                  }`}
-                  aria-current={
-                    router.pathname.startsWith('/faq') ? 'page' : undefined
-                  }
+                <a 
+                  className={`nav-link ${router.pathname === '/faq' ? 'active' : ''}`}
                 >
                   FAQ
                 </a>
               </Link>
             </li>
+
+            {/* Tombol CTA Utama */}
+            <li className="nav-item ms-lg-3">
+              <Link href="/order" legacyBehavior>
+                <a className="btn btn-primary">
+                  Pesan Sekarang
+                </a>
+              </Link>
+            </li>
+            
           </ul>
         </div>
       </div>
