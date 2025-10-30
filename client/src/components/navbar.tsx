@@ -64,6 +64,7 @@ export default function Navbar() {
               </Link>
             </li>
             
+            {/* Page Product */}
             <li className="nav-item">
               <Link href="/products" legacyBehavior>
                 <a 
@@ -75,17 +76,19 @@ export default function Navbar() {
               </Link>
             </li>
             
+            {/* Page Galeri */}
             <li className="nav-item">
-              <Link href="/products" legacyBehavior>
-                <a 
-                  className={`nav-link ${router.pathname.startsWith('/products') ? 'active' : ''}`}
+              <Link href="/gallery" legacyBehavior>
+                <a
+                  className={`nav-link ${router.pathname === '/gallery' ? 'active' : ''}`}
+                  aria-current={router.pathname === '/gallery' ? 'page' : undefined}
                 >
                   Galeri
                 </a>
               </Link>
             </li>
 
-            {/* TAMBAHKAN INI */}
+            {/* Page Our Cakes */}
             <li className="nav-item">
               <Link href="/our-cakes" legacyBehavior>
                 <a 
@@ -96,7 +99,7 @@ export default function Navbar() {
               </Link>
             </li>
 
-            {/* TAMBAHKAN INI JUGA */}
+            {/* Page FAQ */}
             <li className="nav-item">
               <Link href="/faq" legacyBehavior>
                 <a 
@@ -107,7 +110,7 @@ export default function Navbar() {
               </Link>
             </li>
 
-            {/* Tombol CTA Utama */}
+            {/* CTA */}
             <li className="nav-item ms-lg-3">
               <Link href="/order" legacyBehavior>
                 <a className="btn btn-primary">

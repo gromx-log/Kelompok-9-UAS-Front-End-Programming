@@ -24,7 +24,7 @@ export default function OurCakesPage() {
         />
       </Head>
 
-      {/* --- Page Header (Padding Diperbaiki) --- */}
+      {/*Header*/}
       <header 
         className="py-5 text-center" 
         style={{ 
