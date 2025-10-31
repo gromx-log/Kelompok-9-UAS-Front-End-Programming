@@ -280,3 +280,14 @@ a {
   top: 10px;
   transform: rotate(-45deg);
 }
+
+/* Gaya link di dalam jawaban FAQ Accordion */
+.accordion-body a {
+  color: var(--color-accent);
+  font-weight: 600;
+  text-underline-offset: 3px; 
+}
+
+.accordion-body a:hover {
+  text-decoration: underline; 
+}

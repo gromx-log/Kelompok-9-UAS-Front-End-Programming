@@ -113,9 +113,15 @@ export default function FaqPage() {
                   data-bs-parent="#faqAccordion"
                 >
                   <div className="accordion-body">
-                    Semua kue kami bersifat <strong>custom</strong> (dibuat sesuai pesanan), sehingga kami tidak memiliki pricelist tetap. Harga ditentukan oleh ukuran, base cake, dan kerumitan desain.
+                    Semua kue kami dibuat <strong>custom</strong>, dirancang sepenuhnya sesuai dengan permintaan dan preferensi setiap pelanggan. 
+                    Karena setiap kue memiliki detail dan karakter unik, kami <strong>tidak memiliki daftar harga tetap</strong>.  
                     <br /><br />
-                    Untuk perkiraan harga, Anda bisa melihat halaman <Link href="/gallery">Galeri</Link> sebagai referensi. Silakan isi <Link href="/order">form pemesanan</Link> untuk mendapatkan penawaran harga.
+                    Harga dapat berbeda tergantung pada <strong>ukuran, base cake, serta tingkat kerumitan desain</strong> yang diinginkan. 
+                    Kami selalu berupaya memberikan hasil terbaik, baik dari segi tampilan, maupun rasa dengan menyesuaikan pada kebutuhan.
+                    <br /><br />
+                    Untuk mendapatkan gambaran harga dan inspirasi desain, silakan kunjungi halaman 
+                    <Link href="/gallery"> Galeri</Link> untuk melihat berbagai contoh karya kami.  
+                    Jika Anda sudah memiliki konsep atau ide tertentu, anda dapat mengisi <Link href="/order"> Form Pemesanan </Link> 
                   </div>
                 </div>
               </div>
@@ -141,7 +147,15 @@ export default function FaqPage() {
                   data-bs-parent="#faqAccordion"
                 >
                   <div className="accordion-body">
-                    Pengiriman dari <strong>Jelambar, Jakarta Barat</strong>. Kami sangat menyarankan menggunakan jasa pengiriman khusus kue (mobil) agar kue aman sampai tujuan. Kami juga bisa membantu memesankannya.
+                    Pengiriman dilakukan dari <strong>  Jelambar, Jakarta Barat</strong>. 
+                    Karena setiap kue kami dibuat dengan detail dan dekorasi yang lembut, kami sangat menyarankan untuk menggunakan 
+                    <strong> jasa pengiriman khusus kue (mobil) </strong>agar kue tiba di lokasi dengan aman dan tetap dalam kondisi sempurna.  
+                    <br /><br />
+                    Anda dapat mengatur pengiriman sendiri, namun kami juga dengan senang hati akan <strong> membantu memesankan layanan pengiriman </strong>
+                    melalui mitra logistik yang sudah berpengalaman menangani produk kue dan dessert.  
+                    <br /><br />
+                    Biaya pengiriman akan menyesuaikan dengan jarak dan jenis kendaraan yang digunakan. 
+                    Kami akan membantu memberikan estimasi dan memastikan kue Anda dikirim pada waktu yang tepat agar tetap segar saat diterima.
                   </div>
                 </div>
               </div>
@@ -167,9 +181,14 @@ export default function FaqPage() {
                   data-bs-parent="#faqAccordion"
                 >
                   <div className="accordion-body">
-                    Kami menyediakan dua base cake premium: <strong>Ogura Cake</strong> (lembut) dan <strong>Lapis Surabaya Premium</strong> (padat & kaya rasa).
+                    Kami menyediakan dua pilihan base cake premium: 
+                    <strong> Ogura Cake</strong> dan <strong> Lapis Surabaya Premium</strong>.  
                     <br /><br />
-                    Penjelasan detail dan foto potongan kue bisa dilihat di halaman <Link href="/our-cakes">Tentang Kue Kami</Link>.
+                    <strong>Ogura Cake</strong> memiliki tekstur yang sangat lembut, ringan, dan moist. Sangat cocok untuk Anda yang menyukai rasa manis yang halus dan tidak berlebihan.  
+                    Sementara itu, <strong>Lapis Surabaya Premium</strong> menawarkan sensasi padat, kaya rasa, dan lebih “buttery”, sempurna untuk desain kue yang ingin tampil elegan dan klasik.  
+                    <br /><br />
+                    Anda dapat melihat penjelasan lebih detail beserta foto potongan kue di halaman 
+                    <Link href="/our-cakes"> Tentang Kue Kami</Link> untuk membantu memilih base cake yang paling sesuai dengan selera dan konsep acara Anda.
                   </div>
                 </div>
               </div>
@@ -195,7 +214,15 @@ export default function FaqPage() {
                   data-bs-parent="#faqAccordion"
                 >
                   <div className="accordion-body">
-                    Silakan isi form di halaman <Link href="/order">Pesan Sekarang</Link>. Isi semua detail yang dibutuhkan. Setelah form dikirim, Anda akan langsung terhubung ke WhatsApp kami untuk konsultasi harga dan finalisasi.
+                    Untuk melakukan pemesanan, silakan isi form di halaman <Link href="/order">Pesan Sekarang</Link>. 
+                    Lengkapi semua detail yang dibutuhkan, seperti ukuran, jenis kue, tema desain, dan tanggal acara, 
+                    agar kami dapat memahami kebutuhan Anda dengan lebih baik.  
+                    <br /><br />
+                    Setelah form dikirim, Anda akan langsung terhubung ke <strong> WhatsApp kami </strong> untuk proses konsultasi. 
+                    Di sana, tim kami akan membantu memberikan rekomendasi, menyesuaikan desain jika diperlukan, 
+                    serta memberikan <strong> estimasi harga dan jadwal produksi </strong> sesuai dengan permintaan Anda.  
+                    <br /><br />
+                    Jangan ragu untuk bertanya atau berdiskusi. Kartini Ale dengan senang hati akan membantu Anda untuk membuat kue sesuai dengan keinginan Anda.
                   </div>
                 </div>
               </div>
