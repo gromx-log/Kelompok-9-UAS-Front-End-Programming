@@ -2,6 +2,7 @@ import React from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
+import CallToAction from '../components/callToAction';
 
 // TODO: GANTI GAMBAR!!!!!!!!!!!!!!!!!!
 const oguraImage = "/images/placeholder-ogura.jpg"; // Contoh path
@@ -24,7 +25,7 @@ export default function OurCakesPage() {
         />
       </Head>
 
-      {/* --- Page Header (Padding Diperbaiki) --- */}
+      {/*Header*/}
       <header 
         className="py-5 text-center" 
         style={{ 
@@ -208,30 +209,7 @@ export default function OurCakesPage() {
       </section>
 
       {/* --- CTA Section --- */}
-      <section className="py-5 text-center" style={{ backgroundColor: 'var(--color-bg-light)' }}>
-        <div className="container">
-          <h2 className="fw-bold h1 mb-4 fade-in-up">
-            Tertarik dengan Kualitas Kami?
-          </h2>
-          <p className="lead fs-5 mb-4 fade-in-up delay-1" style={{ color: 'var(--color-text-muted)' }}>
-            Lihat karya-karya kami atau mulai konsultasi untuk wujudkan kue impian Anda.
-          </p>
-          <div className="d-flex flex-wrap justify-content-center gap-3 fade-in-up delay-2">
-            <Link href="/gallery" legacyBehavior>
-              <a className="btn btn-outline-primary btn-lg" style={{ 
-                padding: '0.75rem 2rem' 
-              }}>
-                Lihat Galeri Kami
-              </a>
-            </Link>
-            <Link href="/order" legacyBehavior>
-              <a className="btn btn-primary btn-lg" style={{ padding: '0.75rem 2rem' }}>
-                Pesan Sekarang
-              </a>
-            </Link>
-          </div>
-        </div>
-      </section>
+      <CallToAction />
     </>
   );
 }
