@@ -50,9 +50,7 @@ export default function Navbar() {
           <span className="navbar-toggler-icon"></span>
         </button>
         <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav ms-auto">
-            
-            {/* 3. Terapkan Logika Dinamis */}
+          <ul className="navbar-nav ms-auto"
             <li className="nav-item">
               <Link href="/" legacyBehavior>
                 <a 
