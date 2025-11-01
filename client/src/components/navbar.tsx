@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import Image from 'next/image';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -39,7 +40,14 @@ export default function Navbar() {
       `}
     >
       <div className="container">
-        
+        <Link href="/" legacyBehavior>
+          <Image
+              src="/KartiniAle.png" // Image Path
+              alt="Kartini Ale Logo" 
+              width={90} // Lebar Logo
+              height={90} // Panjang Logo
+            />
+        </Link>
         <Link href="/" legacyBehavior>
           <a 
             className="navbar-brand" 
