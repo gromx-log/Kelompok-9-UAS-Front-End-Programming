@@ -2,7 +2,7 @@ import React from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
-import CallToAction from '../components/callToAction';
+import CallToAction from '../../components/callToAction';
 
 // TODO: GANTI GAMBAR!!!!!!!!!!!!!!!!!!
 const oguraImage = "/images/placeholder-ogura.jpg"; // Contoh path

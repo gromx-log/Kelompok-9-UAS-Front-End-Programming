@@ -1,24 +1,24 @@
 import React from 'react';
-import ProductCard from '../components/productCard';
+import ProductCard from '../../components/productCard';
 
 // Data dummy 
 const dummyProducts = [
   {
-    id: 1,
+    slug: 'red-velvet-classic', 
     name: 'Red Velvet Classic',
     description: 'Kue red velvet lembut dengan cream cheese frosting.',
     price: 'Rp 250.000',
     imageUrl: '/images/cake-placeholder.jpg',
   },
   {
-    id: 2,
+    slug: 'chocolate-overload',
     name: 'Chocolate Overload',
     description: 'Bagi pecinta cokelat, kue ini penuh dengan ganache.',
     price: 'Rp 300.000',
     imageUrl: '/images/cake-placeholder.jpg',
   },
   {
-    id: 3,
+    slug: 'unicorn-rainbow-cake',
     name: 'Unicorn Rainbow Cake',
     description: 'Kue pelangi lucu untuk ulang tahun anak.',
     price: 'Rp 350.000',
@@ -33,8 +33,9 @@ export default function ProductsPage() {
       
       <div className="row g-4">
         {dummyProducts.map((product) => (
-          <div className="col-md-6 col-lg-4" key={product.id}>
+          <div className="col-md-6 col-lg-4" key={product.slug}>
             <ProductCard
+              slug={product.slug}
               title={product.name}
               description={product.description}
               price={product.price}
