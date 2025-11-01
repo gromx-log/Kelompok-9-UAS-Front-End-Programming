@@ -207,9 +207,6 @@ export default function OurCakesPage() {
           </div>
         </div>
       </section>
-
-      {/* --- CTA Section --- */}
-      <CallToAction />
     </>
   );
 }

@@ -135,7 +135,7 @@ export default function Navbar() {
               </Link>
             </li>
 
-            <li className="nav-item ms-lg-3">
+            <li className="nav-item ms-lg-3 ">
               <Link href="/order" legacyBehavior>
                 <a className="btn btn-primary" onClick={closeMenu}> 
                   Pesan Sekarang
