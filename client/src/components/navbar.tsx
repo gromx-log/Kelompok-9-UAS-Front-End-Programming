@@ -1,63 +1,52 @@
+'use client';
+
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { usePathname } from 'next/navigation'; 
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false); 
-  const router = useRouter();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const pathname = usePathname(); 
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
+      setIsScrolled(window.scrollY > 50);
     };
 
     window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const isScrolledOrOpen = isScrolled || isMenuOpen;
+  const closeMenu = () => setIsMenuOpen(false);
 
-  const closeMenu = () => {
-    setIsMenuOpen(false);
-  };
+  const isScrolledOrOpen = isScrolled || isMenuOpen;
 
   return (
     <nav
       className={`
         navbar navbar-expand-lg fixed-top navbar-light
-        ${isScrolledOrOpen
-          ? 'bg-light shadow scrolled navbar-small'
-          : 'bg-transparent navbar-large' 
+        ${
+          isScrolledOrOpen
+            ? 'bg-light shadow scrolled navbar-small'
+            : 'bg-transparent navbar-large'
         }
       `}
     >
       <div className="container">
-        
-        <Link href="/" legacyBehavior>
-          <a 
-            className="navbar-brand" 
-            onClick={closeMenu} 
-          >
-            KartiniAle
-          </a>
+        <Link href="/" className="navbar-brand" onClick={closeMenu}>
+          KartiniAle
         </Link>
 
         <button
-          className="navbar-toggler border-0 shadow-none" 
+          className="navbar-toggler border-0 shadow-none"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#navbarNav"
           aria-controls="navbarNav"
-          aria-expanded={isMenuOpen} 
+          aria-expanded={isMenuOpen}
           aria-label="Toggle navigation"
-          onClick={() => setIsMenuOpen(!isMenuOpen)} 
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
           <div className={`custom-toggler ${isMenuOpen ? 'open' : ''}`}>
             <span></span>
@@ -66,75 +55,64 @@ export default function Navbar() {
           </div>
         </button>
 
-        <div className={`collapse navbar-collapse ${isMenuOpen ? 'show' : ''}`} id="navbarNav">
+        <div
+          className={`collapse navbar-collapse ${isMenuOpen ? 'show' : ''}`}
+          id="navbarNav"
+        >
           <ul className="navbar-nav ms-auto">
-            
             <li className="nav-item">
-              <Link href="/" legacyBehavior>
-                <a
-                  className={`nav-link ${router.pathname === '/' ? 'active' : ''}`}
-                  aria-current={router.pathname === '/' ? 'page' : undefined}
-                  onClick={closeMenu} 
-                >
-                  Home
-                </a>
+              <Link
+                href="/"
+                className={`nav-link ${pathname === '/' ? 'active' : ''}`}
+                aria-current={pathname === '/' ? 'page' : undefined}
+                onClick={closeMenu}
+              >
+                Home
               </Link>
             </li>
 
             <li className="nav-item">
-              <Link href="/products" legacyBehavior>
-                <a
-                  className={`nav-link ${router.pathname.startsWith('/products') ? 'active' : ''}`}
-                  aria-current={router.pathname.startsWith('/products') ? 'page' : undefined}
-                  onClick={closeMenu} 
-                >
-                  Produk
-                </a>
+              <Link
+                href="/products"
+                className={`nav-link ${
+                  pathname.startsWith('/products') ? 'active' : ''
+                }`}
+                aria-current={
+                  pathname.startsWith('/products') ? 'page' : undefined
+                }
+                onClick={closeMenu}
+              >
+                Produk
               </Link>
             </li>
 
             <li className="nav-item">
-              <Link href="/gallery" legacyBehavior>
-                <a
-                  className={`nav-link ${router.pathname === '/gallery' ? 'active' : ''}`}
-                  aria-current={router.pathname === '/gallery' ? 'page' : undefined}
-                  onClick={closeMenu} 
-                >
-                  Galeri
-                </a>
+              <Link
+                href="/our-cakes"
+                className={`nav-link ${
+                  pathname === '/our-cakes' ? 'active' : ''
+                }`}
+                onClick={closeMenu}
+              >
+                Tentang Kue Kami
               </Link>
             </li>
 
             <li className="nav-item">
-              <Link href="/our-cakes" legacyBehavior>
-                <a
-                  className={`nav-link ${router.pathname === '/our-cakes' ? 'active' : ''}`}
-                  onClick={closeMenu} 
-                >
-                  Tentang Kue Kami
-                </a>
+              <Link
+                href="/faq"
+                className={`nav-link ${pathname === '/faq' ? 'active' : ''}`}
+                onClick={closeMenu}
+              >
+                FAQ
               </Link>
             </li>
 
-            <li className="nav-item">
-              <Link href="/faq" legacyBehavior>
-                <a
-                  className={`nav-link ${router.pathname === '/faq' ? 'active' : ''}`}
-                  onClick={closeMenu} 
-                >
-                  FAQ
-                </a>
+            <li className="nav-item ms-lg-3">
+              <Link href="/order" className="btn btn-primary" onClick={closeMenu}>
+                Pesan Sekarang
               </Link>
             </li>
-
-            <li className="nav-item ms-lg-3 ">
-              <Link href="/order" legacyBehavior>
-                <a className="btn btn-primary" onClick={closeMenu}> 
-                  Pesan Sekarang
-                </a>
-              </Link>
-            </li>
-
           </ul>
         </div>
       </div>
