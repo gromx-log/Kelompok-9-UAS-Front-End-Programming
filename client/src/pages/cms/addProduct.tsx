@@ -1,7 +1,6 @@
 import React from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-// Pastikan path ini benar (jika CmsLayout.tsx ada di 'components')
 import CmsLayout from '../../components/cmsLayout'; 
 import { FaUpload } from 'react-icons/fa';
 
@@ -71,13 +70,9 @@ export default function CmsAddProductPage() {
               </div>
               <div className="card-body p-4 text-center">
                 <div className="cms-upload-box">
-                  
-                  {/* --- PERBAIKAN DI SINI --- */}
                   <span className="text-muted">
                     <FaUpload size={40} />
-                  </span>
-                  {/* --- AKHIR PERBAIKAN --- */}
-                  
+                  </span>                  
                   <p className="mt-3 text-muted">Klik untuk upload foto (1:1)</p>
                 </div>
                 <small className="text-muted">Rasio 1:1, maks. 2MB, format JPG/PNG</small>

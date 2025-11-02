@@ -356,6 +356,61 @@ a {
   object-fit: cover;
 }
 
+/* 1. Animasi "Mengambang" untuk Hero */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.hero-illustration-section img {
+  animation: float 6s ease-in-out infinite;
+  transition: transform 0.3s ease-out;
+}
+
+.hero-illustration-section img:hover {
+  transform: scale(1.05);
+}
+
+.btn-primary,
+.btn-outline-primary,
+.btn-light {
+  transition: all 0.3s ease-out;
+}
+
+.btn-primary:hover,
+.btn-outline-primary:hover,
+.btn-light:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 4px 15px var(--color-accent);
+}
+.btn-outline-primary:hover {
+  box-shadow: 0 4px 15px var(--color-accent);
+}
+
+.flip-card-container,
+.KEAHLIAN SECTION img {
+  transition: transform 0.4s ease-out, box-shadow 0.4s ease-out;
+}
+
+.flip-card-container:hover,
+.KEAHLIAN SECTION img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 1rem 3rem rgba(0,0,0,.175) !important;
+}
+
+
+
 /* CMS */
 .cms-layout {
   display: flex;
