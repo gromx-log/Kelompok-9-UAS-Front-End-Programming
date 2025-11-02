@@ -312,6 +312,16 @@ a {
   transform: rotate(-45deg);
 }
 
+/* Gaya link di dalam jawaban FAQ Accordion */
+.accordion-body a {
+  color: var(--color-accent);
+  font-weight: 600;
+  text-underline-offset: 3px; 
+}
+
+.accordion-body a:hover {
+  text-decoration: underline; 
+}
 /* untuk flip card kue */
 .flip-card-container {
   /* perspective: 1000px; efek 3D */
