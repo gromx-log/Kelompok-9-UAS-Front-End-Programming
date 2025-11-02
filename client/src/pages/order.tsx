@@ -2,9 +2,7 @@ import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 
-// Definisikan tipe untuk state form Anda agar lebih aman
 interface IFormData {
-  [x: string]: string | number | readonly string[];
   customerName: string;
   customerPhone: string;
   deliveryDate: string;
@@ -29,6 +27,10 @@ export default function OrderPage() {
 
   // State untuk mengontrol status "freeze" pada input rasa
   const [isFlavorDisabled, setIsFlavorDisabled] = useState(false);
+  
+  // State untuk loading dan error handling
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   // Efek ini akan berjalan setiap kali 'cakeType' berubah
   useEffect(() => {
@@ -51,59 +53,97 @@ export default function OrderPage() {
     }));
   };
 
-  // Fungsi utama: HANYA mengubah data form menjadi pesan WhatsApp
-  // (TIDAK 'async' dan TIDAK 'fetch')
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  // Fungsi utama: Menyimpan ke DB EKSTERNAL, LALU membuka WhatsApp
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitError(null);
 
-    // TODO: GANTI DENGAN NOMOR WHATSAPP ADMIN ANDA (format 62)
-    const adminPhoneNumber = '6281211365855';
+    // --- LANGKAH 1: KIRIM KE BACKEND ---
+    try {
+      // Siapkan data untuk dikirim.
+      // Kita perlu menyalin formData dan menghapus cakeFlavor jika tidak relevan
+      const payload: Partial<IFormData> = { ...formData };
+      if (payload.cakeType !== 'Ogura') {
+        delete payload.cakeFlavor;
+      }
+      
+      const response = await fetch('http://localhost:3000/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json', // WAJIB
+        },
+        body: JSON.stringify(payload), // WAJIB di-stringify
+      });
 
-    // 1. Buat template pesan
-    let message = `Hai sayang, saya mau pesan kue custom:\n\n`;
-    message += `*1. DATA PEMESAN*\n`;
-    message += `Nama: ${formData.customerName}\n`;
-    message += `No. HP/WA: ${formData.customerPhone}\n`;
-    message += `Tanggal Pengiriman (diinginkan): ${formData.deliveryDate}\n`;
-    message += `\n`;
-    message += `*2. DETAIL KUE*\n`;
-    message += `Base Cake: ${formData.cakeType}\n`;
-    
-    if (formData.cakeType === 'Ogura' && formData.cakeFlavor) {
-      message += `Rasa Ogura: ${formData.cakeFlavor}\n`;
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Menangani error validasi dari server (sesuai doc Franz)
+        throw new Error(data.message || 'Gagal menyimpan pesanan');
+      }
+      
+      console.log('Sukses tersimpan di DB:', data);
+
+      // --- LANGKAH 2: JIKA SUKSES, BARU BUKA WHATSAPP ---
+      
+      const adminPhoneNumber = '6287739768658'; // Nomor Anda sudah benar
+
+      // 1. Buat template pesan (Logika ini tetap sama)
+      let message = `Hai sayang, saya mau pesan kue custom:\n\n`;
+      message += `*1. DATA PEMESAN*\n`;
+      message += `Nama: ${formData.customerName}\n`;
+      message += `No. HP/WA: ${formData.customerPhone}\n`;
+      message += `Tanggal Pengiriman (diinginkan): ${formData.deliveryDate}\n`;
+      message += `\n`;
+      message += `*2. DETAIL KUE*\n`;
+      message += `Base Cake: ${formData.cakeType}\n`;
+      
+      if (formData.cakeType === 'Ogura' && formData.cakeFlavor) {
+        message += `Rasa Ogura: ${formData.cakeFlavor}\n`;
+      }
+      
+      message += `Ukuran Kue: ${formData.cakeSize}\n`;
+      message += `\n`;
+      message += `*3. DESAIN & TEMA*\n`;
+      message += `Deskripsi Tema:\n${formData.themeDescription}\n`;
+      
+      if (formData.referenceImageUrl) {
+        message += `\nLink Referensi Gambar: ${formData.referenceImageUrl}\n`;
+      }
+      
+      message += `\n---\n`;
+      message += `Mohon info selanjutnya untuk harga dan konfirmasi. Terima kasih!`;
+
+      // 2. Encode pesan untuk URL
+      const encodedMessage = encodeURIComponent(message);
+
+      // 3. Buka link WhatsApp di tab baru
+      const whatsappUrl = `https://wa.me/${adminPhoneNumber}?text=${encodedMessage}`;
+      window.open(whatsappUrl, '_blank');
+
+      // (Opsional) Reset form setelah berhasil
+      setFormData({
+        customerName: '',
+        customerPhone: '',
+        deliveryDate: '',
+        cakeType: 'Ogura',
+        cakeFlavor: '',
+        cakeSize: '',
+        themeDescription: '',
+        referenceImageUrl: '',
+      });
+
+    } catch (error) {
+      // Tampilkan error di frontend jika fetch gagal
+      console.error('Error saat menyimpan ke DB:', (error as Error).message);
+      setSubmitError((error as Error).message);
+    } finally {
+      // Hentikan status loading
+      setIsSubmitting(false);
     }
-    
-    message += `Ukuran Kue: ${formData.cakeSize}\n`;
-    message += `\n`;
-    message += `*3. DESAIN & TEMA*\n`;
-    message += `Deskripsi Tema:\n${formData.themeDescription}\n`;
-    
-    if (formData.referenceImageUrl) {
-      message += `\nLink Referensi Gambar: ${formData.referenceImageUrl}\n`;
-    }
-    
-    message += `\n---\n`;
-    message += `Mohon info selanjutnya untuk harga dan konfirmasi. Terima kasih!`;
-
-    // 2. Encode pesan untuk URL
-    const encodedMessage = encodeURIComponent(message);
-
-    // 3. Buka link WhatsApp di tab baru
-    const whatsappUrl = `https://wa.me/${adminPhoneNumber}?text=${encodedMessage}`;
-    window.open(whatsappUrl, '_blank');
-    
-    // (Opsional) Reset form setelah berhasil
-    setFormData({
-      customerName: '',
-      customerPhone: '',
-      deliveryDate: '',
-      cakeType: 'Ogura',
-      cakeFlavor: '',
-      cakeSize: '',
-      themeDescription: '',
-      referenceImageUrl: '',
-    });
   };
+
 
   return (
     <>
@@ -238,9 +278,10 @@ export default function OrderPage() {
                         required={!isFlavorDisabled}
                       >
                         <option value="">{isFlavorDisabled ? '(Hanya untuk Ogura)' : 'Pilih rasa Ogura...'}</option>
-                        <option value="Vanilla">Cokelat</option>
-                        <option value="Cokelat">Keju</option>
-                        <option value="Keju">Stroberi</option>
+                        {/* Pilihan rasa Anda sudah benar */}
+                        <option value="Cokelat">Cokelat</option>
+                        <option value="Keju">Keju</option>
+                        <option value="Stroberi">Stroberi</option>
                       </select>
                     </div>
                   </div>
@@ -250,7 +291,7 @@ export default function OrderPage() {
                       className="form-select"
                       id="cakeSize"
                       name="cakeSize"
-                      value={formData.value}
+                      value={formData.cakeSize} 
                       onChange={handleChange}
                       required
                     >
@@ -294,14 +335,19 @@ export default function OrderPage() {
                     />
                   </div>
 
-                  {/* === Tombol Submit (Versi Simpel) === */}
+                  {/* === Tombol Submit (Dengan Loading & Error) === */}
                   <div className="d-grid mt-4">
-                    <button type="submit" className="btn btn-primary btn-lg py-3">
-                      Lanjutkan ke WhatsApp
+                    <button type="submit" className="btn btn-primary btn-lg py-3" disabled={isSubmitting}>
+                      {isSubmitting ? 'Menyimpan...' : 'Lanjutkan ke WhatsApp'}
                     </button>
                   </div>
 
-                  {/* Tidak ada lagi 'submitError' di sini */}
+                  {/* Tampilkan pesan error jika ada */}
+                  {submitError && (
+                    <div className="alert alert-danger mt-3" role="alert">
+                      <strong>Terjadi Kesalahan:</strong> {submitError}
+                    </div>
+                  )}
 
                 </form>
 
