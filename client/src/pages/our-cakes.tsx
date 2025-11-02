@@ -2,6 +2,7 @@ import React from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
+import CallToAction from '../components/callToAction';
 
 // TODO: GANTI GAMBAR!!!!!!!!!!!!!!!!!!
 const oguraImage = "/images/placeholder-ogura.jpg"; // Contoh path
@@ -190,12 +191,12 @@ export default function OurCakesPage() {
                   />
                 </div>
                 <div className="col-lg-6">
-                  <h2 className="display-5 fw-bold mb-3">Opsi "Dami Cake"</h2>
+                  <h2 className="display-5 fw-bold mb-3">Opsi &ldquo;Dami Cake&quot;</h2>
                   <p className="lead fs-5 mb-4" style={{ color: 'var(--color-text-muted)' }}>
                     Butuh kue yang cantik hanya untuk keperluan foto? Kami punya solusi hemat.
                   </p>
                   <p className="fs-5" style={{ color: 'var(--color-text)' }}>
-                    Kami menyediakan opsi "Dami Cake", yaitu kue palsu dari styrofoam
+                    Kami menyediakan opsi &ldquo;Dami Cake&quot;, yaitu kue palsu dari styrofoam
                     yang kami hias secantik mungkin, disajikan dengan kue potong asli
                     secara terpisah. Lebih hemat dan bisa Anda simpan sebagai kenang-kenangan.
                   </p>
@@ -203,32 +204,6 @@ export default function OurCakesPage() {
               </div>
             </div>
 
-          </div>
-        </div>
-      </section>
-
-      {/* --- CTA Section --- */}
-      <section className="py-5 text-center" style={{ backgroundColor: 'var(--color-bg-light)' }}>
-        <div className="container">
-          <h2 className="fw-bold h1 mb-4 fade-in-up">
-            Tertarik dengan Kualitas Kami?
-          </h2>
-          <p className="lead fs-5 mb-4 fade-in-up delay-1" style={{ color: 'var(--color-text-muted)' }}>
-            Lihat karya-karya kami atau mulai konsultasi untuk wujudkan kue impian Anda.
-          </p>
-          <div className="d-flex flex-wrap justify-content-center gap-3 fade-in-up delay-2">
-            <Link href="/gallery" legacyBehavior>
-              <a className="btn btn-outline-primary btn-lg" style={{ 
-                padding: '0.75rem 2rem' 
-              }}>
-                Lihat Galeri Kami
-              </a>
-            </Link>
-            <Link href="/order" legacyBehavior>
-              <a className="btn btn-primary btn-lg" style={{ padding: '0.75rem 2rem' }}>
-                Pesan Sekarang
-              </a>
-            </Link>
           </div>
         </div>
       </section>
