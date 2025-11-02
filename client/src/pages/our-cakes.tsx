@@ -191,12 +191,12 @@ export default function OurCakesPage() {
                   />
                 </div>
                 <div className="col-lg-6">
-                  <h2 className="display-5 fw-bold mb-3">Opsi "Dami Cake"</h2>
+                  <h2 className="display-5 fw-bold mb-3">Opsi &ldquo;Dami Cake&quot;</h2>
                   <p className="lead fs-5 mb-4" style={{ color: 'var(--color-text-muted)' }}>
                     Butuh kue yang cantik hanya untuk keperluan foto? Kami punya solusi hemat.
                   </p>
                   <p className="fs-5" style={{ color: 'var(--color-text)' }}>
-                    Kami menyediakan opsi "Dami Cake", yaitu kue palsu dari styrofoam
+                    Kami menyediakan opsi &ldquo;Dami Cake&quot;, yaitu kue palsu dari styrofoam
                     yang kami hias secantik mungkin, disajikan dengan kue potong asli
                     secara terpisah. Lebih hemat dan bisa Anda simpan sebagai kenang-kenangan.
                   </p>
