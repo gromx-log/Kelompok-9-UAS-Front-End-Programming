@@ -1,15 +1,15 @@
 import React from 'react';
 import Head from 'next/head';
-import CmsLayout from '../../components/cmsLayout';
+import CmsLayout from '../cmslayout';
+
+export const metadata = {
+  title: 'Manajemen Pesanan - KartiniAle CMS',
+  robots: 'noindex, nofollow',
+};
 
 export default function CmsOrdersPage() {
   return (
     <CmsLayout>
-      <Head>
-        <title>Manajemen Pesanan - KartiniAle CMS</title>
-        <meta name="robots" content="noindex, nofollow" />
-      </Head>
-
       <div className="container-fluid p-4">
         {/* Header */}
         <h1 className="display-5 fw-bold mb-4" style={{ color: 'var(--color-text)' }}>

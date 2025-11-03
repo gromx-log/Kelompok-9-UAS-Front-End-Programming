@@ -1,16 +1,15 @@
-import React from 'react';
-import Head from 'next/head';
+// app/cms/dashboard/page.jsx
 import { FaChartBar, FaShoppingBag } from 'react-icons/fa';
-import CmsLayout from '../../components/cmsLayout'; 
+import CmsLayout from '../cmslayout';
+
+export const metadata = {
+  title: 'Dashboard - KartiniAle CMS',
+  robots: 'noindex, nofollow',
+};
 
 export default function CmsDashboardPage() {
   return (
     <CmsLayout>
-      <Head>
-        <title>Dashboard - KartiniAle CMS</title>
-        <meta name="robots" content="noindex, nofollow" />
-      </Head>
-
       <div className="container-fluid p-4">
         {/* Header Dashboard */}
         <h1 className="display-5 fw-bold mb-4" style={{ color: 'var(--color-text)' }}>
@@ -22,7 +21,7 @@ export default function CmsDashboardPage() {
           <div className="col-lg-4 col-md-6">
             <div className="card h-100 shadow-sm border-0">
               <div className="card-body d-flex align-items-center">
-                <span className="me-3"> 
+                <span className="me-3">
                   <FaShoppingBag size={30} color="var(--color-accent)" />
                 </span>
                 <div>
@@ -32,10 +31,11 @@ export default function CmsDashboardPage() {
               </div>
             </div>
           </div>
+
           <div className="col-lg-4 col-md-6">
             <div className="card h-100 shadow-sm border-0">
               <div className="card-body d-flex align-items-center">
-                <span className="me-3"> 
+                <span className="me-3">
                   <FaChartBar size={30} color="var(--color-accent)" />
                 </span>
                 <div>
@@ -45,10 +45,13 @@ export default function CmsDashboardPage() {
               </div>
             </div>
           </div>
+
           <div className="col-lg-4 col-md-6">
             <div className="card h-100 shadow-sm border-0">
               <div className="card-body d-flex align-items-center">
-                <span className="h2 me-3 mb-0" style={{ color: 'var(--color-accent)' }}>✉️</span>
+                <span className="h2 me-3 mb-0" style={{ color: 'var(--color-accent)' }}>
+                  ✉️
+                </span>
                 <div>
                   <h5 className="card-title text-muted mb-1">Pesan Masuk</h5>
                   <p className="card-text h3 fw-bold">3</p>
@@ -65,10 +68,8 @@ export default function CmsDashboardPage() {
           </div>
           <div className="card-body p-4">
             <p className="text-muted">Tabel pesanan terbaru akan muncul di sini...</p>
-            
           </div>
         </div>
-
       </div>
     </CmsLayout>
   );
