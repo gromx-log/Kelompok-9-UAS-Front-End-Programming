@@ -530,3 +530,9 @@ a {
 .cms-upload-box:hover {
   background-color: #f5f5f5;
 }
+
+.logo-navbar {
+  width: 10%; 
+  min-width: 75px; 
+  height: auto; 
+}

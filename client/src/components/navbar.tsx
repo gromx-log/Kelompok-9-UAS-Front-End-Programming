@@ -43,9 +43,9 @@ export default function Navbar() {
           <Image
             src="/KartiniAle.png"
             alt="Kartini Ale Logo"
-            width={90}
-            height={90}
-            className="me-2"
+            width={75}
+            height={75}
+            className="logo-navbar me-2"
           />
           KartiniAle
         </Link>
