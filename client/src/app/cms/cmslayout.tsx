@@ -9,7 +9,7 @@ export default function CmsLayout({ children }) {
 
   // Determine active routes
   const isProductsActive =
-    pathname?.startsWith('/cms/products') || pathname.startsWith('/cms/addProduct');
+    pathname?.startsWith('/cms/products') || pathname?.startsWith('/cms/addProduct');
   const isOrdersActive = pathname?.startsWith('/cms/orders');
 
   const navItems = [
