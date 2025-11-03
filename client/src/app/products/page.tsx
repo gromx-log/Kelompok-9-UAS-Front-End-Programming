@@ -1,5 +1,13 @@
 import React from 'react';
 import ProductCard from '../../components/productCard';
+import { Metadata } from 'next';
+import Navbar from '../../components/navbar';
+import CTA from '../../components/callToAction';
+import Footer from '../../components/footer';
+
+export const metadata = {
+  title: 'Produk Kami - KartiniAle',
+};
 
 // Data dummy 
 const dummyProducts = [
@@ -28,6 +36,8 @@ const dummyProducts = [
 
 export default function ProductsPage() {
   return (
+    <>
+    <Navbar/>
     <div className="container my-5 pt-5"> 
       <h1 className="text-center mb-4">Katalog Kue Kami</h1>
       
@@ -45,5 +55,8 @@ export default function ProductsPage() {
         ))}
       </div>
     </div>
+    <CTA/>
+    <Footer/>
+    </>
   );
 }

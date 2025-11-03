@@ -1,31 +1,27 @@
 import React from 'react';
-import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
-import CallToAction from '../../components/callToAction';
+import { Metadata } from 'next';
+import Navbar from '../../components/navbar';
+import CTA from '../../components/callToAction';
+import Footer from '../../components/footer';
 
-// TODO: GANTI GAMBAR!!!!!!!!!!!!!!!!!!
-const oguraImage = "/images/placeholder-ogura.jpg"; // Contoh path
-const lapisImage = "/images/placeholder-lapis.jpg"; // Contoh path
-const damiImage = "/images/placeholder-dami.jpg"; // Contoh path
+const oguraImage = "/images/placeholder-ogura.jpg";
+const lapisImage = "/images/placeholder-lapis.jpg";
+const damiImage = "/images/placeholder-dami.jpg";
+
+export const metadata = {
+  title: 'Tentang Kue Kami - KartiniAle',
+  description: 'Pelajari tentang base cake premium kami: Ogura Cake yang lembut dan Lapis Surabaya Premium yang kaya rasa.',
+};
 
 export default function OurCakesPage() {
   return (
     <>
-      <Head>
-        <title>Tentang Kue Kami - KartiniAle</title>
-        <meta
-          name="description"
-          content="Pelajari tentang base cake premium kami: Ogura Cake yang lembut dan Lapis Surabaya Premium yang kaya rasa."
-        />
-        {/* Kita butuh icon Bootstrap jika kamu menggunakannya */}
-        <link 
-          rel="stylesheet" 
-          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" 
-        />
-      </Head>
 
-      {/*Header*/}
+      <Navbar/>
+      
+      {/* Header */}
       <header 
         className="py-5 text-center" 
         style={{ 
@@ -45,11 +41,11 @@ export default function OurCakesPage() {
         </div>
       </header>
 
-      {/* --- Konten Utama (Layout Tabbed Interface) --- */}
+      {/* Main Section */}
       <section className="py-5" style={{ backgroundColor: 'var(--color-bg)' }}>
         <div className="container">
           
-          {/* --- Navigasi Tabs --- */}
+          {/* Tabs Navigation */}
           <ul 
             className="nav nav-pills mb-4 justify-content-center fade-in-up our-cakes-tabs" 
             id="cakeTabs" 
@@ -103,10 +99,10 @@ export default function OurCakesPage() {
             </li>
           </ul>
 
-          {/* --- Konten Tabs --- */}
+          {/* Tabs Content */}
           <div className="tab-content pt-4" id="cakeTabsContent">
             
-            {/* --- Pane 1: Ogura Cake --- */}
+            {/* Ogura Cake */}
             <div 
               className="tab-pane fade show active" 
               id="ogura-tab-pane" 
@@ -141,7 +137,7 @@ export default function OurCakesPage() {
               </div>
             </div>
 
-            {/* --- Pane 2: Lapis Surabaya --- */}
+            {/* Lapis Surabaya */}
             <div 
               className="tab-pane fade" 
               id="lapis-tab-pane" 
@@ -173,7 +169,7 @@ export default function OurCakesPage() {
               </div>
             </div>
 
-            {/* --- Pane 3: Dami Cake --- */}
+            {/* Dami Cake */}
             <div 
               className="tab-pane fade" 
               id="dami-tab-pane" 
@@ -191,12 +187,12 @@ export default function OurCakesPage() {
                   />
                 </div>
                 <div className="col-lg-6">
-                  <h2 className="display-5 fw-bold mb-3">Opsi "Dami Cake"</h2>
+                  <h2 className="display-5 fw-bold mb-3">Opsi &ldquo;Dami Cake&quot;</h2>
                   <p className="lead fs-5 mb-4" style={{ color: 'var(--color-text-muted)' }}>
                     Butuh kue yang cantik hanya untuk keperluan foto? Kami punya solusi hemat.
                   </p>
                   <p className="fs-5" style={{ color: 'var(--color-text)' }}>
-                    Kami menyediakan opsi "Dami Cake", yaitu kue palsu dari styrofoam
+                    Kami menyediakan opsi &ldquo;Dami Cake&quot;, yaitu kue palsu dari styrofoam
                     yang kami hias secantik mungkin, disajikan dengan kue potong asli
                     secara terpisah. Lebih hemat dan bisa Anda simpan sebagai kenang-kenangan.
                   </p>
@@ -207,6 +203,9 @@ export default function OurCakesPage() {
           </div>
         </div>
       </section>
+
+      <CTA/>
+      <Footer/>
     </>
   );
 }

@@ -1,0 +1,157 @@
+📝 Dokumentasi API Backend (Fase 1) untuk Tim Frontend
+Berikut adalah panduan untuk Orang 3 & 4 tentang cara menggunakan API yang telah disiapkan oleh Tim Backend.
+
+URL Dasar (Base URL)
+Semua permintaan API dari frontend harus ditujukan ke server backend yang berjalan di: http://localhost:5000
+
+Poin Kunci: CORS & Headers
+CORS: Kalian tidak perlu khawatir soal CORS. Tim Backend sudah mengaturnya di server (Access-Control-Allow-Origin: *). Fetch request kalian dari localhost:3000 (Next.js) akan diizinkan.
+
+Headers: Untuk permintaan POST, kalian wajib menyertakan header Content-Type: application/json. Backend kita hanya menerima JSON.
+
+## 1. Endpoint: Mengambil Semua Produk
+Ini digunakan oleh Orang 4 untuk membangun Halaman Galeri (/gallery).
+
+Method: GET
+
+URL: /api/products
+
+URL Lengkap: http://localhost:5000/api/products
+
+Contoh Implementasi (Frontend - fetch)
+Kalian bisa menggunakan fetch di dalam useEffect atau getServerSideProps di Next.js.
+
+JavaScript
+
+// Di dalam halaman gallery.tsx
+
+async function fetchProducts() {
+  try {
+    const response = await fetch('http://localhost:5000/api/products');
+    
+    if (!response.ok) {
+      throw new Error('Gagal mengambil data dari server');
+    }
+    
+    const data = await response.json();
+    console.log(data); // Ini adalah array produk
+    // setProducts(data); // Simpan ke state React
+
+  } catch (error) {
+    console.error('Gagal mengambil produk:', error.message);
+  }
+}
+Contoh Respons Sukses (200 OK)
+Kamu akan menerima sebuah array dari objek produk. Jika database masih kosong, kamu akan menerima array kosong [].
+
+JSON
+
+[
+  {
+    "_id": "6541f5a91f4d6b1d4c9d1c7f",
+    "name": "Kue Ultah Spiderman",
+    "slug": "kue-ultah-spiderman",
+    "images": ["/images/kue-spiderman-1.jpg"],
+    "category": "Anak",
+    "description": "Kue fondant dengan tema Spiderman, base cake Ogura.",
+    "startPrice": 500000,
+    "__v": 0
+  },
+  {
+    "_id": "6541f5b91f4d6b1d4c9d1c8a",
+    "name": "Kue Wedding Elegant",
+    "slug": "kue-wedding-elegant",
+    "images": ["/images/kue-wedding-1.jpg"],
+    "category": "Dewasa",
+    "description": "Kue 3 tingkat untuk pernikahan.",
+    "startPrice": 2500000,
+    "__v": 0
+  }
+]
+## 2. Endpoint: Membuat Pesanan Baru
+Ini digunakan oleh Orang 4 untuk Halaman Form Pemesanan (/order). Ini adalah Aksi 2 (Database) dari alur hibrida kita.
+
+Method: POST
+
+URL: /api/orders
+
+URL Lengkap: http://localhost:5000/api/orders
+
+Data yang Harus Dikirim (Body)
+Kamu wajib mengirim data dalam format JSON di dalam body permintaan. Pastikan untuk menggunakan JSON.stringify().
+
+Contoh Objek Data (JSON) yang dikirim:
+
+JSON
+
+{
+  "customerName": "Filbert Ferdinand",
+  "customerPhone": "08123456789",
+  "deliveryDate": "2025-11-20T10:00:00.000Z",
+  "cakeType": "Lapis Surabaya",
+  "cakeSize": "20cm",
+  "themeDescription": "Tema Marvel, minta ada figurin Iron Man dan Captain America",
+  "referenceImageUrl": "https://pinterest.com/link-gambar.jpg"
+}
+(Catatan: cakeFlavor bersifat opsional, kirim hanya jika cakeType adalah "Ogura")
+
+Contoh Implementasi (Frontend - fetch)
+Ini adalah fungsi yang akan dipanggil saat tombol "Kirim & Konsultasi" diklik (Aksi 2).
+
+JavaScript
+
+// Di dalam halaman order.tsx
+
+// 'orderData' adalah objek JS seperti contoh di atas
+async function submitOrderToDatabase(orderData) {
+  try {
+    const response = await fetch('http://localhost:5000/api/orders', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json', // WAJIB
+      },
+      body: JSON.stringify(orderData), // WAJIB di-stringify
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      // Menangani error validasi dari server
+      throw new Error(data.message || 'Gagal menyimpan pesanan');
+    }
+
+    console.log('Sukses tersimpan di DB:', data);
+    // Sekarang frontend bisa melanjutkan ke Aksi 1 (redirect WA)
+
+  } catch (error) {
+    console.error('Error saat menyimpan ke DB:', error.message);
+    // Mungkin tampilkan notifikasi error ke pengguna
+  }
+}
+Contoh Respons Sukses (201 Created)
+Backend akan mengembalikan data pesanan yang baru saja tersimpan di database.
+
+JSON
+
+{
+  "_id": "6542f5b91f4d6b1d4c9d1c9f",
+  "customerName": "Filbert Ferdinand",
+  "customerPhone": "08123456789",
+  "deliveryDate": "2025-11-20T10:00:00.000Z",
+  "cakeType": "Lapis Surabaya",
+  "cakeSize": "20cm",
+  "themeDescription": "Tema Marvel...",
+  "referenceImageUrl": "https://pinterest.com/link-gambar.jpg",
+  "status": "Pending",
+  "createdAt": "2025-11-02T10:30:00.000Z",
+  "__v": 0
+}
+Contoh Respons Gagal (400 Bad Request)
+Ini terjadi jika frontend lupa mengirim data yang wajib.
+
+JSON
+
+{
+  "message": "Semua data wajib diisi"
+}
+Langkah Selanjutnya: Tim Frontend (Orang 3 & 4) sekarang memiliki semua yang mereka butuhkan untuk mulai membangun UI dan menghubungkannya ke backend.

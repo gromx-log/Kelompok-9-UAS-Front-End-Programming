@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation'; 
+import Image from 'next/image';
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -34,7 +35,18 @@ export default function Navbar() {
       `}
     >
       <div className="container">
-        <Link href="/" className="navbar-brand" onClick={closeMenu}>
+        <Link
+          href="/"
+          className="navbar-brand d-flex align-items-center"
+          onClick={closeMenu}
+        >
+          <Image
+            src="/KartiniAle.png"
+            alt="Kartini Ale Logo"
+            width={90}
+            height={90}
+            className="me-2"
+          />
           KartiniAle
         </Link>
 
@@ -75,10 +87,10 @@ export default function Navbar() {
               <Link
                 href="/products"
                 className={`nav-link ${
-                  pathname.startsWith('/products') ? 'active' : ''
+                  pathname?.startsWith('/products') ? 'active' : ''
                 }`}
                 aria-current={
-                  pathname.startsWith('/products') ? 'page' : undefined
+                  pathname?.startsWith('/products') ? 'page' : undefined
                 }
                 onClick={closeMenu}
               >

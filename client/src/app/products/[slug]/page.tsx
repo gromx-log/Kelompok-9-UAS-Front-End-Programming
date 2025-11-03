@@ -1,5 +1,9 @@
+import { Metadata } from 'next';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
+import Navbar from '../../../components/navbar';
+import CTA from '../../../components/callToAction';
+import Footer from '../../../components/footer';
 
 const dummyProducts = [
   {
@@ -25,6 +29,29 @@ const dummyProducts = [
   },
 ];
 
+export async function generateMetadata( { params }: { params: { slug: string } }
+): Promise<Metadata> {
+  const { slug } = await params;
+  const product = dummyProducts.find((p) => p.slug === slug);
+
+  if (!product) {
+    return {
+      title: 'Produk tidak ditemukan - KartiniAle',
+      description: 'Produk yang Anda cari tidak tersedia.',
+    };
+  }
+
+  return {
+    title: `${product.name} - KartiniAle`,
+    description: product.description,
+    openGraph: {
+      title: product.name,
+      description: product.description,
+      images: [product.imageUrl],
+    },
+  };
+}
+
 export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const product = dummyProducts.find((p) => p.slug === slug);
@@ -32,6 +59,8 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   if (!product) return notFound();
 
   return (
+    <>
+    <Navbar/>
     <div
       className="container d-flex align-items-center justify-content-center"
       style={{
@@ -70,6 +99,9 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         </div>
       </div>
     </div>
+    <CTA/>
+    <Footer/>
+    </>
   );
 
 }

@@ -3,7 +3,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import React, { useState } from 'react';
-
+import Navbar from '../components/navbar';
+import CTA from '../components/callToAction';
+import Footer from '../components/footer';
 
 export default function Home() {
   // state buat flip gambar
@@ -15,6 +17,7 @@ export default function Home() {
 
   return (
     <>
+      <Navbar/>
       {/* HERO SECTION */}
       <section className="hero-illustration-section">
         <div className="container">
@@ -157,7 +160,7 @@ export default function Home() {
                 adalah karya seni yang personal.
               </p>
               {/* Tombol CTA untuk ke galeri */}
-              <Link href="/gallery" className="btn btn-outline-primary mt-3">
+              <Link href="/products" className="btn btn-outline-primary mt-3">
                   Lihat Galeri Kami
               </Link>
             </div>
@@ -165,6 +168,19 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Tombol ke CMS */}
+      <section className="py-5 text-center" style={{ backgroundColor: 'var(--color-bg-light)' }}>
+        <div className="container">
+          <p className="text-muted">Hanya untuk admin</p>
+          <Link href="/cms/dashboard" className="btn btn-outline-secondary">
+              Halaman Admin (CMS)
+          </Link>
+        </div>
+      </section>
+
+      <CTA/>
+      <Footer/>
     </>
   );
 }
