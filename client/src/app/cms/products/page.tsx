@@ -3,7 +3,12 @@ import Head from 'next/head';
 import Link from 'next/link';
 import Image from 'next/image';
 import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
-import CmsLayout from '../../components/cmsLayout'; 
+import CmsLayout from '../cmslayout'; 
+
+export const metadata = {
+  title: 'Manajemen Produk - KartiniAle CMS',
+  robots: 'noindex, nofollow',
+};
 
 // Data dummy 
 interface Product {
@@ -18,10 +23,6 @@ const dummyProducts: Product[] = [
 export default function CmsProductsPage() {
   return (
     <CmsLayout>
-      <Head>
-        <title>Manajemen Produk - KartiniAle CMS</title>
-        <meta name="robots" content="noindex, nofollow" />
-      </Head>
 
       <div className="container-fluid p-4">
         {/* Header */}
@@ -29,11 +30,9 @@ export default function CmsProductsPage() {
           <h1 className="display-5 fw-bold" style={{ color: 'var(--color-text)' }}>
             Produk Saya
           </h1>
-          <Link href="/cms/add-product" legacyBehavior>
-            <a className="btn btn-primary btn-lg cms-btn-accent">
-              <span className="me-2"><FaPlus /></span>
-              Tambah Produk Baru
-            </a>
+          <Link href="/cms/addProduct" className="btn btn-primary btn-lg cms-btn-accent">
+            <span className="me-2"><FaPlus /></span>
+            Tambah Produk Baru
           </Link>
         </div>
 

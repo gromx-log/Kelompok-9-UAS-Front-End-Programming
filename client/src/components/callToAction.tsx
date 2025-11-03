@@ -12,17 +12,11 @@ const CallToAction: React.FC = () => {
           Lihat karya-karya kami atau mulai konsultasi untuk wujudkan kue impian Anda.
         </p>
         <div className="d-flex flex-wrap justify-content-center gap-3 fade-in-up delay-2">
-          <Link href="/gallery" legacyBehavior>
-            <a className="btn btn-outline-primary btn-lg" style={{ 
-              padding: '0.75rem 2rem' 
-            }}>
+          <Link href="/products" className='btn btn-outline-primary btn-lg' style={{ padding: '0.75rem 2rem' }}>
               Lihat Galeri Kami
-            </a>
           </Link>
-          <Link href="/order" legacyBehavior>
-            <a className="btn btn-primary btn-lg" style={{ padding: '0.75rem 2rem' }}>
+          <Link href="/order" className="btn btn-primary btn-lg" style={{ padding: '0.75rem 2rem' }} >
               Pesan Sekarang
-            </a>
           </Link>
         </div>
       </div>
