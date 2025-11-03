@@ -3,6 +3,8 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import Navbar from '../../components/navbar';
+import Footer from '../../components/footer';
 
 // Definisikan tipe untuk state form Anda agar lebih aman
 interface IFormData {
@@ -154,6 +156,8 @@ export default function OrderPage() {
       <Head>
         <title>Pesan Sekarang - KartiniAle</title>
       </Head>
+
+      <Navbar/>
 
       {/* Style banner dan 'freeze' tetap sama */}
       <style jsx>{`
@@ -357,6 +361,8 @@ export default function OrderPage() {
           </div>
         </div>
       </div>
+
+      <Footer/>
     </>
   );
 }
