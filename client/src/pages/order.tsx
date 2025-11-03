@@ -54,59 +54,98 @@ export default function OrderPage() {
     }));
   };
 
-  // Fungsi utama: HANYA mengubah data form menjadi pesan WhatsApp
-  // (TIDAK 'async' dan TIDAK 'fetch')
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  // Fungsi utama: Menyimpan ke DB EKSTERNAL, LALU membuka WhatsApp
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitError(null);
 
-    // Ganti dengan nomor WhatsApp Anda
-    const adminPhoneNumber = '6281211365855';
+    // --- LANGKAH 1: KIRIM KE BACKEND (SESUAI DOKUMENTASI FRANZ) ---
+    try {
+      // Siapkan data untuk dikirim.
+      // Hapus cakeFlavor jika tidak relevan (sesuai skema backend)
+      const payload: Partial<IFormData> = { ...formData };
+      if (payload.cakeType !== 'Ogura') {
+        delete payload.cakeFlavor;
+      }
+      
+      const response = await fetch('http://localhost:5000/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json', // WAJIB
+        },
+        body: JSON.stringify(payload), // WAJIB di-stringify
+      });
 
-    // 1. Buat template pesan
-    let message = `Hai sayang, saya mau pesan kue custom:\n\n`;
-    message += `*1. DATA PEMESAN*\n`;
-    message += `Nama: ${formData.customerName}\n`;
-    message += `No. HP/WA: ${formData.customerPhone}\n`;
-    message += `Tanggal Pengiriman (diinginkan): ${formData.deliveryDate}\n`;
-    message += `\n`;
-    message += `*2. DETAIL KUE*\n`;
-    message += `Base Cake: ${formData.cakeType}\n`;
-    
-    if (formData.cakeType === 'Ogura' && formData.cakeFlavor) {
-      message += `Rasa Ogura: ${formData.cakeFlavor}\n`;
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Menangani error validasi dari server (sesuai doc Franz/orderHandler.js)
+        // 'message' dari sendError atau 'error' dari Mongoose
+        throw new Error(data.message || data.error || 'Gagal menyimpan pesanan');
+      }
+      
+      console.log('Sukses tersimpan di DB:', data);
+
+      // --- LANGKAH 2: JIKA SUKSES, BARU BUKA WHATSAPP ---
+      
+      const adminPhoneNumber = '6281211365855'; // Nomor Filbert
+
+      // 1. Buat template pesan
+      let message = `Hai sayang, saya mau pesan kue custom:\n\n`;
+      message += `*1. DATA PEMESAN*\n`;
+      message += `Nama: ${formData.customerName}\n`;
+      message += `No. HP/WA: ${formData.customerPhone}\n`;
+      message += `Tanggal Pengiriman (diinginkan): ${formData.deliveryDate}\n`;
+      message += `\n`;
+      message += `*2. DETAIL KUE*\n`;
+      message += `Base Cake: ${formData.cakeType}\n`;
+      
+      if (formData.cakeType === 'Ogura' && formData.cakeFlavor) {
+        message += `Rasa Ogura: ${formData.cakeFlavor}\n`;
+      }
+      
+      message += `Ukuran Kue: ${formData.cakeSize}\n`;
+      message += `\n`;
+      message += `*3. DESAIN & TEMA*\n`;
+      message += `Deskripsi Tema:\n${formData.themeDescription}\n`;
+      
+      if (formData.referenceImageUrl) {
+        message += `\nLink Referensi Gambar: ${formData.referenceImageUrl}\n`;
+      }
+      
+      message += `\n---\n`;
+      message += `Mohon info selanjutnya untuk harga dan konfirmasi. Terima kasih!`;
+
+      // 2. Encode pesan untuk URL
+      const encodedMessage = encodeURIComponent(message);
+
+      // 3. Buka link WhatsApp di tab baru
+      const whatsappUrl = `https://wa.me/${adminPhoneNumber}?text=${encodedMessage}`;
+      window.open(whatsappUrl, '_blank');
+
+      // (Opsional) Reset form setelah berhasil
+      setFormData({
+        customerName: '',
+        customerPhone: '',
+        deliveryDate: '',
+        cakeType: 'Ogura',
+        cakeFlavor: '',
+        cakeSize: '',
+        themeDescription: '',
+        referenceImageUrl: '',
+      });
+
+    } catch (error) {
+      // Tampilkan error di frontend jika fetch gagal
+      console.error('Error saat menyimpan ke DB:', (error as Error).message);
+      setSubmitError((error as Error).message);
+    } finally {
+      // Hentikan status loading
+      setIsSubmitting(false);
     }
-    
-    message += `Ukuran Kue: ${formData.cakeSize}\n`;
-    message += `\n`;
-    message += `*3. DESAIN & TEMA*\n`;
-    message += `Deskripsi Tema:\n${formData.themeDescription}\n`;
-    
-    if (formData.referenceImageUrl) {
-      message += `\nLink Referensi Gambar: ${formData.referenceImageUrl}\n`;
-    }
-    
-    message += `\n---\n`;
-    message += `Mohon info selanjutnya untuk harga dan konfirmasi. Terima kasih!`;
-
-    // 2. Encode pesan untuk URL
-    const encodedMessage = encodeURIComponent(message);
-
-    // 3. Buka link WhatsApp di tab baru
-    const whatsappUrl = `https://wa.me/${adminPhoneNumber}?text=${encodedMessage}`;
-    window.open(whatsappUrl, '_blank');
-    
-    // (Opsional) Reset form setelah berhasil
-    setFormData({
-      customerName: '',
-      customerPhone: '',
-      deliveryDate: '',
-      cakeType: 'Ogura',
-      cakeFlavor: '',
-      cakeSize: '',
-      themeDescription: '',
-      referenceImageUrl: '',
-    });
   };
+
 
   return (
     <>
