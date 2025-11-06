@@ -1,7 +1,7 @@
 import React from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import CmsLayout from '../../components/cmsLayout'; 
+import CmsLayout from '../cmslayout'; 
 import { FaUpload } from 'react-icons/fa';
 
 export default function CmsAddProductPage() {
