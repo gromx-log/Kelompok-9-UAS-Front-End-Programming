@@ -30,8 +30,6 @@
 .pageHeader {
     background-color: var(--color-primary);
     color:  #fff;
-    padding-top: 9rem;
-    padding-bottom: 3rem;
 }
 
 /* Style untuk Breadcrumbs di atas banner */
@@ -57,10 +55,3 @@
   color: rgba(255, 255, 255, 0.8);
 }
 
-/* == Mobile Friendly untuk Banner == */
-@media (max-width: 768px) {
-  .pageHeader {
-    padding-top: 7rem;
-    padding-bottom: 2.5rem;
-  }
-}

@@ -5,6 +5,8 @@ import Head from 'next/head';
 import Link from 'next/link';
 import Navbar from '../../components/navbar';
 import Footer from '../../components/footer';
+import CustomHeader from '../../components/customHeader';
+import styles from './order.module.css';
 
 // Definisikan tipe untuk state form Anda agar lebih aman
 interface IFormData {
@@ -159,42 +161,9 @@ export default function OrderPage() {
 
       <Navbar/>
 
-      {/* Style banner dan 'freeze' tetap sama */}
-      <style jsx>{`
-        .page-header {
-          background-color: var(--color-primary);
-          color: #fff;
-          padding-top: 9rem;
-          padding-bottom: 3rem;
-        }
-        .breadcrumb { margin-bottom: 0.5rem; font-weight: 500; }
-        :global(.breadcrumb-item a) { color: #fff; text-decoration: none; }
-        :global(.breadcrumb-item a:hover) { text-decoration: underline; }
-        :global(.breadcrumb-item.active) { color: rgba(255, 255, 255, 0.8); }
-        :global(.breadcrumb-item + .breadcrumb-item::before) { color: rgba(255, 255, 255, 0.8); }
-        
-        .form-select:disabled,
-        .form-control:disabled {
-          background-color: #f8f9fa;
-          cursor: not-allowed;
-          opacity: 0.7;
-        }
-
-        @media (max-width: 768px) {
-          .page-header { padding-top: 7rem; padding-bottom: 2.5rem; }
-        }
-      `}</style>
-
       {/* === Banner Halaman === */}
-      <section className="page-header">
-        <div className="container text-center">
-          <h1 className="display-5 display-lg-4 fade-in-up fw-bold" style={{ color: 'var(--color-text)' }}>
-            Form Pemesanan
-          </h1>
-          <p className="lead fs-4 fade-in-up delay-1" style={{ color: 'var(--color-text-muted)' }}>
-            Wujudkan kue impianmu bersama KartiniAle
-          </p>
-        </div>
+      <section className={styles.pageHeader}>
+        <CustomHeader title='Form Pemesanan' subtitle='Wujudkan kue impianmu bersama KartiniAle'/>
       </section>
 
       {/* === Konten Form === */}
