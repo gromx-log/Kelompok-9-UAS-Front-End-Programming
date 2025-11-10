@@ -4,6 +4,7 @@ import Image from 'next/image';
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import styles from '../styles/productCard.module.css';
 
 interface ProductCardProps {
   slug: string;
@@ -26,8 +27,8 @@ export default function ProductCard({ slug, title, description, price, imageUrl 
 
   return (
     <div 
-      className="card h-100 shadow-sm border-0" 
-      style={{ backgroundColor: 'var(--color-bg-light)', cursor: 'pointer' }}
+      className={`card h-100 shadow-sm border-0 ${styles.productCard}`} 
+      style={{ backgroundColor: 'var(--color-bg-light)', cursor: 'pointer', transition: 'transform 0.3s ease, box-shadow 0.3s ease', }}
       onClick={handleCardClick}
     >
       <div
@@ -55,10 +56,10 @@ export default function ProductCard({ slug, title, description, price, imageUrl 
       
       <div className="card-body d-flex flex-column">
         <h5 className="card-title">{title}</h5>
+        <h6 className="card-subtitle mb-2 fw-bold">{price}</h6>
         <p className="card-text" style={{ color: 'var(--color-text-muted)' }}>
           {description}
         </p>
-        <h6 className="card-subtitle mb-2 fw-bold">{price}</h6>
         
         <Link
           href={`/order`} 

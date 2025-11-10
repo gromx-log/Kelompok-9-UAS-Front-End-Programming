@@ -6,6 +6,7 @@ import styles from './faq.module.css';
 import Navbar from '../../components/navbar';
 import CTA from '../../components/callToAction';
 import Footer from '../../components/footer';
+import CustomHeader from '../../components/customHeader';
 
 export const metadata = {
   title: 'FAQ - Pertanyaan Umum - KartiniAle',
@@ -18,11 +19,7 @@ export default function FaqPage() {
       <Navbar/>
       {/* === Banner Halaman Baru === */}
       <section className={styles.pageHeader}>
-        <div className="container text-center">
-          <h1 className="display-5 display-lg-4 fade-in-up fw-bold" style={{ color: 'var(--color-text)' }}>
-            Pertanyaan Umum (FAQ)
-          </h1>
-        </div>
+        <CustomHeader title='Pertanyaan Umum (FAQ)'/>
       </section>
 
       {/* === Konten Accordion === */}
