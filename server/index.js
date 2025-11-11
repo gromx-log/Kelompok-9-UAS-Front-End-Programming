@@ -1,4 +1,3 @@
-// File utama buat menjalankan servernya
 require('dotenv').config();
 const http = require('http');
 const connectDB = require('./config/db');
@@ -13,6 +12,9 @@ const { sendError, handleOptions } = require('./utils/responseHelper');
 const bodyParser = require('./utils/bodyParser');
 const { protect } = require('./utils/authMiddleware');
 const { matchRoute } = require('./utils/routeMatcher');
+
+// Import jobs (cron) untuk reminder
+const { startReminderCron, runManualCheck } = require('./jobs/reminderCron');
 
 // 1. Hubungkan ke Database
 connectDB();
@@ -103,6 +105,20 @@ const server = http.createServer(async(req, res) => {
     }
   }
 
+  // GET /api/test-reminder - Test reminder manual (untuk testing)
+  // TODO: DELETE SOON AFTER TESTING
+  if (url === '/api/test-reminder' && method === 'GET') {
+    try {
+      await runManualCheck();
+      return sendJSON(res, 200, { 
+        success: true, 
+        message: 'Reminder check selesai. Lihat console untuk detail.' 
+      });
+    } catch (error) {
+      return sendError(res, 500, 'Error: ' + error.message);
+    }
+  }
+
   // ===== 404 - Route not found =====
   return sendError(res, 404, 'Endpoint Not Found');
 });
@@ -110,6 +126,47 @@ const server = http.createServer(async(req, res) => {
 // 4. Jalankan Server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-  console.log(`🚀 Server murni berjalan di port ${PORT}`);
+  console.log('\n' + '='.repeat(70));
+  console.log('🎂 CUSTOM CAKE ORDER SYSTEM');
+  console.log('='.repeat(70));
+  console.log(`✅ Server berjalan di port ${PORT}`);
   console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🕐 Waktu server: ${new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })}`);
+  
+  // 🆕 Start cron job untuk reminder
+  console.log('\n' + '-'.repeat(70));
+  console.log('⏰ CRON JOB CONFIGURATION');
+  console.log('-'.repeat(70));
+  
+  const cronSchedule = process.env.REMINDER_CRON_SCHEDULE || '0 9 * * *';
+  startReminderCron(cronSchedule);
+  
+  console.log('-'.repeat(70));
+  
+  // Tampilkan endpoint yang tersedia
+  console.log('\n📌 AVAILABLE ENDPOINTS:');
+  console.log('-'.repeat(70));
+  console.log('Public Routes:');
+  console.log('  GET    /api/products              - List semua produk');
+  console.log('  POST   /api/orders                - Buat order baru (+ email)');
+  console.log('  POST   /api/auth/login            - Admin login');
+  console.log('\nProtected Routes (butuh token):');
+  console.log('  GET    /api/products/:id          - Detail produk');
+  console.log('  POST   /api/products              - Tambah produk');
+  console.log('  PUT    /api/products/:id          - Update produk');
+  console.log('  DELETE /api/products/:id          - Hapus produk');
+  console.log('  GET    /api/orders                - List semua order');
+  console.log('  PUT    /api/orders/:id/status     - Update status (+ email)');
+  console.log('\nTesting:');
+  console.log('  GET    /api/test-reminder         - Test cron job manual');
+  console.log('-'.repeat(70));
+  
+  console.log('\n💡 TIPS:');
+  console.log('  - Pastikan .env sudah dikonfigurasi dengan benar');
+  console.log('  - Email notifikasi akan dikirim otomatis saat:');
+  console.log('    1. Ada order baru masuk');
+  console.log('    2. Status order berubah');
+  console.log('    3. H-1 sebelum pengiriman (via cron job)');
+  console.log('  - Gunakan /api/test-reminder untuk test cron secara manual');
+  console.log('='.repeat(70) + '\n');
 });
