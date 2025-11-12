@@ -169,16 +169,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Tombol ke CMS */}
-      <section className="py-5 text-center" style={{ backgroundColor: 'var(--color-bg-light)' }}>
-        <div className="container">
-          <p className="text-muted">Hanya untuk admin</p>
-          <Link href="/cms/dashboard" className="btn btn-outline-secondary">
-              Halaman Admin (CMS)
-          </Link>
-        </div>
-      </section>
-
       <CTA/>
       <Footer/>
     </>
