@@ -1,28 +1,55 @@
-import React from 'react';
+'use client'; 
+import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import Image from 'next/image';
 import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
-import CmsLayout from '../cmslayout'; 
+import CmsLayout from '../cmslayout';
+import api from '../../../lib/api'; 
 
-export const metadata = {
-  title: 'Manajemen Produk - KartiniAle CMS',
-  robots: 'noindex, nofollow',
-};
-
-// Data dummy 
 interface Product {
-  id: number; name: string; price: string; category: string; imageUrl: string;
+  _id: string; 
+  name: string;
+  startPrice: number; 
+  category: string;
+  images: string[]; 
 }
-const dummyProducts: Product[] = [
-  { id: 1, name: 'Red Velvet Classic', price: 'Rp 250.000', category: 'Kue Ulang Tahun', imageUrl: 'https://picsum.photos/seed/ogura/80/80' },
-  { id: 2, name: 'Unicorn Rainbow', price: 'Rp 350.000', category: 'Kue Ulang Tahun', imageUrl: 'https://picsum.photos/seed/lapis/80/80' },
-  { id: 3, name: 'Chocolate Overload', price: 'Rp 300.000', category: 'Kue Kustom', imageUrl: 'https://picsum.photos/seed/figurine1/80/80' },
-];
 
 export default function CmsProductsPage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const { data } = await api.get('/api/products'); 
+        setProducts(data);
+      } catch (error) {
+        console.error("Gagal mengambil data produk:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  const handleDelete = async (id: string) => {
+    if (window.confirm('Anda yakin ingin menghapus produk ini?')) {
+      try {
+        await api.delete(`/api/products/${id}`);
+        setProducts(products.filter((p) => p._id !== id));
+      } catch (error) {
+        alert("Gagal menghapus produk.");
+      }
+    }
+  };
+
   return (
     <CmsLayout>
+      <Head>
+        <title>Manajemen Produk - KartiniAle CMS</title>
+        <meta name="robots" content="noindex, nofollow" />
+      </Head>
 
       <div className="container-fluid p-4">
         {/* Header */}
@@ -39,13 +66,7 @@ export default function CmsProductsPage() {
         {/* Nav Tab */}
         <ul className="nav nav-tabs cms-tabs mb-4">
           <li className="nav-item">
-            <a className="nav-link active" href="#">Semua (3)</a>
-          </li>
-          <li className="nav-item">
-            <a className="nav-link" href="#">Stok Habis (0)</a>
-          </li>
-          <li className="nav-item">
-            <a className="nav-link" href="#">Disembunyikan (0)</a>
+            <a className="nav-link active" href="#">Semua ({products.length})</a>
           </li>
         </ul>
 
@@ -55,36 +76,40 @@ export default function CmsProductsPage() {
             <div className="table-responsive">
               <table className="table table-hover align-middle" style={{ minWidth: '700px' }}>
                 <thead className="table-light">
-                  <tr>
-                    <th scope="col" style={{ width: '10%' }}>Gambar</th>
-                    <th scope="col" style={{ width: '30%' }}>Nama Produk</th>
-                    <th scope="col" style={{ width: '20%' }}>Kategori</th>
-                    <th scope="col" style={{ width: '20%' }}>Harga</th>
-                    <th scope="col" style={{ width: '20%' }}>Aksi</th>
-                  </tr>
                 </thead>
                 <tbody>
-                  {dummyProducts.map((product) => (
-                    <tr key={product.id}>
-                      <td>
-                        <Image
-                          src={product.imageUrl} alt={product.name} width={80} height={80}
-                          className="rounded" style={{ objectFit: 'cover' }}
-                        />
-                      </td>
-                      <td className="fw-bold">{product.name}</td>
-                      <td>{product.category}</td>
-                      <td>{product.price}</td>
-                      <td>
-                        <button className="btn btn-outline-secondary btn-sm me-2" title="Edit">
-                          <FaEdit />
-                        </button>
-                        <button className="btn btn-outline-danger btn-sm" title="Hapus">
-                          <FaTrash />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                  {loading ? (
+                    <tr><td colSpan={5} className="text-center p-5">Memuat data produk...</td></tr>
+                  ) : (
+                    products.map((product) => (
+                      <tr key={product._id}>
+                        <td>
+                          <Image
+                            // Ambil gambar pertama dari array
+                            src={product.images[0] || 'https://picsum.photos/seed/placeholder/80/80'}
+                            alt={product.name} width={80} height={80}
+                            className="rounded" style={{ objectFit: 'cover' }}
+                          />
+                        </td>
+                        <td className="fw-bold">{product.name}</td>
+                        <td>{product.category}</td>
+                        <td>{`Rp ${product.startPrice.toLocaleString('id-ID')}`}</td>
+                        <td>
+                          <Link href={`/cms/products/edit/${product._id}`} passHref
+                                className="btn btn-outline-secondary btn-sm me-2" title="Edit">
+                              <FaEdit />
+                          </Link>
+                          <button 
+                            className="btn btn-outline-danger btn-sm" 
+                            title="Hapus"
+                            onClick={() => handleDelete(product._id)}
+                          >
+                            <FaTrash />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
