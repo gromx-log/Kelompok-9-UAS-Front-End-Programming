@@ -1,5 +1,5 @@
 const Product = require('../models/productModel');
-const formidable = require('formidable');
+const { formidable } = require('formidable');
 const { sendJSON, sendError } = require('../utils/responseHelper');
 const { uploadToCloudinary, deleteFromCloudinary } = require('../utils/cloudinaryHelper');
 const fs = require('fs').promises;

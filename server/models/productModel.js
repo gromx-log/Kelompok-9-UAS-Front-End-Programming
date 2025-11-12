@@ -10,7 +10,7 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true,
         // TODO: Kategori Kue: MOHON DIGANTI SESUAI KEBUTUHAN
-        enum: ['Anak', 'Dewasa', 'Olahraga', 'Musik', 'Lainnya']
+        enum: ['Anak', 'Kue Ulang Tahun', 'Kue Kustom']
     },
     description: { type: String, required: true },
     startPrice: { type: Number, required: true }
