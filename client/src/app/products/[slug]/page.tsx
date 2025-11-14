@@ -5,75 +5,71 @@ import Navbar from '../../../components/navbar';
 import CTA from '../../../components/callToAction';
 import Footer from '../../../components/footer';
 
-const dummyProducts = [
-  {
-    slug: 'red-velvet-classic', 
-    name: 'Red Velvet Classic',
-    description: 'Kue red velvet lembut dengan cream cheese frosting.',
-    price: 'Rp 250.000',
-    imageUrl: '/images/cake-placeholder.jpg',
-  },
-  {
-    slug: 'chocolate-overload',
-    name: 'Chocolate Overload',
-    description: 'Bagi pecinta cokelat, kue ini penuh dengan ganache.',
-    price: 'Rp 300.000',
-    imageUrl: '/images/cake-placeholder.jpg',
-  },
-  {
-    slug: 'unicorn-rainbow-cake',
-    name: 'Unicorn Rainbow Cake',
-    description: 'Kue pelangi lucu untuk ulang tahun anak.',
-    price: 'Rp 350.000',
-    imageUrl: '/images/cake-placeholder.jpg',
-  },
-];
+const API_URL = 'https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/products';
 
-export async function generateMetadata( { params }: { params: { slug: string } }
-): Promise<Metadata> {
-  const { slug } = await params;
-  const product = dummyProducts.find((p) => p.slug === slug);
-
-  if (!product) {
-    return {
-      title: 'Produk tidak ditemukan - KartiniAle',
-      description: 'Produk yang Anda cari tidak tersedia.',
-    };
-  }
-
-  return {
-    title: `${product.name} - KartiniAle`,
-    description: product.description,
-    openGraph: {
-      title: product.name,
-      description: product.description,
-      images: [product.imageUrl],
-    },
-  };
+// Fetch all products
+async function getProducts() {
+  const res = await fetch(API_URL, { cache: 'no-store' });
+  if (!res.ok) throw new Error('Failed to fetch products');
+  return res.json();
 }
 
-export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+// Generate metadata
+export async function generateMetadata(
+  { params }: { params: { slug: string } }
+): Promise<Metadata> {
+  try {
+    const { slug } = await params;
+    const products = await getProducts();
+    const product = products.find((p: any) => p.slug === slug);
+
+    if (!product) {
+      return {
+        title: 'Produk tidak ditemukan - KartiniAle',
+        description: 'Produk yang Anda cari tidak tersedia.',
+      };
+    }
+
+    return {
+      title: `${product.name} - KartiniAle`,
+      description: product.description,
+      openGraph: {
+        title: product.name,
+        description: product.description,
+        images: [product.images?.[0] ?? '/images/cake-placeholder.jpg'],
+      },
+    };
+  } catch {
+    return {
+      title: 'Produk - KartiniAle',
+      description: 'Temukan produk terbaik dari KartiniAle.',
+    };
+  }
+}
+
+// Page
+export default async function ProductDetailPage({ params }: { params: { slug: string } }) {
   const { slug } = await params;
-  const product = dummyProducts.find((p) => p.slug === slug);
+  const products = await getProducts();
+  const product = products.find((p: any) => p.slug === slug);
 
   if (!product) return notFound();
 
   return (
     <>
-    <Navbar/>
-    <div
-      className="container d-flex align-items-center justify-content-center"
-      style={{
-        minHeight: '100vh', 
-        paddingTop: '6rem', 
-        paddingBottom: '2rem',
-      }}
-    >
-      <div className="row align-items-center w-100">
-        <div className="col-md-6 text-center mb-4 mb-md-0">
-          {product.imageUrl ? (
+      <Navbar />
+      <div
+        className="container d-flex align-items-center justify-content-center"
+        style={{
+          minHeight: '100vh',
+          paddingTop: '6rem',
+          paddingBottom: '2rem',
+        }}
+      >
+        <div className="row align-items-center w-100">
+          <div className="col-md-6 text-center mb-4 mb-md-0">
             <Image
-              src={product.imageUrl}
+              src={product.images?.[0] ?? '/images/cake-placeholder.jpg'}
               alt={product.name}
               width={500}
               height={350}
@@ -84,24 +80,26 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 borderRadius: '12px',
               }}
             />
-          ) : (
-            <span className="text-muted">{product.name}</span>
-          )}
-        </div>
+          </div>
 
-        <div className="col-md-6 text-center text-md-start">
-          <h1 className="fw-bold mb-3">{product.name}</h1>
-          <h4 className="text-muted mb-4">{product.price}</h4>
-          <p className="mb-4">{product.description}</p>
-          <a href="/order" className="btn btn-primary btn-lg">
-            Pesan Sekarang
-          </a>
+          <div className="col-md-6 text-center text-md-start">
+            <h1 className="fw-bold mb-3">{product.name}</h1>
+            <h4 className="text-muted mb-4">
+              {new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 2,
+              }).format(product.startPrice)}
+            </h4>
+            <p className="mb-4">{product.description}</p>
+            <a href="/order" className="btn btn-primary btn-lg">
+              Pesan Sekarang
+            </a>
+          </div>
         </div>
       </div>
-    </div>
-    <CTA/>
-    <Footer/>
+      <CTA />
+      <Footer />
     </>
   );
-
 }

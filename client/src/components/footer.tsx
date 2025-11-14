@@ -36,12 +36,11 @@ export default function Footer() {
           <div className="col-lg-4 col-md-6">
             <h6 className="footer-heading">Kategori Kue</h6>
             <ul className="footer-links-list">
-              <li><Link href="/products/birthday">Kue Ulang Tahun</Link></li>
-              <li><Link href="/products/wedding">Kue Pernikahan</Link></li>
-              <li><Link href="/products/custom">Kue Kustom</Link></li>
-              <li><Link href="/products/cupcakes">Cupcakes</Link></li>
-              <li><Link href="/products/dessert-box">Dessert Box</Link></li>
-              <li><Link href="/products/cookies">Cookies</Link></li>
+              <li><Link href="/products/">Kue Anak</Link></li>
+              <li><Link href="/products/">Kue Dewasa</Link></li>
+              <li><Link href="/products/">Kue Olahraga</Link></li>
+              <li><Link href="/products/">Kue Musik</Link></li>
+              <li><Link href="/products/">Lainnya</Link></li>
             </ul>
           </div>
 

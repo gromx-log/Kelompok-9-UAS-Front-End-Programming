@@ -3,7 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   // buat dummy image
   images: {
-    domains: ['picsum.photos'],
+    domains: ['picsum.photos','res.cloudinary.com'],
   },
 };
 

@@ -1,12 +1,15 @@
 "use client";
 
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
-import Head from 'next/head';
+// Head dan Link tidak terpakai di file ini, tetapi saya biarkan
+import Head from 'next/head'; 
 import Link from 'next/link';
 import Navbar from '../../components/navbar';
 import Footer from '../../components/footer';
-// import CustomHeader from '../../components/customHeader';
+import CustomHeader from '../../components/customHeader';
 import styles from './order.module.css';
+// CmsLayout tidak terpakai di halaman ini
+// import CmsLayout from '../../components/cmsLayout';
 
 // Definisikan tipe untuk state form Anda agar lebih aman
 interface IFormData {
@@ -34,7 +37,7 @@ export default function OrderPage() {
 
   // State untuk mengontrol status "freeze" pada input rasa
   const [isFlavorDisabled, setIsFlavorDisabled] = useState(false);
-  
+
   // State untuk loading dan error handling
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -74,7 +77,7 @@ export default function OrderPage() {
       if (payload.cakeType !== 'Ogura') {
         delete payload.cakeFlavor;
       }
-      
+
       const response = await fetch('https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/orders', {
         method: 'POST',
         headers: {
@@ -90,11 +93,11 @@ export default function OrderPage() {
         // 'message' dari sendError atau 'error' dari Mongoose
         throw new Error(data.message || data.error || 'Gagal menyimpan pesanan');
       }
-      
+
       console.log('Sukses tersimpan di DB:', data);
 
       // --- LANGKAH 2: JIKA SUKSES, BARU BUKA WHATSAPP ---
-      
+
       const adminPhoneNumber = '6281211365855'; // Nomor Filbert
 
       // 1. Buat template pesan
@@ -106,20 +109,20 @@ export default function OrderPage() {
       message += `\n`;
       message += `*2. DETAIL KUE*\n`;
       message += `Base Cake: ${formData.cakeType}\n`;
-      
+
       if (formData.cakeType === 'Ogura' && formData.cakeFlavor) {
         message += `Rasa Ogura: ${formData.cakeFlavor}\n`;
       }
-      
+
       message += `Ukuran Kue: ${formData.cakeSize}\n`;
       message += `\n`;
       message += `*3. DESAIN & TEMA*\n`;
       message += `Deskripsi Tema:\n${formData.themeDescription}\n`;
-      
+
       if (formData.referenceImageUrl) {
         message += `\nLink Referensi Gambar: ${formData.referenceImageUrl}\n`;
       }
-      
+
       message += `\n---\n`;
       message += `Mohon info selanjutnya untuk harga dan konfirmasi. Terima kasih!`;
 
@@ -151,19 +154,15 @@ export default function OrderPage() {
       setIsSubmitting(false);
     }
   };
-
-
+  
+  // SEMUA JSX (TAMPILAN) KEMBALI KE SINI
   return (
     <>
-      <Head>
-        <title>Pesan Sekarang - KartiniAle</title>
-      </Head>
-
-      <Navbar/>
+      <Navbar />
 
       {/* === Banner Halaman === */}
       <section className={styles.pageHeader}>
-         {/* <CustomHeader title='Form Pemesanan' subtitle='Wujudkan kue impianmu bersama KartiniAle'/> */}
+        <CustomHeader title='Form Pemesanan' subtitle='Wujudkan kue impianmu bersama KartiniAle' />
       </section>
 
       {/* === Konten Form === */}
@@ -172,13 +171,13 @@ export default function OrderPage() {
           <div className="col-lg-8">
             <div className="card shadow-sm border-0" style={{ backgroundColor: 'var(--color-bg-light)', borderRadius: '0.5rem' }}>
               <div className="card-body p-4 p-md-5">
-                
+
                 <p className="lead text-center mb-4" style={{ color: 'var(--color-text-muted)' }}>
                   Isi form ini untuk terhubung dengan kami di WhatsApp.
                 </p>
 
                 <form onSubmit={handleSubmit}>
-                  
+
                   {/* === 1. Data Diri === */}
                   <h3 className="h4 mb-3">1. Data Diri Anda</h3>
                   <div className="mb-3">
@@ -331,7 +330,7 @@ export default function OrderPage() {
         </div>
       </div>
 
-      <Footer/>
+      <Footer />
     </>
   );
 }

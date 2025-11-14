@@ -2,6 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import '../styles/globals.css';
 import '../styles/our-cakes.css';
 
+
 export const metadata = {
   title: 'KartiniAle',
   description: 'kue kustom terbaik',

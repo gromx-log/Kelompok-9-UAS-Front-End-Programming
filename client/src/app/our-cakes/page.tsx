@@ -5,6 +5,7 @@ import { Metadata } from 'next';
 import Navbar from '../../components/navbar';
 import CTA from '../../components/callToAction';
 import Footer from '../../components/footer';
+import CustomHeader from '../../components/customHeader';
 
 const oguraImage = "/images/placeholder-ogura.jpg";
 const lapisImage = "/images/placeholder-lapis.jpg";
@@ -22,24 +23,10 @@ export default function OurCakesPage() {
       <Navbar/>
       
       {/* Header */}
-      <header 
-        className="py-5 text-center" 
-        style={{ 
-          marginTop: '6rem', 
-          paddingTop: '3rem',
-          paddingBottom: '3rem',
-          backgroundColor: 'var(--color-primary)' 
-        }}
-      >
-        <div className="container">
-          <h1 className="display-4 fw-bold fade-in-up" style={{ color: 'var(--color-text)' }}>
-            Kualitas di Balik Keindahan
-          </h1>
-          <p className="lead fs-4 fade-in-up delay-1" style={{ color: 'var(--color-text-muted)' }}>
-            Pelajari mengapa kue kami tidak hanya cantik, tapi juga lezat tak terlupakan.
-          </p>
-        </div>
-      </header>
+      <CustomHeader 
+        title='Kualitas di Balik Keindahan'
+        subtitle='Pelajari mengapa kue kami tidak hanya cantik, tapi juga lezat tak terlupakan.'
+      />
 
       {/* Main Section */}
       <section className="py-5" style={{ backgroundColor: 'var(--color-bg)' }}>
