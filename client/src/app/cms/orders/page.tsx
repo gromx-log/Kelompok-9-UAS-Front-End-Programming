@@ -7,14 +7,21 @@ import api from '../../../lib/api';
 import { FaCheck, FaTimes, FaPencilAlt } from 'react-icons/fa';
 
 interface Order {
-_id: string;
-customerName: string; 
-status: string; 
-createdAt: string;
-totalPrice: number;
-paymentStatus: string;
-deliveryDate: string; 
+  _id: string;
+  customerName: string;
+  customerPhone: string;
+  deliveryDate: string;        
+  totalPrice: number;
+  paymentStatus: 'Belum Bayar' | 'DP' | 'Lunas';
+  cakeType: 'Ogura' | 'Lapis Surabaya' | 'Dami Cake';
+  cakeFlavor?: string | null;  
+  cakeSize: string;
+  themeDescription: string;
+  referenceImageUrl?: string | null;
+  status: string;
+  createdAt: string;           
 }
+
 
 //Opsi dropdown untuk Status Order
 const STATUS_OPTIONS = [
@@ -173,119 +180,144 @@ export default function CmsOrdersPage() {
    </ul>
 
    {/* Tabel Pesanan */}
-   <div className="card shadow-sm border-0">
-    <div className="card-body p-4">
-     <div className="table-responsive">
-      <table className="table table-hover align-middle" style={{ minWidth: '1000px' }}>
-       <thead className="table-light">
-        <tr>
-         <th scope="col">ID Pesanan</th>
-         <th scope="col">Customer</th>
-         <th scope="col" style={{minWidth: '170px'}}>Tgl. Kirim (Edit)</th>
-         <th scope="col" style={{minWidth: '220px'}}>Total Harga (Edit)</th>
-         <th scope="col" style={{minWidth: '170px'}}>Status Bayar (Edit)</th>
-         <th scope="col" style={{minWidth: '170px'}}>Status Order (Edit)</th>
-        </tr>
-       </thead>
-       <tbody>
-        {loading ? (
-         <tr><td colSpan={6} className="text-center p-5">Memuat data pesanan...</td></tr>
-        ) : (
-         filteredOrders.map((order) => (
-          <tr key={order._id}>
-           <td className="fw-bold">...{order._id.slice(-6)}</td>
-           <td>{order.customerName || 'N/A'}</td>
-           
-           {/* --- KOLOM TANGGAL KIRIM (EDITABLE) --- */}
-           <td>
-            <input
-             type="date"
-             className="form-control"
-             value={formatDateForInput(order.deliveryDate)}
-             onChange={(e) => handleDetailChange(order._id, 'deliveryDate', e.target.value)}
-            />
-           </td>
+    <div className="table-responsive" style={{ overflowX: 'auto' }}>
+      <table className="table table-hover align-middle" style={{ minWidth: '1600px' }}>
+        <thead className="table-light">
+          <tr>
+            <th>ID Pesanan</th>
+            <th>Nama Customer</th>
+            <th>No. HP</th>
 
-           {/* --- KOLOM HARGA (EDITABLE DENGAN TOMBOL) --- */}
-           <td>
-              {editingOrderId === order._id ? (
-                  // Tampilan saat mode EDIT
-                  <div className="input-group">
-                    <span className="input-group-text">Rp</span>
-                    <input
-                      type="number"
-                      className="form-control"
-                      value={tempPrices[order._id] ?? 0}
-                      onChange={(e) => handlePriceChange(e, order._id)}
+            <th>Tgl. Kirim</th>
+            <th>Total Harga</th>
+            <th>Status Bayar</th>
+
+            <th>Jenis Kue</th>
+            <th>Rasa Kue</th>
+            <th>Ukuran Kue</th>
+            <th>Deskripsi Tema</th>
+            <th>Gambar Contoh</th>
+
+            <th>Status Order</th>
+            <th>Dibuat Pada</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {loading ? (
+            <tr><td colSpan={15} className="text-center p-5">Memuat data pesanan...</td></tr>
+          ) : (
+            filteredOrders.map((order) => (
+              <tr key={order._id}>
+
+                <td className="fw-bold">...{order._id.slice(-6)}</td>
+                <td>{order.customerName}</td>
+                <td>{order.customerPhone}</td>
+
+                {/* TGL KIRIM */}
+                <td>
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={formatDateForInput(order.deliveryDate)}
+                    onChange={(e) => handleDetailChange(order._id, 'deliveryDate', e.target.value)}
+                  />
+                </td>
+
+                {/* TOTAL HARGA */}
+                <td>
+                  {editingOrderId === order._id ? (
+                    <div className="input-group">
+                      <span className="input-group-text">Rp</span>
+                      <input
+                        type="number"
+                        className="form-control"
+                        value={tempPrices[order._id] ?? 0}
+                        onChange={(e) => handlePriceChange(e, order._id)}
                       />
-                      <button 
-                        className="btn btn-success" 
-                        type="button" 
-                        onClick={() => handleConfirmClick(order._id)}
-                        title="Simpan"
-                        >
+                      <button className="btn btn-success" onClick={() => handleConfirmClick(order._id)}>
                         <FaCheck />
                       </button>
-                      <button 
-                        className="btn btn-secondary" 
-                        type="button" 
-                        onClick={handleCancelClick}
-                        title="Batal"
-                        >
-                          <FaTimes />
-                        </button>
-                      </div> ) : (
-                        // Tampilan saat mode NORMAL
-                      <div className="d-flex justify-content-between align-items-center">
-                        <span>
-                          {order.totalPrice != null 
-                          ? `Rp ${order.totalPrice.toLocaleString('id-ID')}` 
-                          : 'N/A'}
-                              </span>
-                                <button 
-                                  className="btn btn-outline-secondary btn-sm ms-2" 
-                                  type="button"
-                                  onClick={() => handleEditClick(order)}
-                                  title="Edit Harga"
-                                  >
-                                <FaPencilAlt />
-                              </button>
-                            </div>
-                          )}
-          </td>
+                      <button className="btn btn-secondary" onClick={handleCancelClick}>
+                        <FaTimes />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="d-flex justify-content-between align-items-center">
+                      <span>
+                        Rp {order.totalPrice?.toLocaleString('id-ID')}
+                      </span>
+                      <button
+                        className="btn btn-outline-secondary btn-sm ms-2 price-edit-btn"
+                        onClick={() => handleEditClick(order)}
+                      >
+                        <FaPencilAlt />
+                      </button>
+                    </div>
+                  )}
+                </td>
 
-           {/* --- KOLOM STATUS BAYAR (EDITABLE) --- */}
-           <td>
-            <select 
-             className="form-select" 
-             value={order.paymentStatus || 'Belum Bayar'}
-             onChange={(e) => handleDetailChange(order._id, 'paymentStatus', e.target.value)}
-            >
-             {PAYMENT_STATUS_OPTIONS.map(status => (
-              <option key={status} value={status}>{status}</option>
-             ))}
-            </select>
-           </td>
+                {/* STATUS BAYAR */}
+                <td>
+                  <select
+                    className="form-select"
+                    value={order.paymentStatus}
+                    onChange={(e) => handleDetailChange(order._id, 'paymentStatus', e.target.value)}
+                  >
+                    {PAYMENT_STATUS_OPTIONS.map((s) => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                </td>
 
-           {/* --- KOLOM STATUS ORDER (TETAP SAMA) --- */}
-           <td>
-            <select 
-             className="form-select" 
-             value={order.status} 
-             onChange={(e) => handleStatusChange(order._id, e.target.value)}
-            >
-             {STATUS_OPTIONS.map(status => (
-             <option key={status} value={status}>{status}</option>
-             ))}
-            </select>
-          </td>
-          </tr>
-         ))
-        )}
-       </tbody>
+                {/* JENIS KUE */}
+                <td>{order.cakeType}</td>
+
+                {/* RASA KUE */}
+                <td>{order.cakeFlavor || '-'}</td>
+
+                {/* UKURAN */}
+                <td>{order.cakeSize}</td>
+
+                {/* TEMA */}
+                <td style={{ maxWidth: "250px", whiteSpace: 'normal' }}>
+                  {order.themeDescription}
+                </td>
+
+                {/* REFERENCE IMAGE */}
+                <td>
+                  {order.referenceImageUrl ? (
+                    <a href={order.referenceImageUrl} target="_blank" className="btn btn-sm btn-primary">
+                      Lihat
+                    </a>
+                  ) : (
+                    <span className="text-muted">Tidak ada</span>
+                  )}
+                </td>
+
+                {/* STATUS ORDER */}
+                <td>
+                  <select
+                    className="form-select"
+                    value={order.status}
+                    onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                  >
+                    {STATUS_OPTIONS.map((s) => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                </td>
+
+                {/* CREATED AT */}
+                <td>{new Date(order.createdAt).toLocaleDateString('id-ID')}</td>
+
+              </tr>
+            ))
+          )}
+        </tbody>
       </table>
-     </div>
-     {/* --- AKHIR PERBAIKAN --- */}
+    </div>
+
 
      {!loading && filteredOrders.length === 0 && (
      <div className="text-center p-5">
@@ -294,8 +326,6 @@ export default function CmsOrdersPage() {
    </div>
      )}
     </div>
-   </div>
-  </div>
  </CmsLayout>
  );
 }
