@@ -71,11 +71,23 @@ const orderSchema = new mongoose.Schema({
     // Format: "09:00", "14:30", dll
   },
   
-  // Ukuran kue
-  cakeSize: { 
-    type: String, 
+  // Ukuran kue (custom input dari user)
+  cakeTiers: {
+    type: Number,
     required: true,
-    enum: ['Small (15cm)', 'Medium (20cm)', 'Large (25cm)', 'Extra Large (30cm)']
+    min: 1,
+    max: 10
+    // Jumlah tingkat kue (1-10 tingkat)
+    // Input number dari customer
+  },
+  
+  cakeDiameter: {
+    type: String,
+    required: true,
+    trim: true
+    // Diameter kue dalam cm (free text)
+    // Contoh: "20cm", "15cm", "20cm + 15cm" (untuk multi-tier)
+    // Customer bisa input format apa saja
   },
   
   // Alamat pengiriman
