@@ -54,18 +54,12 @@ async function updateOrderStatus(req, res, id, body) {
  try {
   const { status } = body;
 
-    // 1. Cek jika status ada
+    // Cek jika status ada
     if (!status) {
       return sendError(res, 400, 'Status wajib diisi');
     }
 
-    // 2. HAPUS validasi array yang lama
-    // const validStatuses = ['Pending', 'Confirmed', 'In Progress', 'Done']; // <-- DIHAPUS
-    // if (!validStatuses.includes(status)) { // <-- DIHAPUS
-    //  return sendError(res, 400, 'Status tidak valid'); // <-- DIHAPUS
-    // }
-
-  // 3. Ambil order
+  // Ambil order
   const order = await Order.findById(id);
   if (!order) {
    return sendError(res, 404, 'Order tidak ditemukan');
@@ -73,12 +67,12 @@ async function updateOrderStatus(req, res, id, body) {
 
   const oldStatus = order.status;
     
-    // 4. Update status dan simpan
+    // Update status dan simpan
     // Biarkan Mongoose/Model yang melakukan validasi enum
     order.status = status;
   const updatedOrder = await order.save(); // .save() akan memvalidasi enum
 
-  // 5. Kirim email (logika Anda sudah benar)
+  // Kirim email 
   if (oldStatus !== status) {
    sendStatusChangeEmail(updatedOrder, oldStatus).catch(err => {
     console.error('Error mengirim email status change:', err.message);
@@ -91,7 +85,7 @@ async function updateOrderStatus(req, res, id, body) {
   sendJSON(res, 200, updatedOrder);
 
  } catch (error) {
-    // 6. Tangkap error jika Mongoose GAGAL validasi enum
+    // catch error jika Mongoose GAGAL validasi enum
     if (error.name === 'ValidationError') {
       // Kirim pesan error "Status tidak valid" dari sini
       return sendError(res, 400, 'Status tidak valid: ' + error.message);
@@ -101,8 +95,44 @@ async function updateOrderStatus(req, res, id, body) {
  }
 }
 
+// PUT /api/orders/:id
+// Handler untuk update harga, tgl kirim, dan status bayar
+async function updateOrderDetails(req, res, id, body) {
+  try {
+    const { totalPrice, paymentStatus, deliveryDate } = body;
+
+    const order = await Order.findById(id);
+    if (!order) {
+      return sendError(res, 404, 'Order tidak ditemukan');
+    }
+
+    // Update field hanya jika nilainya dikirim
+    if (totalPrice !== undefined) {
+      order.totalPrice = Number(totalPrice);
+    }
+    if (paymentStatus) {
+      order.paymentStatus = paymentStatus;
+    }
+    if (deliveryDate) {
+      // Pastikan format tanggal valid sebelum disimpan
+      order.deliveryDate = new Date(deliveryDate); 
+    }
+
+    const updatedOrder = await order.save();
+    sendJSON(res, 200, updatedOrder);
+
+  } catch (error) {
+    if (error.name === 'ValidationError') {
+      return sendError(res, 400, 'Update gagal: ' + error.message);
+    }
+    console.error('Error update order details:', error);
+    sendError(res, 500, 'Server Error: ' + error.message);
+  }
+}
+
 module.exports = {
  createOrder,
  getAllOrders,
- updateOrderStatus
+ updateOrderStatus,
+ updateOrderDetails
 };
