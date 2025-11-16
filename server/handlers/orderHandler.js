@@ -12,11 +12,15 @@ async function createOrder(req, res, body) {
     const { 
       cakeModel,
       cakeBase,
+      mixBase,
+      cakeFlavor,
       cakeFilling,
       cakeText,
       age,
       deliveryDate,
       deliveryTime,
+      cakeTiers,
+      cakeDiameter,
       cakeSize,
       deliveryAddress,
       customerName,
@@ -24,54 +28,64 @@ async function createOrder(req, res, body) {
     } = body;
 
     // Validasi required fields
-    if (!cakeModel || !cakeBase || !cakeFilling || !cakeText || 
-        !deliveryDate || !deliveryTime || !cakeSize || 
-        !deliveryAddress || !customerName || !customerPhone) {
+    if (!cakeModel || !cakeBase || !deliveryDate 
+      || !deliveryTime || !cakeTiers || !cakeDiameter ||
+      !deliveryAddress || !customerName || !customerPhone) {
       return sendError(res, 400, 'Semua field wajib diisi');
     }
 
-    // Validasi enum values
-    const validBases = ['Vanilla', 'Mocca', 'Keju', 'Coklat', 'Pandan'];
-    const validFillings = ['Blueberry', 'Strawberry', 'Mocca', 'Coklat'];
-    const validSizes = ['Small (15cm)', 'Medium (20cm)', 'Large (25cm)', 'Extra Large (30cm)'];
-
-    if (!validBases.includes(cakeBase)) {
-      return sendError(res, 400, 'Base kue tidak valid');
-    }
-    if (!validFillings.includes(cakeFilling)) {
-      return sendError(res, 400, 'Selai tidak valid');
-    }
-    if (!validSizes.includes(cakeSize)) {
-      return sendError(res, 400, 'Ukuran kue tidak valid');
+    // Validasi Base Kue (cakeBase)
+    // 3a. Validasi 'mixBase'
+    if (cakeBase === 'Dummy + Mix' && !mixBase) {
+      return sendError(res, 400, 'Pilih Mix Base (Ogura atau Lapis Surabaya) jika base cake adalah "Dummy + Mix"');
     }
 
-    // Validasi deliveryDate tidak boleh di masa lalu
+    // 3b. Validasi 'cakeFlavor' (Wajib jika Ogura murni ATAU mix Ogura)
+    const needsFlavor = (cakeBase === 'Ogura Cake') || (cakeBase === 'Dummy + Mix' && mixBase === 'Ogura Cake');
+    if (needsFlavor && !cakeFlavor) {
+      return sendError(res, 400, 'Flavor wajib diisi untuk Ogura Cake atau Mix Ogura');
+    }
+
+    // 3c. Validasi 'cakeFilling' (Wajib KECUALI Dummy Cake murni)
+    const needsFilling = cakeBase !== 'Dummy Cake';
+    if (needsFilling && !cakeFilling) {
+      return sendError(res, 400, 'Filling wajib diisi untuk base cake ini');
+    }
+
+    // Validasi Delivery Date (!> today)
     const deliveryDateObj = new Date(deliveryDate);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
+
     if (deliveryDateObj < today) {
       return sendError(res, 400, 'Tanggal pengiriman tidak boleh di masa lalu');
     }
 
-    // Buat order baru (tanpa pricing, akan diisi admin di CMS)
+    // Validasi Tingkat Kue (pastikan ini adalah Angka)
+    // Minimal tingkat 1, maksimal 10
+    const tiersNum = parseInt(cakeTiers, 10);
+    if (isNaN(tiersNum) || tiersNum < 1 || tiersNum > 10) {
+      return sendError(res, 400, 'Jumlah tingkat kue (cakeTiers) harus angka valid antara 1-10');
+    }
+
+    // Buat order baru
     const newOrder = new Order({
       // Customer input
       cakeModel,
       cakeBase,
-      mixBase: mixBase || null,         // null jika bukan Dummy + Mix
-      cakeFlavor: cakeFlavor || null,   // null jika tidak applicable
-      cakeFilling: cakeFilling || null, // null jika Dummy Cake
+      mixBase: mixBase || null,     
+      cakeFlavor: cakeFlavor || null, 
+      cakeFilling: cakeFilling || null,
       cakeText,
       age: age || null,
       deliveryDate: deliveryDateObj,
       deliveryTime,
-      cakeTiers: tiersNum,
-      cakeDiameter: cakeDiameter.trim(),
+      cakeTiers: tiersNum,            
+      cakeDiameter: cakeDiameter.trim(), 
       deliveryAddress,
       customerName,
       customerPhone,
-      
+
       // Default values (akan diupdate admin)
       price: 0,
       shippingCost: 0,
@@ -80,6 +94,7 @@ async function createOrder(req, res, body) {
       paymentStatus: 'Unpaid'
     });
 
+    // Mongoose akan otomatis memvalidasi ENUM di sini saat .save()
     const savedOrder = await newOrder.save();
     
     // Kirim email ke seller
@@ -98,6 +113,9 @@ async function createOrder(req, res, body) {
 
   } catch (error) {
     console.error('❌ Error create order:', error);
+    if (error.name === 'ValidationError') {
+        return sendError(res, 400, `Validasi Gagal: ${error.message}`);
+    }
     sendError(res, 500, 'Server Error: ' + error.message);
   }
 }
