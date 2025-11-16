@@ -8,6 +8,19 @@ const orderSchema = new mongoose.Schema({
     // Waktu pengiriman
     deliveryDate: { type: Date, required: true },
 
+    // Total Price (bisa diedit admin)
+    totalPrice: {
+      type: Number,
+      default: 0
+    },
+
+    // Status pembayaran
+    paymentStatus: {
+      type: String,
+      default: 'Belum Bayar',
+      enum: ['Belum Bayar', 'DP', 'Lunas']
+    },
+
     // Kue yang di-order
     cakeType: {
         type: String,
