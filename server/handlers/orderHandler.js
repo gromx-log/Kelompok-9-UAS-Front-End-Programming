@@ -66,7 +66,8 @@ async function createOrder(req, res, body) {
       age: age || null,
       deliveryDate: deliveryDateObj,
       deliveryTime,
-      cakeSize,
+      cakeTiers: tiersNum,
+      cakeDiameter: cakeDiameter.trim(),
       deliveryAddress,
       customerName,
       customerPhone,
@@ -83,7 +84,7 @@ async function createOrder(req, res, body) {
     
     // Kirim email ke seller
     sendNewOrderEmail(savedOrder).catch(err => {
-      console.error('Error mengirim email order baru:', err.message);
+      console.error('❌ Error mengirim email order baru:', err.message);
     });
     
     console.log(`✅ Order baru berhasil dibuat: #${savedOrder._id}`);
@@ -96,7 +97,7 @@ async function createOrder(req, res, body) {
     });
 
   } catch (error) {
-    console.error('Error create order:', error);
+    console.error('❌ Error create order:', error);
     sendError(res, 500, 'Server Error: ' + error.message);
   }
 }
@@ -124,7 +125,7 @@ async function getAllOrders(req, res) {
     
     sendJSON(res, 200, ordersWithExtras);
   } catch (error) {
-    console.error('Error get all orders:', error);
+    console.error('❌ Error get all orders:', error);
     sendError(res, 500, 'Server Error: ' + error.message);
   }
 }
@@ -145,7 +146,7 @@ async function getOrderById(req, res, id) {
       paymentProgress: order.paymentProgress
     });
   } catch (error) {
-    console.error('Error get order by ID:', error);
+    console.error('❌ Error get order by ID:', error);
     sendError(res, 500, 'Server Error: ' + error.message);
   }
 }
@@ -195,7 +196,7 @@ async function updateOrder(req, res, id, body) {
     // Kirim email jika status berubah
     if (oldOrderStatus !== order.orderStatus) {
       sendStatusChangeEmail(updatedOrder, oldOrderStatus).catch(err => {
-        console.error('Error mengirim email status change:', err.message);
+        console.error('❌ Error mengirim email status change:', err.message);
       });
       
       console.log(`✅ Status order #${order._id} berubah: ${oldOrderStatus} → ${order.orderStatus}`);
@@ -209,7 +210,7 @@ async function updateOrder(req, res, id, body) {
     });
 
   } catch (error) {
-    console.error('Error update order:', error);
+    console.error('❌ Error update order:', error);
     sendError(res, 500, 'Server Error: ' + error.message);
   }
 }
@@ -240,7 +241,7 @@ async function updateOrderStatus(req, res, id, body) {
     // Kirim email jika status berubah
     if (oldStatus !== status) {
       sendStatusChangeEmail(order, oldStatus).catch(err => {
-        console.error('Error mengirim email status change:', err.message);
+        console.error('❌ Error mengirim email status change:', err.message);
       });
       
       console.log(`✅ Status order #${order._id} berubah: ${oldStatus} → ${status}`);
@@ -249,7 +250,7 @@ async function updateOrderStatus(req, res, id, body) {
 
     sendJSON(res, 200, order);
   } catch (error) {
-    console.error('Error update order status:', error);
+    console.error('❌ Error update order status:', error);
     sendError(res, 500, 'Server Error: ' + error.message);
   }
 }
@@ -270,7 +271,7 @@ async function deleteOrder(req, res, id) {
       message: 'Order berhasil dihapus'
     });
   } catch (error) {
-    console.error('Error delete order:', error);
+    console.error('❌ Error delete order:', error);
     sendError(res, 500, 'Server Error: ' + error.message);
   }
 }
