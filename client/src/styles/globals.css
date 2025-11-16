@@ -536,3 +536,14 @@ a {
   min-width: 75px; 
   height: auto; 
 }
+
+/* Sembunyikan tombol edit harga */
+.price-edit-btn {
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+/* Saat row di-hover, munculkan */
+tr:hover .price-edit-btn {
+  opacity: 1;
+}

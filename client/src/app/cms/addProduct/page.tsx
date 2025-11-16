@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client'; 
 import React, { useState } from 'react';
 import Head from 'next/head';
@@ -17,11 +18,36 @@ export default function CmsAddProductPage() {
  const [startPrice, setStartPrice] = useState(0);
  const [description, setDescription] = useState('');
  
- const [imageFiles, setImageFiles] = useState<FileList | null>(null); 
+ const [imageFiles, setImageFiles] = useState<FileList | null>(null);
+ const [previewImage, setPreviewImage] = useState<string | null>(null);
+
+ // untuk carousel
+ const [carouselIndex, setCarouselIndex] = useState<number | null>(null);
+ const [previewURLs, setPreviewURLs] = useState<string[]>([]);
+
+
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
+      const files = Array.from(e.target.files);
+
+      const maxSize = 2 * 1024 * 1024; // 2MB
+      const oversizedFiles = files.filter(file => file.size > maxSize);
+
+      if (oversizedFiles.length > 0) {
+        setError(`Ukuran maksimal per file adalah 2MB. File terlalu besar: ${oversizedFiles.map(f => f.name).join(', ')}`);
+        return;
+      }
+
+      // CLEANUP PREVIEW URL LAMA
+      previewURLs.forEach(url => URL.revokeObjectURL(url));
+
+      const newURLs = files.map(file => URL.createObjectURL(file));
+
       setImageFiles(e.target.files);
+      setPreviewURLs(newURLs);
+      setCarouselIndex(null); 
+      setError('');
     }
   };
 
@@ -183,17 +209,54 @@ export default function CmsAddProductPage() {
                   
                   {/* Tampilkan preview file yang dipilih */}
                   {imageFiles && imageFiles.length > 0 && (
-                    <div className="mt-3">
-                      <p className="text-muted mb-1">File dipilih:</p>
-                      <ul className="list-group">
-                        {Array.from(imageFiles).map((file, index) => (
-                          <li key={index} className="list-group-item list-group-item-success">
-                            {file.name}
-                          </li>
-                        ))}
-                      </ul>
+                  <div className="mt-3">
+                    <p className="text-muted mb-1">Preview:</p>
+                    
+                    <div className="d-flex flex-wrap gap-2">
+                      {Array.from(imageFiles).map((file, index) => (
+                        <div key={index} className="border p-2 rounded" style={{ width: '120px' }}>
+                          <img 
+                            src={URL.createObjectURL(file)} 
+                            className="img-fluid rounded"
+                            alt={`preview-${index}`}
+                            style={{ cursor: "pointer" }}
+                            onClick={() => setPreviewImage(URL.createObjectURL(file))}
+                          />
+                          <small className="d-block text-truncate mt-1">{file.name}</small>
+                        </div>
+                      ))}
                     </div>
-                  )}
+                  </div>
+                )}
+                {previewImage && (
+                <div 
+                  onClick={() => setPreviewImage(null)}
+                  style={{
+                    position: "fixed",
+                    top: 0,
+                    left: 0,
+                    width: "100vw",
+                    height: "100vh",
+                    background: "rgba(0,0,0,0.7)",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    cursor: "zoom-out",
+                    zIndex: 2000
+                  }}
+                >
+                  <img 
+                    src={previewImage} 
+                    alt="Preview Besar"
+                    style={{
+                      maxWidth: "90%",
+                      maxHeight: "90%",
+                      borderRadius: "12px",
+                      boxShadow: "0px 0px 20px rgba(255,255,255,0.4)"
+                    }}
+                  />
+                </div>
+              )}
         </div>
        </div>
       </div>
@@ -208,6 +271,8 @@ export default function CmsAddProductPage() {
      </div>
     </form>
    </div>
+
+   
   </CmsLayout>
  );
 }
