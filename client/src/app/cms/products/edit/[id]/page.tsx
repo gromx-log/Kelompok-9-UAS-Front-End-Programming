@@ -26,7 +26,7 @@ export default function CmsEditProductPage() {
   if (id) {
    const fetchProduct = async () => {
     try {
-     const { data } = await api.get(`/api/products/${id}`); 
+     const { data } = await api.get(`https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/products/${id}`); 
      setFormData({
       name: data.name,
       startPrice: data.startPrice,
@@ -81,7 +81,7 @@ export default function CmsEditProductPage() {
   try {
       // Panggil API dengan FormData. 
       // Axios akan otomatis mengatur Content-Type menjadi multipart/form-data
-   await api.put(`/api/products/${id}`, dataToSubmit); 
+   await api.put(`https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/products/${id}`, dataToSubmit); 
    alert('Produk berhasil diperbarui!');
    router.push('/cms/products'); 
   } catch (err: any) {
@@ -121,8 +121,9 @@ export default function CmsEditProductPage() {
               value={formData?.category || ''} onChange={handleChange} required>
            <option value="">Pilih Kategori...</option>
            <option value="Anak">Anak</option> 
-           <option value="Kue Ulang Tahun">Kue Ulang Tahun</option>
-           <option value="Kue Kustom">Kue Kustom</option> 
+           <option value="Dewasa">Dewasa</option>
+           <option value="Olahraga">Olahraga</option> 
+           <option value="Musik">Musik</option> 
           </select>
          </div>
          <div className="mb-3">

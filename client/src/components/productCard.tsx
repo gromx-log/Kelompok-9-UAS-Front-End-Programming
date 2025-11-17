@@ -56,7 +56,7 @@ export default function ProductCard({ slug, title, description, price, imageUrl 
       
       <div className="card-body d-flex flex-column">
         <h5 className="card-title">{title}</h5>
-        <h6 className="card-subtitle mb-2 fw-bold">{price}</h6>
+        <h6 className="card-subtitle mb-2 fw-bold">Mulai dari {price}</h6>
         <p className="card-text" style={{ color: 'var(--color-text-muted)' }}>
           {description}
         </p>
@@ -66,7 +66,7 @@ export default function ProductCard({ slug, title, description, price, imageUrl 
           className="btn btn-primary w-100 mt-auto"
           onClick={handleButtonClick}
         >
-          Pesan Sekarang
+          Konsultasikan Sekarang
         </Link>
       </div>
     </div>

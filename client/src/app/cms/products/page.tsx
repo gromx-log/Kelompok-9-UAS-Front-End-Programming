@@ -22,7 +22,7 @@ export default function CmsProductsPage() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const { data } = await api.get('/api/products'); 
+        const { data } = await api.get('https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/products'); 
         setProducts(data);
       } catch (error) {
         console.error("Gagal mengambil data produk:", error);
@@ -36,7 +36,7 @@ export default function CmsProductsPage() {
   const handleDelete = async (id: string) => {
     if (window.confirm('Anda yakin ingin menghapus produk ini?')) {
       try {
-        await api.delete(`/api/products/${id}`);
+        await api.delete(`https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/products/${id}`);
         setProducts(products.filter((p) => p._id !== id));
       } catch (error) {
         alert("Gagal menghapus produk.");

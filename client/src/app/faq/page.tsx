@@ -153,7 +153,7 @@ export default function FaqPage() {
                   data-bs-parent="#faqAccordion"
                 >
                   <div className="accordion-body">
-                    Untuk melakukan pemesanan, silakan isi form di halaman <Link href="/order">Pesan Sekarang</Link>. 
+                    Untuk melakukan pemesanan, silakan isi form di halaman <Link href="/order">Konsultasikan Sekarang</Link>. 
                     Lengkapi semua detail yang dibutuhkan, seperti ukuran, jenis kue, tema desain, dan tanggal acara, 
                     agar kami dapat memahami kebutuhan Anda dengan lebih baik.  
                     <br /><br />
