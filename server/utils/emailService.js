@@ -49,15 +49,29 @@ async function sendEmail(mailOptions) {
 
   try {
     if (emailConfig.provider === 'resend') {
-      // Resend API format
+      // ✅ PERBAIKAN: Resend API format - to harus array
+      const toEmails = Array.isArray(mailOptions.to) 
+        ? mailOptions.to 
+        : [mailOptions.to];
+
       const result = await client.emails.send({
         from: mailOptions.from,
-        to: mailOptions.to,
+        to: toEmails, // ✅ Ubah ke array
         subject: mailOptions.subject,
         html: mailOptions.html
       });
-      console.log('✅ Email berhasil dikirim via Resend:', result.id);
-      return true;
+
+      // ✅ PERBAIKAN: Cek result dengan lebih teliti
+      if (result && result.data && result.data.id) {
+        console.log('✅ Email berhasil dikirim via Resend:', result.data.id);
+        return true;
+      } else if (result && result.id) {
+        console.log('✅ Email berhasil dikirim via Resend:', result.id);
+        return true;
+      } else {
+        console.warn('⚠️  Resend response tidak memiliki ID:', result);
+        return false;
+      }
     } else {
       // Nodemailer SMTP format
       await client.sendMail(mailOptions);
@@ -66,9 +80,18 @@ async function sendEmail(mailOptions) {
     }
   } catch (error) {
     console.error('❌ Gagal mengirim email:', error.message);
+    
+    // ✅ PERBAIKAN: Tampilkan error detail dari Resend
     if (error.response) {
-      console.error('Error details:', error.response);
+      console.error('Error response:', error.response);
     }
+    if (error.statusCode) {
+      console.error('Status code:', error.statusCode);
+    }
+    if (error.name) {
+      console.error('Error name:', error.name);
+    }
+    
     return false;
   }
 }
@@ -79,10 +102,14 @@ async function sendEmail(mailOptions) {
 async function sendNewOrderEmail(order) {
   console.log('📧 Mempersiapkan email order baru...');
   
-  // Determine sender based on provider
-  const fromEmail = emailConfig.provider === 'resend' 
-    ? `${emailConfig.fromName} <${emailConfig.resend.fromEmail}>`
-    : `"${emailConfig.fromName}" <${emailConfig.smtp.auth.user}>`;
+  // ✅ PERBAIKAN: Pastikan format from email benar untuk Resend
+  let fromEmail;
+  if (emailConfig.provider === 'resend') {
+    // Resend format: "Name <email@domain.com>"
+    fromEmail = `${emailConfig.fromName} <${emailConfig.resend.fromEmail}>`;
+  } else {
+    fromEmail = `"${emailConfig.fromName}" <${emailConfig.smtp.auth.user}>`;
+  }
 
   const mailOptions = {
     from: fromEmail,
@@ -252,9 +279,12 @@ async function sendNewOrderEmail(order) {
 async function sendDeliveryReminderEmail(order) {
   console.log('📧 Mempersiapkan email reminder H-1...');
   
-  const fromEmail = emailConfig.provider === 'resend' 
-    ? `${emailConfig.fromName} <${emailConfig.resend.fromEmail}>`
-    : `"${emailConfig.fromName}" <${emailConfig.smtp.auth.user}>`;
+  let fromEmail;
+  if (emailConfig.provider === 'resend') {
+    fromEmail = `${emailConfig.fromName} <${emailConfig.resend.fromEmail}>`;
+  } else {
+    fromEmail = `"${emailConfig.fromName}" <${emailConfig.smtp.auth.user}>`;
+  }
 
   const mailOptions = {
     from: fromEmail,
@@ -364,9 +394,12 @@ async function sendDeliveryReminderEmail(order) {
 async function sendStatusChangeEmail(order, oldStatus) {
   console.log('📧 Mempersiapkan email status change...');
   
-  const fromEmail = emailConfig.provider === 'resend' 
-    ? `${emailConfig.fromName} <${emailConfig.resend.fromEmail}>`
-    : `"${emailConfig.fromName}" <${emailConfig.smtp.auth.user}>`;
+  let fromEmail;
+  if (emailConfig.provider === 'resend') {
+    fromEmail = `${emailConfig.fromName} <${emailConfig.resend.fromEmail}>`;
+  } else {
+    fromEmail = `"${emailConfig.fromName}" <${emailConfig.smtp.auth.user}>`;
+  }
 
   // Tentukan warna dan emoji berdasarkan status
   const statusConfig = {

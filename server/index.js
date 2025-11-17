@@ -47,7 +47,7 @@ const server = http.createServer(async(req, res) => {
       message: 'Welcome to Custom Cake Order API' 
     });
   }
-  
+    
   // GET /api/products - Ambil semua produk (untuk galeri)
   if (url === '/api/products' && method === 'GET') {
     return getAllProducts(req, res);
