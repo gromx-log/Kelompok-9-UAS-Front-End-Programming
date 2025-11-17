@@ -97,136 +97,142 @@ export default function OrderPage() {
 
   // Fungsi utama: Menyimpan ke DB EKSTERNAL, LALU membuka WhatsApp
 const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-e.preventDefault();
-setIsSubmitting(true);
-setSubmitError(null);
+  e.preventDefault();
+  setIsSubmitting(true);
+  setSubmitError(null);
 
- try {
- // --- LANGKAH 1: Buat Payload yang Diterjemahkan untuk Backend ---
-// Ini adalah payload yang SESUAI dengan orderSchema.js Anda
-const payload: any = {
- // Nama field di kiri = nama di Mongoose Schema
-// Nama field di kanan = nama di formData state
+  try {
+   // --- LANGKAH 1: Buat Payload yang Diterjemahkan untuk Backend ---
+   // Ini harus SINKRON 100% dengan orderModel.js
+   
+   // Tentukan cakeType berdasarkan cakeBase
+   let cakeType = formData.cakeBase;
+   if (formData.cakeBase === 'Dummy Cake' || formData.cakeBase === 'Dummy + Mix') {
+    cakeType = 'Dummy Cake';
+   }
 
-// 1. Field yang Wajib & Namanya Cocok
- customerName: formData.customerName,
-customerPhone: formData.customerPhone,
- deliveryDate: formData.deliveryDate,
- cakeSize: formData.cakeSize,
- themeDescription: formData.themeDescription,
+   const payload: any = {
+    // Data Customer & Pengiriman (WAJIB)
+    customerName: formData.customerName,
+    customerPhone: formData.customerPhone,
+    deliveryAddress: formData.deliveryAddress, // WAJIB ADA
+    deliveryDate: formData.deliveryDate,
+    deliveryTime: formData.deliveryTime, // WAJIB ADA
 
- // 2. Field Wajib yang Namanya Beda (INI KUNCINYA)
- cakeType: formData.cakeBase, // <- Nama 'cakeBase' diubah jadi 'cakeType'
+    // Penerjemahan Nama Field (WAJIB)
+    cakeType: formData.cakeBase, // Terjemahkan 'cakeBase' -> 'cakeType'
 
- // 3. Field Opsional (Selalu kirim, biarkan backend yg urus)
- cakeFlavor: formData.cakeFlavor, // Kirim walau "" (jika tidak di-disable)
-  referenceImageUrl: formData.referenceImageUrl, // Kirim walau ""
-};
+    // Detail Kue Lainnya (WAJIB)
+    mixBase: formData.mixBase,
+    cakeFilling: formData.cakeFilling,
+    cakeSize: formData.cakeSize,
+    themeDescription: formData.themeDescription,
+    referenceImageUrl: formData.referenceImageUrl,
+    cakeText: formData.cakeText,
+    age: formData.age,
+    cakeFlavor: formData.cakeFlavor,
+   };
 
- // 4. Logika Kondisional (Sudah benar dari kode asli Anda)
-// Jika flavor di-disable, HAPUS key-nya dari payload
-if (isFlavorDisabled) {
- delete payload.cakeFlavor;
-}
+   // Logika Kondisional (Opsional, tapi bagus)
+   if (isFlavorDisabled) {
+    payload.cakeFlavor = ''; // Set string kosong jika di-disable
+   }
+   if (isFillingDisabled) {
+    payload.cakeFilling = ''; // Set string kosong jika di-disable
+   }
+   if (!isMixBaseVisible) {
+    payload.mixBase = ''; // Set string kosong jika disembunyikan
+   }
 
- // [PENTING] Menangani enum 'Dummy Cake'
- // Backend Anda hanya menerima 'Dami Cake'. Kita terjemahkan.
- if (payload.cakeType === 'Dummy Cake') {
- payload.cakeType = 'Dami Cake';
+   // --- DEBUG: Lihat payload final ---
+   console.log("Payload FINAL yang dikirim ke backend:", payload);
+
+   const response = await fetch('https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/orders', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload), // Kirim payload yang LENGKAP
+   });
+
+   const data = await response.json();
+
+   if (!response.ok) {
+    // 'data.error' akan berisi pesan error dari Mongoose/Backend
+    throw new Error(data.message || data.error || 'Gagal menyimpan pesanan');
+   }
+
+   console.log('Sukses tersimpan di DB:', data);
+
+   // --- LANGKAH 2: Buka WhatsApp (SEMUA KODE DI BAWAH INI SAMA) ---
+// ... (sisa kode WA Anda) ...
+   const adminPhoneNumber = '6281211365855'; // Nomor Filbert
+
+   // 1. Buat template pesan BARU (Logika ini sudah benar)
+   let message = `Hai sayang, saya mau pesan kue custom:\n\n`;
+   message += `*1. DATA PEMESAN*\n`;
+   message += `Nama: ${formData.customerName}\n`;
+   message += `No. HP/WA: ${formData.customerPhone}\n`;
+   message += `Alamat Pengiriman:\n${formData.deliveryAddress}\n`;
+   message += `\n`;
+   message += `*2. JADWAL PENGIRIMAN (diinginkan)*\n`;
+   message += `Tanggal: ${formData.deliveryDate}\n`;
+   message += `Waktu: ${formData.deliveryTime}\n`;
+   message += `\n`;
+   message += `*3. DETAIL KUE*\n`;
+   message += `Base Cake: ${formData.cakeBase}\n`;
+   
+   if (isMixBaseVisible && formData.mixBase) {
+    message += `Mix dengan: ${formData.mixBase}\n`;
+   }
+   if (!isFlavorDisabled && formData.cakeFlavor) {
+    message += `Rasa Kue: ${formData.cakeFlavor}\n`;
+   if (isMixBaseVisible && formData.mixBase) {
+    message += `Mix dengan: ${formData.mixBase}\n`;
+   }
+   }
+   
+   message += `Ukuran Kue: ${formData.cakeSize}\n`;
+   message += `\n`;
+   message += `*4. DESAIN & TEMA*\n`;
+   message += `Model/Tema:\n${formData.themeDescription}\n`;
+
+   if (formData.cakeText) {
+    message += `\nTulisan di Kue: ${formData.cakeText}\n`;
+   }
+   if (formData.age) {
+    message += `Umur: ${formData.age}\n`;
+   }
+   if (formData.referenceImageUrl) {
+    message += `\nLink Referensi Gambar: ${formData.referenceImageUrl}\n`;
+   }
+   
+   message += `\n---\n`;
+   message += `Mohon info selanjutnya untuk harga dan konfirmasi. Terima kasih!`;
+
+   // 2. Encode pesan untuk URL
+   const encodedMessage = encodeURIComponent(message);
+
+   // 3. Buka link WhatsApp di tab baru
+   const whatsappUrl = `https://wa.me/${adminPhoneNumber}?text=${encodedMessage}`;
+   window.open(whatsappUrl, '_blank');
+
+   // (Opsional) Reset form setelah berhasil
+   setFormData({
+    customerName: '', customerPhone: '', deliveryDate: '',
+    deliveryTime: '', deliveryAddress: '', cakeBase: 'Ogura',
+    mixBase: '', cakeFlavor: '', cakeFilling: '',
+    cakeSize: '', cakeText: '', age: '',
+    themeDescription: '', referenceImageUrl: '',
+   });
+
+  } catch (error) {
+   console.error('Error saat menyimpan ke DB:', (error as Error).message);
+   // Error.message sekarang akan berisi pesan dari backend
+   // cth: "Order validation failed: deliveryAddress: Path `deliveryAddress` is required."
+   setSubmitError((error as Error).message);
+  } finally {
+   setIsSubmitting(false);
+  };
  }
- // Ini akan error jika 'Dummy + Mix' karena tidak ada di enum backend
-// Asumsi sementara kita tidak pakai 'Dummy + Mix' dulu.
-
- // --- DEBUG: Lihat payload final ---
-console.log("Payload FINAL yang dikirim ke backend:", payload);
-
- const response = await fetch('https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/orders', {
-method: 'POST',
- headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify(payload), // Kirim payload yang sudah diterjemahkan
- });
-
- const data = await response.json();
-
-if (!response.ok) {
-throw new Error(data.message || data.error || 'Gagal menyimpan pesanan');
-}
-
- console.log('Sukses tersimpan di DB:', data);
-
- // --- LANGKAH 2: Buka WhatsApp (SEMUA KODE DI BAWAH INI SAMA) ---
- // ... (sisa kode handleSubmit Anda) ...
-      
-      
-
-      // --- LANGKAH 2: JIKA SUKSES, BARU BUKA WHATSAPP ---
-      const adminPhoneNumber = '6281211365855'; // Nomor Filbert
-
-      // 1. Buat template pesan BARU (Logika ini sudah benar)
-      let message = `Hai sayang, saya mau pesan kue custom:\n\n`;
-      message += `*1. DATA PEMESAN*\n`;
-      message += `Nama: ${formData.customerName}\n`;
-      message += `No. HP/WA: ${formData.customerPhone}\n`;
-      message += `Alamat Pengiriman:\n${formData.deliveryAddress}\n`;
-      message += `\n`;
-      message += `*2. JADWAL PENGIRIMAN (diinginkan)*\n`;
-      message += `Tanggal: ${formData.deliveryDate}\n`;
-      message += `Waktu: ${formData.deliveryTime}\n`;
-      message += `\n`;
-      message += `*3. DETAIL KUE*\n`;
-      message += `Base Cake: ${formData.cakeBase}\n`;
-      
-      if (isMixBaseVisible && formData.mixBase) {
-        message += `Mix dengan: ${formData.mixBase}\n`;
-      }
-      if (!isFlavorDisabled && formData.cakeFlavor) {
-        message += `Rasa Kue: ${formData.cakeFlavor}\n`;
-      }
-      if (!isFillingDisabled && formData.cakeFilling) {
-        message += `Filling/Selai: ${formData.cakeFilling}\n`;
-      }
-      
-      message += `Ukuran Kue: ${formData.cakeSize}\n`;
-      message += `\n`;
-      message += `*4. DESAIN & TEMA*\n`;
-      message += `Model/Tema:\n${formData.themeDescription}\n`;
-
-      if (formData.cakeText) {
-        message += `\nTulisan di Kue: ${formData.cakeText}\n`;
-      }
-      if (formData.age) {
-        message += `Umur: ${formData.age}\n`;
-      }
-      if (formData.referenceImageUrl) {
-        message += `\nLink Referensi Gambar: ${formData.referenceImageUrl}\n`;
-      }
-      
-      message += `\n---\n`;
-      message += `Mohon info selanjutnya untuk harga dan konfirmasi. Terima kasih!`;
-
-      // 2. Encode pesan untuk URL
-      const encodedMessage = encodeURIComponent(message);
-
-      // 3. Buka link WhatsApp di tab baru
-      const whatsappUrl = `https://wa.me/${adminPhoneNumber}?text=${encodedMessage}`;
-      window.open(whatsappUrl, '_blank');
-
-      // (Opsional) Reset form setelah berhasil
-      setFormData({
-        customerName: '', customerPhone: '', deliveryDate: '',
-        deliveryTime: '', deliveryAddress: '', cakeBase: 'Ogura',
-        mixBase: '', cakeFlavor: '', cakeFilling: '',
-        cakeSize: '', cakeText: '', age: '',
-        themeDescription: '', referenceImageUrl: '',
-      });
-
-    } catch (error) {
-      console.error('Error saat menyimpan ke DB:', (error as Error).message);
-      setSubmitError((error as Error).message);
-    } finally {
-      setIsSubmitting(false);
-    };
-  }
   
   // SEMUA JSX (TAMPILAN) KEMBALI KE SINI
   return (
