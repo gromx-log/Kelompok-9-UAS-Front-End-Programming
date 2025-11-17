@@ -9,6 +9,7 @@ const { sendNewOrderEmail, sendStatusChangeEmail } = require('../utils/emailServ
 // POST /api/orders
 async function createOrder(req, res, body) {
   try {
+    
     const { 
       cakeModel,
       cakeBase,
@@ -23,13 +24,14 @@ async function createOrder(req, res, body) {
       cakeDiameter,
       deliveryAddress,
       customerName,
-      customerPhone
+      customerPhone,
+      referenceImageUrl
     } = body;
 
     // Validasi required fields
     if (!cakeModel || !cakeBase || !deliveryDate 
-      || !deliveryTime || !cakeTiers || !cakeDiameter ||
-      !deliveryAddress || !customerName || !customerPhone) {
+      || !deliveryTime || !cakeTiers || !cakeDiameter || !cakeText
+      || !deliveryAddress || !customerName || !customerPhone) {
       return sendError(res, 400, 'Semua field wajib diisi');
     }
 
@@ -84,6 +86,7 @@ async function createOrder(req, res, body) {
       deliveryAddress,
       customerName,
       customerPhone,
+      referenceImageUrl: referenceImageUrl || null,
 
       // Default values (akan diupdate admin)
       price: 0,
@@ -189,7 +192,8 @@ async function updateOrder(req, res, id, body) {
       'orderStatus',
       'paymentStatus',
       'dpAmount',
-      'adminNotes'
+      'adminNotes',
+      'referenceImageUrl'
     ];
 
     allowedUpdates.forEach(field => {
