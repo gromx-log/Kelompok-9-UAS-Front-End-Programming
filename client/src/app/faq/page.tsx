@@ -2,85 +2,24 @@ import React from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import Image from 'next/image'; // Tetap di-import, meskipun tidak dipakai di Q&A baru
+import styles from './faq.module.css';
+import Navbar from '../../components/navbar';
+import CTA from '../../components/callToAction';
+import Footer from '../../components/footer';
+import CustomHeader from '../../components/customHeader';
+
+export const metadata = {
+  title: 'FAQ - Pertanyaan Umum - KartiniAle',
+};
 
 export default function FaqPage() {
   return (
     <>
-      <Head>
-        <title>FAQ - Pertanyaan Umum - KartiniAle</title>
-      </Head>
 
-      {/* Style kustom untuk Bootstrap Accordion & Banner Halaman Baru
-      */}
-      <style jsx>{`
-        /* == Gaya Accordion == */
-        .accordion-button {
-          font-weight: 600;
-          color: var(--color-text);
-          background-color: var(--color-bg-light);
-        }
-        .accordion-button:not(.collapsed) {
-          color: var(--color-text);
-          background-color: #fffbf8; /* Sedikit lebih gelap dari putih */
-          box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.05);
-        }
-        .accordion-button:focus {
-          box-shadow: 0 0 0 0.25rem rgba(249, 175, 175, 0.5); /* Warna --color-accent-light */
-          border-color: var(--color-accent);
-        }
-        .accordion-body {
-          color: var(--color-text-muted);
-          line-height: 1.7; /* Membuat teks jawaban lebih mudah dibaca */
-        }
-        .accordion-item {
-          background-color: var(--color-bg-light);
-          border-color: rgba(0, 0, 0, 0.05);
-        }
-
-        /* == Gaya Banner Halaman Baru == */
-        .page-header {
-          background-color: var(--color-primary);
-          color: #fff;
-          padding-top: 9rem;
-          padding-bottom: 3rem;
-        }
-
-        /* Style untuk Breadcrumbs di atas banner */
-        .breadcrumb {
-          margin-bottom: 0.5rem;
-          font-weight: 500;
-        }
-        
-        :global(.breadcrumb-item a) {
-          color: #fff;
-          text-decoration: none;
-        }
-        :global(.breadcrumb-item a:hover) {
-          text-decoration: underline;
-        }
-        :global(.breadcrumb-item.active) {
-          color: rgba(255, 255, 255, 0.8);
-        }
-        :global(.breadcrumb-item + .breadcrumb-item::before) {
-          color: rgba(255, 255, 255, 0.8);
-        }
-        
-        /* == Mobile Friendly untuk Banner == */
-        @media (max-width: 768px) {
-          .page-header {
-            padding-top: 7rem;
-            padding-bottom: 2.5rem;
-          }
-        }
-      `}</style>
-
+      <Navbar/>
       {/* === Banner Halaman Baru === */}
-      <section className="page-header">
-        <div className="container text-center">
-          <h1 className="display-5 display-lg-4 fade-in-up fw-bold" style={{ color: 'var(--color-text)' }}>
-            Pertanyaan Umum (FAQ)
-          </h1>
-        </div>
+      <section className={styles.pageHeader}>
+        <CustomHeader title='Pertanyaan Umum (FAQ)'/>
       </section>
 
       {/* === Konten Accordion === */}
@@ -120,7 +59,7 @@ export default function FaqPage() {
                     Kami selalu berupaya memberikan hasil terbaik, baik dari segi tampilan, maupun rasa dengan menyesuaikan pada kebutuhan.
                     <br /><br />
                     Untuk mendapatkan gambaran harga dan inspirasi desain, silakan kunjungi halaman 
-                    <Link href="/gallery"> Galeri</Link> untuk melihat berbagai contoh karya kami.  
+                    <Link href="/products"> Galeri</Link> untuk melihat berbagai contoh karya kami.  
                     Jika Anda sudah memiliki konsep atau ide tertentu, anda dapat mengisi <Link href="/order"> Form Pemesanan </Link> 
                   </div>
                 </div>
@@ -214,7 +153,7 @@ export default function FaqPage() {
                   data-bs-parent="#faqAccordion"
                 >
                   <div className="accordion-body">
-                    Untuk melakukan pemesanan, silakan isi form di halaman <Link href="/order">Pesan Sekarang</Link>. 
+                    Untuk melakukan pemesanan, silakan isi form di halaman <Link href="/order">Konsultasikan Sekarang</Link>. 
                     Lengkapi semua detail yang dibutuhkan, seperti ukuran, jenis kue, tema desain, dan tanggal acara, 
                     agar kami dapat memahami kebutuhan Anda dengan lebih baik.  
                     <br /><br />
@@ -226,11 +165,14 @@ export default function FaqPage() {
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
         </div>
       </div>
+
+      <CTA/>
+      <Footer/>
+
     </>
   );
 }

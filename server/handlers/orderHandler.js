@@ -249,6 +249,8 @@ async function updateOrderStatus(req, res, id, body) {
 
     const oldStatus = oldOrder.orderStatus;
 
+    // ✅ FIX: Gunakan findByIdAndUpdate dengan {new: true}
+    // Tidak perlu .save() lagi karena sudah auto-save
     const order = await Order.findByIdAndUpdate(
       id,
       { orderStatus: status },
@@ -265,7 +267,9 @@ async function updateOrderStatus(req, res, id, body) {
       console.log(`📧 Email notifikasi status change sedang dikirim...`);
     }
 
+    // ✅ FIX: Langsung return order, HAPUS baris .save()
     sendJSON(res, 200, order);
+
   } catch (error) {
     console.error('❌ Error update order status:', error);
     sendError(res, 500, 'Server Error: ' + error.message);
@@ -296,8 +300,8 @@ async function deleteOrder(req, res, id) {
 module.exports = {
   createOrder,        // Public
   getAllOrders,       // Protected
-  getOrderById,       // Protected (NEW)
-  updateOrder,        // Protected (NEW - main update)
+  getOrderById,       // Protected
+  updateOrder,        // Protected (main update)
   updateOrderStatus,  // Protected (quick status update)
-  deleteOrder         // Protected (NEW)
+  deleteOrder         // Protected
 };

@@ -1,0 +1,57 @@
+/* == Gaya Accordion == */
+:global(.accordion-button) {
+  font-weight: 600;
+  color: var(--color-text);
+  background-color: var(--color-bg-light);
+}
+
+:global(.accordion-button:not(.collapsed)) {
+  color: var(--color-text);
+  background-color: #fffbf8; /* Sedikit lebih gelap dari putih */
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.05);
+}
+
+:global(.accordion-button:focus) {
+  box-shadow: 0 0 0 0.25rem rgba(249, 175, 175, 0.5); /* Warna --color-accent-light */
+  border-color: var(--color-accent);
+}
+
+:global(.accordion-body) {
+  color: var(--color-text-muted);
+  line-height: 1.7; /* Membuat teks jawaban lebih mudah dibaca */
+}
+
+:global(.accordion-item) {
+  background-color: var(--color-bg-light);
+  border-color: rgba(0, 0, 0, 0.05);
+}
+
+/* == Gaya Banner Halaman Baru == */
+.pageHeader {
+    background-color: var(--color-primary);
+    color:  #fff;
+}
+
+/* Style untuk Breadcrumbs di atas banner */
+:global(.breadcrumb) {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+:global(.breadcrumb-item a) {
+  color: #fff;
+  text-decoration: none;
+}
+
+:global(.breadcrumb-item a:hover) {
+  text-decoration: underline;
+}
+
+:global(.breadcrumb-item.active) {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+:global(.breadcrumb-item + .breadcrumb-item::before) {
+  color: rgba(255, 255, 255, 0.8);
+}
+

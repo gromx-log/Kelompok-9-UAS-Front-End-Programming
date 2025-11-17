@@ -1,6 +1,11 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import React, { useState } from 'react';
+import Navbar from '../components/navbar';
+import CTA from '../components/callToAction';
+import Footer from '../components/footer';
 
 export default function Home() {
   // state buat flip gambar
@@ -12,6 +17,7 @@ export default function Home() {
 
   return (
     <>
+      <Navbar/>
       {/* HERO SECTION */}
       <section className="hero-illustration-section">
         <div className="container">
@@ -29,10 +35,8 @@ export default function Home() {
                 Spesialis kue custom dengan base cake Ogura dan Lapis Surabaya Premium.
               </p>
               <div className="fade-in-up delay-3">
-                <Link href="/products" legacyBehavior>
-                  <a className="btn btn-primary btn-lg mt-3" style={{ padding: '0.75rem 2rem' }}>
+                <Link href="/products" className="btn btn-primary btn-lg mt-3" style={{ padding: '0.75rem 2rem' }}>
                     Lihat Katalog Kami
-                  </a>
                 </Link>
               </div>
             </div>
@@ -73,10 +77,8 @@ export default function Home() {
                   <strong>Lapis Surabaya:</strong> Resep premium 40 kuning telur dengan 100% butter Wijsman.
                 </li>
               </ul>
-              <Link href="/our-cakes" legacyBehavior>
-                <a className="btn btn-primary mt-3">
+              <Link href="/our-cakes" className="btn btn-primary mt-3">
                   Lihat Selengkapnya
-                </a>
               </Link>
             </div>
 
@@ -158,10 +160,8 @@ export default function Home() {
                 adalah karya seni yang personal.
               </p>
               {/* Tombol CTA untuk ke galeri */}
-              <Link href="/gallery" legacyBehavior>
-                <a className="btn btn-outline-primary mt-3">
+              <Link href="/products" className="btn btn-outline-primary mt-3">
                   Lihat Galeri Kami
-                </a>
               </Link>
             </div>
 
@@ -169,17 +169,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Tombol ke CMS */}
-      <section className="py-5 text-center" style={{ backgroundColor: 'var(--color-bg-light)' }}>
-        <div className="container">
-          <p className="text-muted">Hanya untuk admin</p>
-          <Link href="/cms" legacyBehavior>
-            <a className="btn btn-outline-secondary">
-              Halaman Admin (CMS)
-            </a>
-          </Link>
-        </div>
-      </section>
+      <CTA/>
+      <Footer/>
     </>
   );
 }

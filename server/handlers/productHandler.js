@@ -1,5 +1,5 @@
 const Product = require('../models/productModel');
-const formidable = require('formidable');
+const { formidable } = require('formidable');
 const { sendJSON, sendError } = require('../utils/responseHelper');
 const { uploadToCloudinary, deleteFromCloudinary } = require('../utils/cloudinaryHelper');
 const fs = require('fs').promises;
@@ -7,169 +7,178 @@ const fs = require('fs').promises;
 // For PUBLIC
 // GET /api/products
 async function getAllProducts(req, res) {
-  try {
-    const products = await Product.find();
-    sendJSON(res, 200, products);
-  } catch (error) {
-    sendError(res, 500, 'Server Error: ' + error.message);
-  }
+ try {
+ 	const products = await Product.find();
+ 	sendJSON(res, 200, products);
+ } catch (error) {
+ 	sendError(res, 500, 'Server Error: ' + error.message);
+ }
 }
 
 // GET /api/products/:id
 async function getProductById(req, res, id) {
-  try {
-    const product = await Product.findById(id);
-    
-    if (!product) {
-      return sendError(res, 404, 'Produk tidak ditemukan');
-    }
-    
-    sendJSON(res, 200, product);
-  } catch (error) {
-    sendError(res, 500, 'Server Error: ' + error.message);
-  }
+ try {
+ 	const product = await Product.findById(id);
+ 	
+ 	if (!product) {
+ 	  return sendError(res, 404, 'Produk tidak ditemukan');
+ 	}
+ 	
+ 	sendJSON(res, 200, product);
+ } catch (error) {
+ 	sendError(res, 500, 'Server Error: ' + error.message);
+ }
 }
 
 // =====================================================
 // Admin Only (PROTECTED)
 // POST /api/products
-// = To post a new product into the gallery
 async function createProduct(req, res) {
-  const form = formidable({ multiples: true, maxFileSize: 5 * 1024 * 1024 }); // Max 5MB
+ const form = formidable({ multiples: true, maxFileSize: 5 * 1024 * 1024 }); // Max 5MB
 
-  form.parse(req, async (err, fields, files) => {
-    try {
-      if (err) {
-        return sendError(res, 400, 'Error parsing form: ' + err.message);
+ form.parse(req, async (err, fields, files) => {
+ 	try {
+ 	  if (err) {
+ 	 	 return sendError(res, 400, 'Error parsing form: ' + err.message);
+ 	  }
+
+ 	  // 'fields' dari formidable mengembalikan array untuk setiap field
+ 	  const name = fields.name ? fields.name[0] : undefined;
+ 	  const slug = fields.slug ? fields.slug[0] : undefined;
+ 	  const category = fields.category ? fields.category[0] : undefined;
+ 	  const description = fields.description ? fields.description[0] : undefined;
+ 	  const startPrice = fields.startPrice ? fields.startPrice[0] : undefined;
+
+ 	  // Validate Input
+ 	  if (!name || !slug || !category || !description || !startPrice) {
+ 	 	 return sendError(res, 400, 'Semua field wajib diisi');
+ 	  }
+
+ 	  // Upload Img to Cloudinary
+ 	  const imageUrls = [];
+      if (files.images) { 
+ 	 	  const imageFiles = Array.isArray(files.images) ? files.images : [files.images];
+
+ 	 	  for (const file of imageFiles) {
+ 	 	 	  if (file && file.filepath) {
+ 	 	 	 	  const fileBuffer = await fs.readFile(file.filepath);
+ 	 	 	 	  const url = await uploadToCloudinary(fileBuffer, 'products');
+ 	 	 	 	  imageUrls.push(url);
+ 	 	 	  }
+ 	 	  }
       }
 
-      // Validate Input
-      const { name, slug, category, description, startPrice } = fields;
-      if (!name || !slug || !category || !description || !startPrice) {
-        return sendError(res, 400, 'Semua field wajib diisi');
-      }
+ 	  if (imageUrls.length === 0) {
+ 	 	  return sendError(res, 400, 'Minimal 1 gambar harus diupload');
+ 	  }
 
-      // Upload Img to Cloudinary
-      const imageUrls = [];
-      const imageFiles = Array.isArray(files.images) ? files.images : [files.images];
+ 	  // Save to DB
+ 	  const newProduct = new Product({
+ 	 	  name, 		
+ 	 	  slug, 		
+ 	 	  images: imageUrls,
+ 	 	  category, 	
+ 	 	  description,  
+ 	 	  startPrice: Number(startPrice)
+ 	  });
 
-      for (const file of imageFiles) {
-        if (file) {
-          const fileBuffer = await fs.readFile(file.filepath);
-          const url = await uploadToCloudinary(fileBuffer, 'products');
-          imageUrls.push(url);
-        }
-      }
+ 	  const savedProduct = await newProduct.save();
+ 	  sendJSON(res, 201, savedProduct);
 
-      if (imageUrls.length === 0) {
-        return sendError(res, 400, 'Minimal 1 gambar harus diupload');
-      }
-
-      // Save to DB
-      const newProduct = new Product({
-        name,
-        slug,
-        images: imageUrls,
-        category,
-        description,
-        startPrice: Number(startPrice)
-      });
-
-      const savedProduct = await newProduct.save();
-      sendJSON(res, 201, savedProduct);
-
-    } catch (error) {
-      sendError(res, 500, 'Server Error: ' + error.message);
-    }
-  });
+ 	} catch (error) {
+ 	  sendError(res, 500, 'Server Error: ' + error.message);
+ 	}
+ });
 }
 
 // PUT /api/products/:id
-// = To update a certain product
 async function updateProduct(req, res, id) {
-  const form = formidable({ multiples: true, maxFileSize: 5 * 1024 * 1024 });
+ const form = formidable({ multiples: true, maxFileSize: 5 * 1024 * 1024 });
 
-  form.parse(req, async (err, fields, files) => {
-    try {
-      if (err) {
-        return sendError(res, 400, 'Error parsing form: ' + err.message);
-      }
+ form.parse(req, async (err, fields, files) => {
+ 	try {
+ 	  if (err) {
+ 	 	 return sendError(res, 400, 'Error parsing form: ' + err.message);
+ 	  }
 
-      // Find the product (from ID)
-      const product = await Product.findById(id);
-      if (!product) {
-        return sendError(res, 404, 'Produk tidak ditemukan');
-      }
+ 	  const product = await Product.findById(id);
+ 	  if (!product) {
+ 	 	 return sendError(res, 404, 'Produk tidak ditemukan');
+ 	  }
 
-      // Update fields
-      const { name, slug, category, description, startPrice } = fields;
-      if (name) product.name = name;
-      if (slug) product.slug = slug;
-      if (category) product.category = category;
-      if (description) product.description = description;
-      if (startPrice) product.startPrice = Number(startPrice);
+ 	  const name = fields.name ? fields.name[0] : undefined;
+ 	  const slug = fields.slug ? fields.slug[0] : undefined;
+ 	  const category = fields.category ? fields.category[0] : undefined;
+ 	  const description = fields.description ? fields.description[0] : undefined;
+ 	  const startPrice = fields.startPrice ? fields.startPrice[0] : undefined;
 
-      // Jika ada gambar baru, upload dan replace
-      const imageFiles = files.images;
-      if (imageFiles) {
-        const newImageUrls = [];
-        const filesToUpload = Array.isArray(imageFiles) ? imageFiles : [imageFiles];
+ 	  // Update fields
+ 	  if (name) product.name = name;
+ 	  if (slug) product.slug = slug;
+ 	  if (category) product.category = category;
+ 	  if (description) product.description = description;
+ 	  if (startPrice) product.startPrice = Number(startPrice);
 
-        for (const file of filesToUpload) {
-          if (file) {
-            const fileBuffer = await fs.readFile(file.filepath);
-            const url = await uploadToCloudinary(fileBuffer, 'products');
-            newImageUrls.push(url);
-          }
-        }
+ 	  // Jika ada gambar baru, upload dan replace
+ 	  const imageFiles = files.images;
+ 	  if (imageFiles) {
+ 	 	  const newImageUrls = [];
+ 	 	  const filesToUpload = Array.isArray(imageFiles) ? imageFiles : [imageFiles];
 
-        if (newImageUrls.length > 0) {
-          // (Optional) Delete Old Images
-          for (const oldUrl of product.images) {
-            await deleteFromCloudinary(oldUrl);
-          }
-          product.images = newImageUrls;
-        }
-      }
+ 	 	  for (const file of filesToUpload) {
+ 	 	 	  if (file && file.filepath) {
+ 	 	 	 	  const fileBuffer = await fs.readFile(file.filepath);
+ 	 	 	 	  const url = await uploadToCloudinary(fileBuffer, 'products');
+ 	 	 	 	  newImageUrls.push(url);
+ 	 	 	  }
+ 	 	  }
 
-      const updatedProduct = await product.save();
-      sendJSON(res, 200, updatedProduct);
+ 	 	  if (newImageUrls.length > 0) {
+ 	 	 	  // (Optional) Delete Old Images
+ 	 	 	  for (const oldUrl of product.images) {
+ 	 	 	 	  await deleteFromCloudinary(oldUrl);
+ 	 	 	  }
+ 	 	 	  product.images = newImageUrls;
+ 	 	  }
+ 	  }
 
-    } catch (error) {
-      sendError(res, 500, 'Server Error: ' + error.message);
-    }
-  });
+ 	  const updatedProduct = await product.save();
+ 	  sendJSON(res, 200, updatedProduct);
+
+ 	} catch (error) {
+ 	  sendError(res, 500, 'Server Error: ' + error.message);
+ 	}
+ });
 }
 
 // DELETE /api/products/:id
-// = To delete a product from gallery
 async function deleteProduct(req, res, id) {
-  try {
-    const product = await Product.findById(id);
-    
-    if (!product) {
-      return sendError(res, 404, 'Produk tidak ditemukan');
-    }
+ try {
+ 	const product = await Product.findById(id);
+ 	
+ 	if (!product) {
+ 	  return sendError(res, 404, 'Produk tidak ditemukan');
+ 	}
 
-    // Delte the image from Cloudinary
-    for (const imageUrl of product.images) {
-      await deleteFromCloudinary(imageUrl);
-    }
+ 	// Delte the image from Cloudinary
+ 	for (const imageUrl of product.images) {
+ 	  await deleteFromCloudinary(imageUrl);
+ 	}
 
-    // Delete the product from database
-    await Product.findByIdAndDelete(id);
+ 	// Delete the product from database
+ 	await Product.findByIdAndDelete(id);
 
-    sendJSON(res, 200, { message: 'Produk berhasil dihapus' });
+ 	sendJSON(res, 200, { message: 'Produk berhasil dihapus' });
 
-  } catch (error) {
-    sendError(res, 500, 'Server Error: ' + error.message);
-  }
+ } catch (error) {
+ 	sendError(res, 500, 'Server Error: ' + error.message);
+ }
 }
 
 module.exports = {
-  getAllProducts,
-  getProductById,
-  createProduct,
-  updateProduct,
-  deleteProduct
+ getAllProducts,
+ getProductById,
+ createProduct,
+ updateProduct,
+ deleteProduct
 };

@@ -103,23 +103,23 @@ const server = http.createServer(async(req, res) => {
     return handleProtectedRoute(req, res, getOrderById, getOrderDetailMatch.id);
   }
 
+  // PUT /api/orders/:id/status - Quick update status saja (harus SEBELUM route generic)
+  const updateOrderStatusMatch = matchRoute('/api/orders/:id/status', url);
+  if (updateOrderStatusMatch && method === 'PUT') {
+    try {
+      const body = await bodyParser(req);
+      return handleProtectedRoute(req, res, updateOrderStatus, updateOrderStatusMatch.id, body);
+    } catch (error) {
+      return sendError(res, 400, error.message);
+    }
+  }
+
   // PUT /api/orders/:id - Update order lengkap (pricing, payment, status, dll)
   const updateOrderFullMatch = matchRoute('/api/orders/:id', url);
   if (updateOrderFullMatch && method === 'PUT' && !url.includes('/status')) {
     try {
       const body = await bodyParser(req);
       return handleProtectedRoute(req, res, updateOrder, updateOrderFullMatch.id, body);
-    } catch (error) {
-      return sendError(res, 400, error.message);
-    }
-  }
-
-  // PUT /api/orders/:id/status - Quick update status saja (backward compatibility)
-  const updateOrderStatusMatch = matchRoute('/api/orders/:id/status', url);
-  if (updateOrderStatusMatch && method === 'PUT') {
-    try {
-      const body = await bodyParser(req);
-      return handleProtectedRoute(req, res, updateOrderStatus, updateOrderStatusMatch.id, body);
     } catch (error) {
       return sendError(res, 400, error.message);
     }
@@ -188,9 +188,9 @@ server.listen(PORT, () => {
   console.log('\n🔐 Protected Routes - Orders (butuh token):');
   console.log('  GET    /api/orders                - List semua order');
   console.log('  GET    /api/orders/:id            - Detail satu order');
+  console.log('  PUT    /api/orders/:id/status     - Quick update status saja');
   console.log('  PUT    /api/orders/:id            - Update order lengkap');
   console.log('                                      (pricing, payment, status, notes)');
-  console.log('  PUT    /api/orders/:id/status     - Quick update status saja');
   console.log('  DELETE /api/orders/:id            - Hapus order');
   
   console.log('\n🧪 Testing Routes:');

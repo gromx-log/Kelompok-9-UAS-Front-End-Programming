@@ -1,55 +1,38 @@
 import React from 'react';
-import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
-import CallToAction from '../components/callToAction';
+import { Metadata } from 'next';
+import Navbar from '../../components/navbar';
+import CTA from '../../components/callToAction';
+import Footer from '../../components/footer';
+import CustomHeader from '../../components/customHeader';
 
-// TODO: GANTI GAMBAR!!!!!!!!!!!!!!!!!!
-const oguraImage = "/images/placeholder-ogura.jpg"; // Contoh path
-const lapisImage = "/images/placeholder-lapis.jpg"; // Contoh path
-const damiImage = "/images/placeholder-dami.jpg"; // Contoh path
+const oguraImage = "/images/placeholder-ogura.jpg";
+const lapisImage = "/images/placeholder-lapis.jpg";
+const damiImage = "/images/placeholder-dami.jpg";
+
+export const metadata = {
+  title: 'Tentang Kue Kami - KartiniAle',
+  description: 'Pelajari tentang base cake premium kami: Ogura Cake yang lembut dan Lapis Surabaya Premium yang kaya rasa.',
+};
 
 export default function OurCakesPage() {
   return (
     <>
-      <Head>
-        <title>Tentang Kue Kami - KartiniAle</title>
-        <meta
-          name="description"
-          content="Pelajari tentang base cake premium kami: Ogura Cake yang lembut dan Lapis Surabaya Premium yang kaya rasa."
-        />
-        {/* Kita butuh icon Bootstrap jika kamu menggunakannya */}
-        <link 
-          rel="stylesheet" 
-          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" 
-        />
-      </Head>
 
-      {/*Header*/}
-      <header 
-        className="py-5 text-center" 
-        style={{ 
-          marginTop: '6rem', 
-          paddingTop: '3rem',
-          paddingBottom: '3rem',
-          backgroundColor: 'var(--color-primary)' 
-        }}
-      >
-        <div className="container">
-          <h1 className="display-4 fw-bold fade-in-up" style={{ color: 'var(--color-text)' }}>
-            Kualitas di Balik Keindahan
-          </h1>
-          <p className="lead fs-4 fade-in-up delay-1" style={{ color: 'var(--color-text-muted)' }}>
-            Pelajari mengapa kue kami tidak hanya cantik, tapi juga lezat tak terlupakan.
-          </p>
-        </div>
-      </header>
+      <Navbar/>
+      
+      {/* Header */}
+      <CustomHeader 
+        title='Kualitas di Balik Keindahan'
+        subtitle='Pelajari mengapa kue kami tidak hanya cantik, tapi juga lezat tak terlupakan.'
+      />
 
-      {/* --- Konten Utama (Layout Tabbed Interface) --- */}
+      {/* Main Section */}
       <section className="py-5" style={{ backgroundColor: 'var(--color-bg)' }}>
         <div className="container">
           
-          {/* --- Navigasi Tabs --- */}
+          {/* Tabs Navigation */}
           <ul 
             className="nav nav-pills mb-4 justify-content-center fade-in-up our-cakes-tabs" 
             id="cakeTabs" 
@@ -103,10 +86,10 @@ export default function OurCakesPage() {
             </li>
           </ul>
 
-          {/* --- Konten Tabs --- */}
+          {/* Tabs Content */}
           <div className="tab-content pt-4" id="cakeTabsContent">
             
-            {/* --- Pane 1: Ogura Cake --- */}
+            {/* Ogura Cake */}
             <div 
               className="tab-pane fade show active" 
               id="ogura-tab-pane" 
@@ -141,7 +124,7 @@ export default function OurCakesPage() {
               </div>
             </div>
 
-            {/* --- Pane 2: Lapis Surabaya --- */}
+            {/* Lapis Surabaya */}
             <div 
               className="tab-pane fade" 
               id="lapis-tab-pane" 
@@ -173,7 +156,7 @@ export default function OurCakesPage() {
               </div>
             </div>
 
-            {/* --- Pane 3: Dami Cake --- */}
+            {/* Dami Cake */}
             <div 
               className="tab-pane fade" 
               id="dami-tab-pane" 
@@ -207,6 +190,9 @@ export default function OurCakesPage() {
           </div>
         </div>
       </section>
+
+      <CTA/>
+      <Footer/>
     </>
   );
 }
