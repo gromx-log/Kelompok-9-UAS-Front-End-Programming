@@ -14,11 +14,6 @@ async function createOrder(req, res, body) {
    themeDescription 
   } = body;
 
-  // Validasi sederhana
-  if (!customerName || !customerPhone || !deliveryDate || !cakeType || !cakeSize || !themeDescription) {
-   return sendError(res, 400, 'Semua data wajib diisi');
-  }
-
   // Buat order baru
   const newOrder = new Order(body);
   const savedOrder = await newOrder.save();
@@ -32,10 +27,20 @@ async function createOrder(req, res, body) {
   console.log(`📧 Email notifikasi sedang dikirim ke penjual...`);
   
   sendJSON(res, 201, savedOrder);
- } catch (error) {
-  console.error('Error create order:', error);
-  sendError(res, 500, 'Server Error: ' + error.message);
+} catch (error) {
+ // 4. TANGKAP ERROR VALIDASI DARI MONGOOSE
+ if (error.name === 'ValidationError') {
+  // Jika Mongoose bilang ada field kurang (cth: "deliveryAddress is required")
+  // Kirim error 400 (Bad Request), BUKAN 500.
+  console.error('Error validasi Mongoose:', error.message);
+  // Kirim pesan error yang jelas ke frontend
+  return sendError(res, 400, `Data tidak lengkap: ${error.message}`);
  }
+
+ // Error lainnya (server, database down, dll)
+ console.error('Error create order:', error);
+ sendError(res, 500, 'Server Error: ' + error.message);
+}
 }
 
 // GET /api/orders
