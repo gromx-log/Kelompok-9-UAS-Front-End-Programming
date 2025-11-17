@@ -82,7 +82,7 @@ async function createOrder(req, res, body) {
       deliveryDate: deliveryDateObj,
       deliveryTime,
       cakeTiers: tiersNum,            
-      cakeDiameter: cakeDiameter.trim(), 
+      cakeDiameter: (cakeDiameter || "").toString().trim(),
       deliveryAddress,
       customerName,
       customerPhone,
