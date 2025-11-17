@@ -1,339 +1,213 @@
 "use client";
 
-import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
-import Head from 'next/head';
-import Link from 'next/link';
-import Navbar from '../../components/navbar';
-import Footer from '../../components/footer';
-import CustomHeader from '../../components/customHeader';
-import styles from './order.module.css';
+import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
+import Navbar from "../../components/navbar";
+import Footer from "../../components/footer";
+import CustomHeader from "../../components/customHeader";
+import styles from "./order.module.css";
 
-// --- Tipe Data Form yang Baru (sesuai permintaan) ---
 interface IFormData {
   customerName: string;
   customerPhone: string;
   deliveryDate: string;
-  deliveryTime: string; // BARU
-  deliveryAddress: string; // BARU
-  cakeBase: 'Ogura' | 'Lapis Surabaya' | 'Dummy Cake' | 'Dummy + Mix'; // Opsi diubah
-  mixBase: 'Ogura' | 'Lapis Surabaya' | ''; // BARU (untuk Dummy + Mix)
-  cakeFlavor: string; // Opsi akan diubah
-  cakeFilling: string; // BARU
-  cakeSize: string;
-  cakeText: string; // BARU
-  age: string; // BARU
-  themeDescription: string; // Label akan diubah
+  deliveryTime: string;
+  deliveryAddress: string;
+  cakeBase: "Ogura" | "Lapis Surabaya" | "Dummy Cake" | "Dummy + Mix";
+  mixBase: "Ogura" | "Lapis Surabaya" | "";
+  cakeFlavor: string;
+  cakeFilling: string;
+  cakeDiameter: string;
+  cakeTiers: number | "";
+  cakeText: string;
+  age: number | "";
+  cakeModel: string;
   referenceImageUrl: string;
 }
 
 export default function OrderPage() {
+  const today = new Date().toISOString().split("T")[0];
+
   const [formData, setFormData] = useState<IFormData>({
-    customerName: '',
-    customerPhone: '',
-    deliveryDate: '',
-    deliveryTime: '',
-    deliveryAddress: '',
-    cakeBase: 'Ogura', // Default ke Ogura
-    mixBase: '',
-    cakeFlavor: '',
-    cakeFilling: '',
-    cakeSize: '',
-    cakeText: '',
-    age: '',
-    themeDescription: '',
-    referenceImageUrl: '',
+    customerName: "",
+    customerPhone: "",
+    deliveryDate: "",
+    deliveryTime: "",
+    deliveryAddress: "",
+    cakeBase: "Ogura",
+    mixBase: "",
+    cakeFlavor: "",
+    cakeFilling: "",
+    cakeDiameter: "",
+    cakeTiers: 1,
+    cakeText: "",
+    age: "",
+    cakeModel: "",
+    referenceImageUrl: "",
   });
 
-  // --- State untuk Logika Form Dinamis ---
   const [isMixBaseVisible, setIsMixBaseVisible] = useState(false);
   const [isFlavorDisabled, setIsFlavorDisabled] = useState(false);
   const [isFillingDisabled, setIsFillingDisabled] = useState(false);
-
-  // --- State untuk submit (loading dan error) ---
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  // --- Efek Utama: Otak dari Form Dinamis ---
   useEffect(() => {
     const { cakeBase, mixBase } = formData;
 
-    // 1. Logika 'Mix Base' (Muncul/Sembunyi)
-    const showMixBase = cakeBase === 'Dummy + Mix';
+    const showMixBase = cakeBase === "Dummy + Mix";
     setIsMixBaseVisible(showMixBase);
-    if (!showMixBase) {
-      setFormData((prev) => ({ ...prev, mixBase: '' })); // Reset jika disembunyikan
-    }
+    if (!showMixBase) setFormData((prev) => ({ ...prev, mixBase: "" }));
 
-    // 2. Logika 'Flavor' (Aktif/Nonaktif)
     const disableFlavor =
-      cakeBase === 'Lapis Surabaya' ||
-      cakeBase === 'Dummy Cake' ||
-      (cakeBase === 'Dummy + Mix' && mixBase === 'Lapis Surabaya') ||
-      (cakeBase === 'Dummy + Mix' && mixBase === '');
+      cakeBase === "Lapis Surabaya" ||
+      cakeBase === "Dummy Cake" ||
+      (cakeBase === "Dummy + Mix" &&
+        (mixBase === "Lapis Surabaya" || mixBase === ""));
     setIsFlavorDisabled(disableFlavor);
-    if (disableFlavor) {
-      setFormData((prev) => ({ ...prev, cakeFlavor: '' })); // Reset jika nonaktif
-    }
+    if (disableFlavor) setFormData((prev) => ({ ...prev, cakeFlavor: "" }));
 
-    // 3. Logika 'Filling' (Aktif/Nonaktif)
-    const disableFilling = cakeBase === 'Dummy Cake';
+    const disableFilling = cakeBase === "Dummy Cake";
     setIsFillingDisabled(disableFilling);
-    if (disableFilling) {
-      setFormData((prev) => ({ ...prev, cakeFilling: '' })); // Reset jika nonaktif
-    }
-
+    if (disableFilling) setFormData((prev) => ({ ...prev, cakeFilling: "" }));
   }, [formData.cakeBase, formData.mixBase]);
 
-  // Handler universal untuk semua input
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: type === "number" ? (value === "" ? "" : Number(value)) : value,
     }));
   };
 
-  // Fungsi utama: Menyimpan ke DB EKSTERNAL, LALU membuka WhatsApp
-const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-  setIsSubmitting(true);
-  setSubmitError(null);
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitError(null);
 
-  try {
-   // --- LANGKAH 1: Buat Payload yang Diterjemahkan untuk Backend ---
-   // Ini harus SINKRON 100% dengan orderModel.js
-   
-   // Tentukan cakeType berdasarkan cakeBase
-   let cakeType = formData.cakeBase;
-   if (formData.cakeBase === 'Dummy Cake' || formData.cakeBase === 'Dummy + Mix') {
-    cakeType = 'Dummy Cake';
-   }
+    try {
+      const payload: any = {
+        ...formData,
+        cakeFlavor: isFlavorDisabled ? "" : formData.cakeFlavor,
+        cakeFilling: isFillingDisabled ? "" : formData.cakeFilling,
+        mixBase: isMixBaseVisible ? formData.mixBase : "",
+        cakeTiers: Number(formData.cakeTiers),
+      };
 
-   const payload: any = {
-    // Data Customer & Pengiriman (WAJIB)
-    customerName: formData.customerName,
-    customerPhone: formData.customerPhone,
-    deliveryAddress: formData.deliveryAddress, // WAJIB ADA
-    deliveryDate: formData.deliveryDate,
-    deliveryTime: formData.deliveryTime, // WAJIB ADA
+      console.log("Payload:", payload);
 
-    // Penerjemahan Nama Field (WAJIB)
-    cakeType: formData.cakeBase, // Terjemahkan 'cakeBase' -> 'cakeType'
+      const response = await fetch(
+        "https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/orders",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
 
-    // Detail Kue Lainnya (WAJIB)
-    mixBase: formData.mixBase,
-    cakeFilling: formData.cakeFilling,
-    cakeSize: formData.cakeSize,
-    themeDescription: formData.themeDescription,
-    referenceImageUrl: formData.referenceImageUrl,
-    cakeText: formData.cakeText,
-    age: formData.age,
-    cakeFlavor: formData.cakeFlavor,
-   };
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Gagal menyimpan pesanan");
 
-   // Logika Kondisional (Opsional, tapi bagus)
-   if (isFlavorDisabled) {
-    payload.cakeFlavor = ''; // Set string kosong jika di-disable
-   }
-   if (isFillingDisabled) {
-    payload.cakeFilling = ''; // Set string kosong jika di-disable
-   }
-   if (!isMixBaseVisible) {
-    payload.mixBase = ''; // Set string kosong jika disembunyikan
-   }
+      console.log("Sukses:", data);
 
-   // --- DEBUG: Lihat payload final ---
-   console.log("Payload FINAL yang dikirim ke backend:", payload);
+      const adminPhoneNumber = "6281211365855";
+      let message = `Hai sayang, saya mau pesan kue custom:\n\n`;
+      message += `*1. DATA PEMESAN*\nNama: ${formData.customerName}\nNo. HP/WA: ${formData.customerPhone}\nAlamat Pengiriman:\n${formData.deliveryAddress}\n\n`;
+      message += `*2. JADWAL PENGIRIMAN*\nTanggal: ${formData.deliveryDate}\nWaktu: ${formData.deliveryTime}\n\n`;
+      message += `*3. DETAIL KUE*\nModel/Tema: ${formData.cakeModel}\nBase Cake: ${formData.cakeBase}\n`;
+      if (isMixBaseVisible && formData.mixBase) message += `Mix dengan: ${formData.mixBase}\n`;
+      if (!isFlavorDisabled && formData.cakeFlavor) message += `Rasa Kue: ${formData.cakeFlavor}\n`;
+      if (!isFillingDisabled && formData.cakeFilling) message += `Filling/Selai: ${formData.cakeFilling}\n`;
+      message += `Tingkat Kue: ${formData.cakeTiers}\nDiameter: ${formData.cakeDiameter}\n\n`;
+      message += `*4. TULISAN*\nTulisan di Kue: ${formData.cakeText}\n`;
+      if (formData.age) message += `Umur: ${formData.age}\n`;
+      message += `\n---\nMohon info selanjutnya untuk harga dan konfirmasi. Terima kasih!`;
 
-   const response = await fetch('https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/orders', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload), // Kirim payload yang LENGKAP
-   });
+      const encodedMessage = encodeURIComponent(message);
+      const whatsappUrl = `https://wa.me/${adminPhoneNumber}?text=${encodedMessage}`;
+      window.open(whatsappUrl, "_blank");
 
-   const data = await response.json();
-
-   if (!response.ok) {
-    // 'data.error' akan berisi pesan error dari Mongoose/Backend
-    throw new Error(data.message || data.error || 'Gagal menyimpan pesanan');
-   }
-
-   console.log('Sukses tersimpan di DB:', data);
-
-   // --- LANGKAH 2: Buka WhatsApp (SEMUA KODE DI BAWAH INI SAMA) ---
-// ... (sisa kode WA Anda) ...
-   const adminPhoneNumber = '6281211365855'; // Nomor Filbert
-
-   // 1. Buat template pesan BARU (Logika ini sudah benar)
-   let message = `Hai sayang, saya mau pesan kue custom:\n\n`;
-   message += `*1. DATA PEMESAN*\n`;
-   message += `Nama: ${formData.customerName}\n`;
-   message += `No. HP/WA: ${formData.customerPhone}\n`;
-   message += `Alamat Pengiriman:\n${formData.deliveryAddress}\n`;
-   message += `\n`;
-   message += `*2. JADWAL PENGIRIMAN (diinginkan)*\n`;
-   message += `Tanggal: ${formData.deliveryDate}\n`;
-   message += `Waktu: ${formData.deliveryTime}\n`;
-   message += `\n`;
-   message += `*3. DETAIL KUE*\n`;
-   message += `Base Cake: ${formData.cakeBase}\n`;
-   
-   if (isMixBaseVisible && formData.mixBase) {
-    message += `Mix dengan: ${formData.mixBase}\n`;
-   }
-   if (!isFlavorDisabled && formData.cakeFlavor) {
-    message += `Rasa Kue: ${formData.cakeFlavor}\n`;
-   if (isMixBaseVisible && formData.mixBase) {
-    message += `Mix dengan: ${formData.mixBase}\n`;
-   }
-   }
-   
-   message += `Ukuran Kue: ${formData.cakeSize}\n`;
-   message += `\n`;
-   message += `*4. DESAIN & TEMA*\n`;
-   message += `Model/Tema:\n${formData.themeDescription}\n`;
-
-   if (formData.cakeText) {
-    message += `\nTulisan di Kue: ${formData.cakeText}\n`;
-   }
-   if (formData.age) {
-    message += `Umur: ${formData.age}\n`;
-   }
-   if (formData.referenceImageUrl) {
-    message += `\nLink Referensi Gambar: ${formData.referenceImageUrl}\n`;
-   }
-   
-   message += `\n---\n`;
-   message += `Mohon info selanjutnya untuk harga dan konfirmasi. Terima kasih!`;
-
-   // 2. Encode pesan untuk URL
-   const encodedMessage = encodeURIComponent(message);
-
-   // 3. Buka link WhatsApp di tab baru
-   const whatsappUrl = `https://wa.me/${adminPhoneNumber}?text=${encodedMessage}`;
-   window.open(whatsappUrl, '_blank');
-
-   // (Opsional) Reset form setelah berhasil
-   setFormData({
-    customerName: '', customerPhone: '', deliveryDate: '',
-    deliveryTime: '', deliveryAddress: '', cakeBase: 'Ogura',
-    mixBase: '', cakeFlavor: '', cakeFilling: '',
-    cakeSize: '', cakeText: '', age: '',
-    themeDescription: '', referenceImageUrl: '',
-   });
-
-  } catch (error) {
-   console.error('Error saat menyimpan ke DB:', (error as Error).message);
-   // Error.message sekarang akan berisi pesan dari backend
-   // cth: "Order validation failed: deliveryAddress: Path `deliveryAddress` is required."
-   setSubmitError((error as Error).message);
-  } finally {
-   setIsSubmitting(false);
+      setFormData({
+        customerName: "",
+        customerPhone: "",
+        deliveryDate: "",
+        deliveryTime: "",
+        deliveryAddress: "",
+        cakeBase: "Ogura",
+        mixBase: "",
+        cakeFlavor: "",
+        cakeFilling: "",
+        cakeDiameter: "",
+        cakeTiers: 1,
+        cakeText: "",
+        age: "",
+        cakeModel: "",
+        referenceImageUrl: "",
+      });
+    } catch (error) {
+      console.error(error);
+      setSubmitError((error as Error).message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
- }
-  
-  // SEMUA JSX (TAMPILAN) KEMBALI KE SINI
+
   return (
     <>
       <Navbar />
-
-      {/* === Banner Halaman === */}
-      <section className={styles.pageHeader}>
-        <CustomHeader title='Form Pemesanan' subtitle='Wujudkan kue impianmu bersama KartiniAle' />
-      </section>
-
-      {/* === Konten Form === */}
+      <CustomHeader title="Pesan Kue Custom" />
       <div className="container py-5">
         <div className="row justify-content-center">
           <div className="col-lg-8">
-            <div className="card shadow-sm border-0" style={{ backgroundColor: 'var(--color-bg-light)', borderRadius: '0.5rem' }}>
-              <div className="card-body p-4 p-md-5">
+            <div className={styles.orderContainer}>
+              <form onSubmit={handleSubmit}>
 
-                <p className="lead text-center mb-4" style={{ color: 'var(--color-text-muted)' }}>
-                  Isi form ini untuk terhubung dengan kami di WhatsApp.
-                </p>
-
-                <form onSubmit={handleSubmit}>
-
-                  {/* === 1. Data Diri === */}
-                  <h3 className="h4 mb-3">1. Data Diri Anda</h3>
-                  <div className="mb-3">
-                    <label htmlFor="customerName" className="form-label fw-600">Nama Lengkap</label>
-                    <input
-                      type="text" className="form-control" id="customerName"
-                      name="customerName" value={formData.customerName}
-                      onChange={handleChange} required
-                    />
+                {/* 1. Data Diri */}
+                <div className="mb-5 sectionFadeIn">
+                  <h3 className="h4 mb-4">1. Data Diri Anda</h3>
+                  <div className="form-floating mb-3">
+                    <input type="text" className="form-control" name="customerName" value={formData.customerName} onChange={handleChange} placeholder="Nama Lengkap" required />
+                    <label>Nama Lengkap</label>
                   </div>
-                  <div className="mb-3">
-                    <label htmlFor="customerPhone" className="form-label fw-600">No. WhatsApp (Aktif)</label>
-                    <input
-                      type="tel" className="form-control" id="customerPhone"
-                      name="customerPhone" value={formData.customerPhone}
-                      onChange={handleChange} placeholder="Contoh: 08123456789" required
-                    />
+                  <div className="form-floating mb-3">
+                    <input type="tel" className="form-control" name="customerPhone" value={formData.customerPhone} onChange={handleChange} placeholder="08123456789" required />
+                    <label>No. WhatsApp (Aktif)</label>
                   </div>
-                  <div className="mb-3">
-                    <label htmlFor="deliveryAddress" className="form-label fw-600">Alamat Pengiriman</label>
-                    <textarea
-                      className="form-control" id="deliveryAddress"
-                      name="deliveryAddress" rows={3}
-                      value={formData.deliveryAddress} onChange={handleChange}
-                      placeholder="Masukkan alamat lengkap untuk estimasi ongkir." required
-                    ></textarea>
+                  <div className="form-floating mb-3">
+                    <textarea className="form-control" name="deliveryAddress" value={formData.deliveryAddress} onChange={handleChange} placeholder="Alamat lengkap" style={{ height: 80 }} required></textarea>
+                    <label>Alamat Pengiriman</label>
                   </div>
-                  <hr className="my-4" />
+                </div>
 
-                  {/* === 2. Detail Pesanan === */}
-                  <h3 className="h4 mb-3">2. Detail Pesanan</h3>
-                  <div className="row">
-                    <div className="col-md-7 mb-3">
-                      <label htmlFor="deliveryDate" className="form-label fw-600">Tanggal Pengiriman (diinginkan)</label>
-                      <input
-                        type="date" className="form-control" id="deliveryDate"
-                        name="deliveryDate" value={formData.deliveryDate}
-                        onChange={handleChange} required
-                      />
+                {/* 2. Detail Pesanan */}
+                <div className="mb-5 sectionFadeIn">
+                  <h3 className="h4 mb-4">2. Detail Pesanan</h3>
+                  <div className="row g-3 mb-3">
+                    <div className="col-md-6">
+                      <label className="form-label fw-600">Tanggal Pengiriman</label>
+                      <input type="date" className="form-control" name="deliveryDate" value={formData.deliveryDate} onChange={handleChange} min={today} required />
                     </div>
-                    <div className="col-md-5 mb-3">
-                      <label htmlFor="deliveryTime" className="form-label fw-600">Waktu Pengiriman (diinginkan)</label>
-                      <input
-                        type="time" className="form-control" id="deliveryTime"
-                        name="deliveryTime" value={formData.deliveryTime}
-                        onChange={handleChange} required
-                      />
+                    <div className="col-md-6">
+                      <label className="form-label fw-600">Waktu Pengiriman</label>
+                      <input type="time" className="form-control" name="deliveryTime" value={formData.deliveryTime} onChange={handleChange} required />
                     </div>
                   </div>
-                  <p className="form-text mt-0 mb-2" style={{ color: 'var(--color-text-muted)' }}>
-                    Ketersediaan slot akan kami konfirmasi ulang via WhatsApp.
-                  </p>
-                  
-                  <div className="row">
-                    <div className="col-md-6 mb-3">
-                      <label htmlFor="cakeBase" className="form-label fw-600">Tipe Base Cake</label>
-                      <select
-                        className="form-select" id="cakeBase" name="cakeBase"
-                        value={formData.cakeBase} onChange={handleChange} required
-                      >
-                        <option value="Ogura">Ogura Cake</option>
+
+                  <div className="row g-3 mb-3">
+                    <div className="col-md-6">
+                      <label className="form-label fw-600">Base Cake</label>
+                      <select className="form-select" name="cakeBase" value={formData.cakeBase} onChange={handleChange}>
+                        <option value="Ogura">Ogura</option>
                         <option value="Lapis Surabaya">Lapis Surabaya</option>
-                        <option value="Dummy Cake">Dummy Cake (Pajangan)</option>
+                        <option value="Dummy Cake">Dummy Cake</option>
                         <option value="Dummy + Mix">Dummy + Mix</option>
                       </select>
                     </div>
 
-                    {/* --- Field Kondisional: Mix Base --- */}
                     {isMixBaseVisible && (
-                      <div className="col-md-6 mb-3">
-                        <label htmlFor="mixBase" className="form-label fw-600">Mix dengan Base Apa?</label>
-                        <select
-                          className="form-select" id="mixBase" name="mixBase"
-                          value={formData.mixBase} onChange={handleChange}
-                          required={isMixBaseVisible} // Wajib diisi jika muncul
-                        >
-                          <option value="">Pilih base edible...</option>
+                      <div className="col-md-6 mixBaseContainer">
+                        <label className="form-label fw-600">Mix dengan Base</label>
+                        <select className="form-select" name="mixBase" value={formData.mixBase} onChange={handleChange}>
+                          <option value="">Pilih Mix Base</option>
                           <option value="Ogura">Ogura</option>
                           <option value="Lapis Surabaya">Lapis Surabaya</option>
                         </select>
@@ -341,33 +215,22 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
                     )}
                   </div>
 
-                  <div className="row">
-                    <div className="col-md-6 mb-3">
-                      <label htmlFor="cakeFlavor" className="form-label fw-600">Rasa Kue</label>
-                      <select
-                        className="form-select" id="cakeFlavor" name="cakeFlavor"
-                        value={formData.cakeFlavor} onChange={handleChange}
-                        disabled={isFlavorDisabled} // Dinamis
-                        required={!isFlavorDisabled} // Dinamis
-                      >
-                        <option value="">{isFlavorDisabled ? '(Tidak tersedia u/ base ini)' : 'Pilih rasa...'}</option>
+                  <div className="row g-3 mb-3">
+                    <div className="col-md-6">
+                      <label className="form-label fw-600">Rasa Kue</label>
+                      <select className="form-select" name="cakeFlavor" value={formData.cakeFlavor} onChange={handleChange} disabled={isFlavorDisabled}>
+                        <option value="">Pilih Rasa</option>
                         <option value="Vanilla">Vanilla</option>
                         <option value="Moka">Moka</option>
                         <option value="Keju">Keju</option>
                         <option value="Coklat">Coklat</option>
                         <option value="Pandan">Pandan</option>
-                        <option value="Moka Ceres">Moka Ceres</option>
                       </select>
                     </div>
-                    <div className="col-md-6 mb-3">
-                      <label htmlFor="cakeFilling" className="form-label fw-600">Filling / Selai Kue</label>
-                      <select
-                        className="form-select" id="cakeFilling" name="cakeFilling"
-                        value={formData.cakeFilling} onChange={handleChange}
-                        disabled={isFillingDisabled} // Dinamis
-                        required={!isFillingDisabled} // Dinamis
-                      >
-                        <option value="">{isFillingDisabled ? '(Tidak tersedia u/ base ini)' : 'Pilih filling...'}</option>
+                    <div className="col-md-6">
+                      <label className="form-label fw-600">Filling / Selai</label>
+                      <select className="form-select" name="cakeFilling" value={formData.cakeFilling} onChange={handleChange} disabled={isFillingDisabled}>
+                        <option value="">Pilih Filling</option>
                         <option value="Blueberry">Blueberry</option>
                         <option value="Strawberry">Strawberry</option>
                         <option value="Mocca">Mocca</option>
@@ -376,84 +239,69 @@ const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
                     </div>
                   </div>
 
-                  <div className="mb-3">
-                    <label htmlFor="cakeSize" className="form-label fw-600">Ukuran Kue (Diameter)</label>
-                    <select
-                      className="form-select" id="cakeSize" name="cakeSize"
-                      value={formData.cakeSize} onChange={handleChange} required
-                    >
-                      <option value="">Pilih ukuran...</option>
-                      <option value="16cm">Diameter 16cm</option>
-                      <option value="18cm">Diameter 18cm</option>
-                      <option value="20cm">Diameter 20cm</option>
-                      <option value="Lainnya">Lainnya (tulis di deskripsi)</option>
-                    </select>
+                  <div className="row g-3">
+                    <div className="col-md-8">
+                      <div className="form-floating">
+                        <input type="number" className="form-control" name="cakeDiameter" value={formData.cakeDiameter} onChange={handleChange} placeholder="Contoh: 20cm" required />
+                        <label>Diameter Kue</label>
+                      </div>
+                    </div>
+                    <div className="col-md-4">
+                      <div className="form-floating">
+                        <input type="number" className="form-control" name="cakeTiers" value={formData.cakeTiers} onChange={handleChange} min={1} max={10} placeholder="Tingkat" required />
+                        <label>Jumlah Tingkat</label>
+                      </div>
+                    </div>
                   </div>
-                  <hr className="my-4" />
+                </div>
 
-                  {/* === 3. Desain Tema === */}
-                  <h3 className="h4 mb-3">3. Desain & Tema</h3>
-                  <div className="mb-3">
-                    <label htmlFor="themeDescription" className="form-label fw-600">Model Kue / Deskripsi Tema</label>
-                    <textarea
-                      className="form-control" id="themeDescription" name="themeDescription"
-                      rows={5} value={formData.themeDescription} onChange={handleChange}
-                      placeholder="Jelaskan desain yang Anda inginkan. Contoh: 'Tema Barbie, warna dominan pink & putih, ada tulisan Happy Birthday, boneka Barbie bawa sendiri'"
-                      required
-                    ></textarea>
+                {/* 3. Desain & Tulisan */}
+                <div className="mb-5 sectionFadeIn">
+                  <h3 className="h4 mb-4">3. Desain & Tulisan</h3>
+                  <div className="form-floating mb-3">
+                    <textarea className="form-control" name="cakeModel" value={formData.cakeModel} onChange={handleChange} rows={5} placeholder="Deskripsi desain kue" required></textarea>
+                    <label>Model Kue / Tema</label>
                   </div>
-                  <div className="row">
-                    <div className="col-md-8 mb-3">
-                      <label htmlFor="cakeText" className="form-label fw-600">Tulisan di Kue (Opsional)</label>
-                      <input
-                        type="text" className="form-control" id="cakeText"
-                        name="cakeText" value={formData.cakeText}
-                        onChange={handleChange} placeholder="Contoh: Happy Birthday John!"
-                      />
+
+                  <div className="row g-3">
+                    <div className="col-md-8">
+                      <div className="form-floating">
+                        <input type="text" className="form-control" name="cakeText" value={formData.cakeText} onChange={handleChange} placeholder="Tulisan di kue" required />
+                        <label>Tulisan di Kue</label>
+                      </div>
                     </div>
-                    <div className="col-md-4 mb-3">
-                      <label htmlFor="age" className="form-label fw-600">Umur (Opsional)</label>
-                      <input
-                        type="text" className="form-control" id="age"
-                        name="age" value={formData.age}
-                        onChange={handleChange} placeholder="Contoh: 17"
-                      />
+                    <div className="col-md-4">
+                      <div className="form-floating">
+                        <input type="number" className="form-control" name="age" value={formData.age} onChange={handleChange} placeholder="Umur (Opsional)" min={0} />
+                        <label>Umur (Opsional)</label>
+                      </div>
                     </div>
                   </div>
-                  <div className="mb-3">
-                    <label htmlFor="referenceImageUrl" className="form-label fw-600">Link Referensi Gambar (Opsional)</label>
-                    <p className="form-text mt-0 mb-2" style={{ color: 'var(--color-text-muted)' }}>
-                      Punya contoh gambar? Upload ke Imgur / Pinterest / Google Drive dan tempel link-nya di sini.
-                    </p>
+                  <div className="form-floating mb-3">
                     <input
-                      type="url" className="form-control" id="referenceImageUrl"
-                      name="referenceImageUrl" value={formData.referenceImageUrl}
-                      onChange={handleChange} placeholder="https://pinterest.com/link-gambar-anda"
+                      type="url"
+                      className="form-control"
+                      name="referenceImageUrl"
+                      value={formData.referenceImageUrl}
+                      onChange={handleChange}
+                      placeholder="Link gambar referensi (Opsional)"
                     />
+                    <label>Link Gambar Referensi (Opsional)</label>
                   </div>
+                </div>
 
-                  {/* === Tombol Submit (Dengan Loading & Error) === */}
-                  <div className="d-grid mt-4">
-                    <button type="submit" className="btn btn-primary btn-lg py-3" disabled={isSubmitting}>
-                      {isSubmitting ? 'Menyimpan...' : 'Lanjutkan ke WhatsApp'}
-                    </button>
-                  </div>
-
-                  {/* Tampilkan pesan error jika ada */}
-                  {submitError && (
-                    <div className="alert alert-danger mt-3" role="alert">
-                      <strong>Terjadi Kesalahan:</strong> {submitError}
-                    </div>
-                  )}
-
-                </form>
-
-              </div>
+                {/* Submit */}
+                <div className="d-grid mt-4">
+                  <button type="submit" className={`btn btn-lg py-3 ${styles.submitButton}`} disabled={isSubmitting}>
+                    {isSubmitting ? "Menyimpan..." : "Pesan Sekarang"}
+                  </button>
+                  {submitError && <div className={`alert alert-danger mt-3 ${styles.errorAlert}`}>{submitError}</div>}
+                </div>
+              </form>
             </div>
           </div>
         </div>
       </div>
-
       <Footer />
     </>
   );
