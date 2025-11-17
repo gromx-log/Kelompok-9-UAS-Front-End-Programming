@@ -5,14 +5,23 @@
 require('dotenv').config();
 
 const emailConfig = {
-  // Konfigurasi SMTP
+  // Email provider type
+  provider: process.env.EMAIL_PROVIDER || 'resend', // 'resend' or 'smtp'
+  
+  // Resend configuration (RECOMMENDED for Railway)
+  resend: {
+    apiKey: process.env.RESEND_API_KEY,
+    fromEmail: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
+  },
+  
+  // SMTP configuration (Backup/Alternative)
   smtp: {
     host: process.env.SMTP_HOST || 'smtp.gmail.com',
     port: parseInt(process.env.SMTP_PORT) || 587,
-    secure: process.env.SMTP_SECURE === 'true', // true untuk port 465, false untuk port lainnya
+    secure: process.env.SMTP_SECURE === 'true',
     auth: {
-      user: process.env.SMTP_USER, // Email pengirim
-      pass: process.env.SMTP_PASS  // App password (bukan password email biasa)
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS
     }
   },
   
@@ -24,11 +33,21 @@ const emailConfig = {
   
   // Validasi konfigurasi
   isConfigured() {
-    if (!this.smtp.auth.user || !this.smtp.auth.pass) {
-      console.error('Email belum dikonfigurasi! Pastikan SMTP_USER dan SMTP_PASS ada di .env');
-      return false;
+    if (this.provider === 'resend') {
+      if (!this.resend.apiKey) {
+        console.error('❌ Resend API key tidak ditemukan! Set RESEND_API_KEY di .env');
+        return false;
+      }
+      console.log('✅ Email provider: Resend');
+      return true;
+    } else {
+      if (!this.smtp.auth.user || !this.smtp.auth.pass) {
+        console.error('❌ SMTP credentials tidak lengkap! Set SMTP_USER dan SMTP_PASS di .env');
+        return false;
+      }
+      console.log('✅ Email provider: SMTP');
+      return true;
     }
-    return true;
   }
 };
 

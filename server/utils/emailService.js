@@ -1,17 +1,19 @@
-// utils/emailService.js
-// Service untuk mengirim berbagai jenis email notifikasi
-
-const nodemailer = require('nodemailer');
 const emailConfig = require('../config/email');
 
-// Buat transporter (hanya sekali)
-let transporter = null;
+// Dynamic import based on provider
+let emailClient = null;
 
-function getTransporter() {
-  if (!transporter && emailConfig.isConfigured()) {
-    transporter = nodemailer.createTransport(emailConfig.smtp);
+function getEmailClient() {
+  if (!emailClient && emailConfig.isConfigured()) {
+    if (emailConfig.provider === 'resend') {
+      const { Resend } = require('resend');
+      emailClient = new Resend(emailConfig.resend.apiKey);
+    } else {
+      const nodemailer = require('nodemailer');
+      emailClient = nodemailer.createTransport(emailConfig.smtp);
+    }
   }
-  return transporter;
+  return emailClient;
 }
 
 // Helper untuk format tanggal Indonesia
@@ -36,185 +38,226 @@ function formatRupiah(amount) {
 }
 
 /**
- * Kirim email notifikasi order baru ke penjual
- * @param {Object} order - Data order dari MongoDB
+ * Kirim email menggunakan provider yang dipilih
  */
-async function sendNewOrderEmail(order) {
-  const transport = getTransporter();
-  if (!transport) {
+async function sendEmail(mailOptions) {
+  const client = getEmailClient();
+  if (!client) {
     console.log('⚠️  Email service tidak aktif. Lewati pengiriman email.');
     return false;
   }
 
- const mailOptions = {
-  from: `"${emailConfig.fromName}" <${emailConfig.smtp.auth.user}>`,
-  to: emailConfig.sellerEmail,
-  subject: `🎂 Order Baru Masuk - ${order.customerName}`,
-  html: `
-   <!DOCTYPE html>
-   <html>
-   <head>
-    <meta charset="UTF-8">
-    <style>
-     /* ... (SEMUA CSS ANDA BIARKAN APA ADANYA) ... */
-     body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-     .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-     .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
-     .header h1 { margin: 0; font-size: 28px; }
-     .content { background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px; }
-     .order-box { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin: 20px 0; }
-     .order-box h2 { color: #667eea; margin-top: 0; border-bottom: 2px solid #667eea; padding-bottom: 10px; }
-     .detail-row { display: flex; padding: 12px 0; border-bottom: 1px solid #e9ecef; }
-     .detail-row:last-child { border-bottom: none; }
-     .detail-label { font-weight: bold; width: 180px; color: #495057; }
-     .detail-value { flex: 1; color: #212529; white-space: pre-wrap; } /* Tambah pre-wrap */
-     .status-badge { display: inline-block; padding: 6px 12px; background: #ffc107; color: #000; border-radius: 20px; font-size: 12px; font-weight: bold; }
-     .footer { text-align: center; margin-top: 30px; color: #6c757d; font-size: 14px; }
-     .alert { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; border-radius: 4px; }
-    </style>
-   </head>
-   <body>
-    <div class="container">
-     <div class="header">
-      <h1>🎂 Order Baru Masuk!</h1>
-      <p style="margin: 10px 0 0 0; opacity: 0.9;">Ada pesanan kue custom yang perlu segera diproses</p>
-     </div>
-     
-     <div class="content">
-      <div class="order-box">
-       <h2>📋 Detail Order</h2>
-       
-       <div class="detail-row">
-        <div class="detail-label">Order ID:</div>
-        <div class="detail-value"><strong>#${order._id}</strong></div>
-       </div>
-       
-       <div class="detail-row">
-        <div class="detail-label">Status:</div>
-        <div class="detail-value"><span class="status-badge">${order.status}</span></div>
-       </div>
-       
-       <div class="detail-row">
-        <div class="detail-label">Tanggal Order:</div>
-        <div class="detail-value">${formatDate(order.createdAt)}</div>
-       </div>
-      </div>
-      
-      <div class="order-box">
-       <h2>👤 Informasi Customer</h2>
-       
- <div class="detail-row">
-  <div class="detail-label">Nama:</div>
-  <div class="detail-value">${order.customerName}</div>
- </div>
- 
- <div class="detail-row">
-  <div class="detail-label">No. Telepon:</div>
-  <div class="detail-value"><a href="tel:${order.customerPhone}">${order.customerPhone}</a></div>
- </div>
- 
- <div class="detail-row">
-  <div class="detail-label">Alamat Kirim:</div>
-  <div class="detail-value">${order.deliveryAddress}</div>
- </div>
-</div>
-      
-      <div class="order-box">
-       <h2>🚚 Detail Pengiriman</h2>
-              <div class="detail-row">
-        <div class="detail-label">Tanggal Kirim:</div>
-        <div class="detail-value"><strong style="color: #dc3545;">${formatDate(order.deliveryDate)}</strong></div>
-       </div>
-       
-              <div class="detail-row">
-        <div class="detail-label">Waktu Kirim:</div>
-        <div class="detail-value"><strong style="color: #dc3545;">${order.deliveryTime}</strong></div>
-       </div>
-      </div>
-      
-      <div class="order-box">
-       <h2>🎂 Detail Kue</h2>
-       
-     <div class="detail-row">
-      <div class="detail-label">Base Cake:</div>
-      <div class="detail-value"><strong>${order.cakeType}</strong></div>
-     </div>
-
-     ${order.mixBase ? `
-     <div class="detail-row">
-      <div class="detail-label">Mix dengan:</div>
-      <div class="detail-value">${order.mixBase}</div>
-     </div>
-     ` : ''}
-     
-     ${order.cakeFlavor ? `
-     <div class="detail-row">
-      <div class="detail-label">Rasa:</div>
-      <div class="detail-value">${order.cakeFlavor}</div>
-     </div>
-     ` : ''}
-
-     ${order.cakeFilling ? `
-     <div class="detail-row">
-      <div class="detail-label">Filling:</div>
-      <div class="detail-value">${order.cakeFilling}</div>
-     </div>
-     ` : ''}
-     
-     <div class="detail-row">
-      <div class="detail-label">Ukuran:</div>
-      <div class="detail-value">${order.cakeSize}</div>
-     </div>
-    </div>
-      
-      <div class="order-box">
-       <h2>🎨 Desain & Tema</h2>
-     <div class="detail-row">
-      <div class="detail-label">Deskripsi Tema:</div>
-      <div class="detail-value">${order.themeDescription}</div>
-     </div>
-     
-     ${order.cakeText ? `
-     <div class="detail-row">
-      <div class="detail-label">Tulisan di Kue:</div>
-      <div class="detail-value">${order.cakeText}</div>
-     </div>
-     ` : ''}
-    </div>
-    
-    <div class="footer">
-      <p>Silakan segera hubungi customer untuk konfirmasi pengiriman.</p>
-      <p style="font-size: 12px; color: #adb5bd;">Notifikasi otomatis dari Custom Cake Order System</p>
-    </div>
-   </div>
-  </body>
-  </html>
- `
-};
-
-try {
-  await transport.sendMail(mailOptions);
-  console.log(`✅ Email order baru berhasil dikirim untuk Order #${order._id}`);
-  return true;
-} catch (error) {
-  console.error(`❌ Gagal mengirim email order baru:`, error.message);
-  return false;
+  try {
+    if (emailConfig.provider === 'resend') {
+      // Resend API format
+      const result = await client.emails.send({
+        from: mailOptions.from,
+        to: mailOptions.to,
+        subject: mailOptions.subject,
+        html: mailOptions.html
+      });
+      console.log('✅ Email berhasil dikirim via Resend:', result.id);
+      return true;
+    } else {
+      // Nodemailer SMTP format
+      await client.sendMail(mailOptions);
+      console.log('✅ Email berhasil dikirim via SMTP');
+      return true;
+    }
+  } catch (error) {
+    console.error('❌ Gagal mengirim email:', error.message);
+    if (error.response) {
+      console.error('Error details:', error.response);
+    }
+    return false;
+  }
 }
+
+/**
+ * Kirim email notifikasi order baru ke penjual
+ */
+async function sendNewOrderEmail(order) {
+  console.log('📧 Mempersiapkan email order baru...');
+  
+  // Determine sender based on provider
+  const fromEmail = emailConfig.provider === 'resend' 
+    ? `${emailConfig.fromName} <${emailConfig.resend.fromEmail}>`
+    : `"${emailConfig.fromName}" <${emailConfig.smtp.auth.user}>`;
+
+  const mailOptions = {
+    from: fromEmail,
+    to: emailConfig.sellerEmail,
+    subject: `🎂 Order Baru Masuk - ${order.customerName}`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+          .header h1 { margin: 0; font-size: 28px; }
+          .content { background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px; }
+          .order-box { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin: 20px 0; }
+          .order-box h2 { color: #667eea; margin-top: 0; border-bottom: 2px solid #667eea; padding-bottom: 10px; }
+          .detail-row { display: flex; padding: 12px 0; border-bottom: 1px solid #e9ecef; }
+          .detail-row:last-child { border-bottom: none; }
+          .detail-label { font-weight: bold; width: 180px; color: #495057; }
+          .detail-value { flex: 1; color: #212529; white-space: pre-wrap; }
+          .status-badge { display: inline-block; padding: 6px 12px; background: #ffc107; color: #000; border-radius: 20px; font-size: 12px; font-weight: bold; }
+          .footer { text-align: center; margin-top: 30px; color: #6c757d; font-size: 14px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>🎂 Order Baru Masuk!</h1>
+            <p style="margin: 10px 0 0 0; opacity: 0.9;">Ada pesanan kue custom yang perlu segera diproses</p>
+          </div>
+          
+          <div class="content">
+            <div class="order-box">
+              <h2>📋 Detail Order</h2>
+              
+              <div class="detail-row">
+                <div class="detail-label">Order ID:</div>
+                <div class="detail-value"><strong>#${order._id}</strong></div>
+              </div>
+              
+              <div class="detail-row">
+                <div class="detail-label">Status:</div>
+                <div class="detail-value"><span class="status-badge">${order.orderStatus || 'Pending'}</span></div>
+              </div>
+              
+              <div class="detail-row">
+                <div class="detail-label">Tanggal Order:</div>
+                <div class="detail-value">${formatDate(order.createdAt)}</div>
+              </div>
+            </div>
+            
+            <div class="order-box">
+              <h2>👤 Informasi Customer</h2>
+              
+              <div class="detail-row">
+                <div class="detail-label">Nama:</div>
+                <div class="detail-value">${order.customerName}</div>
+              </div>
+              
+              <div class="detail-row">
+                <div class="detail-label">No. Telepon:</div>
+                <div class="detail-value"><a href="tel:${order.customerPhone}">${order.customerPhone}</a></div>
+              </div>
+              
+              <div class="detail-row">
+                <div class="detail-label">Alamat Kirim:</div>
+                <div class="detail-value">${order.deliveryAddress}</div>
+              </div>
+            </div>
+            
+            <div class="order-box">
+              <h2>🚚 Detail Pengiriman</h2>
+              
+              <div class="detail-row">
+                <div class="detail-label">Tanggal Kirim:</div>
+                <div class="detail-value"><strong style="color: #dc3545;">${formatDate(order.deliveryDate)}</strong></div>
+              </div>
+              
+              <div class="detail-row">
+                <div class="detail-label">Waktu Kirim:</div>
+                <div class="detail-value"><strong style="color: #dc3545;">${order.deliveryTime}</strong></div>
+              </div>
+            </div>
+            
+            <div class="order-box">
+              <h2>🎂 Detail Kue</h2>
+              
+              <div class="detail-row">
+                <div class="detail-label">Model Kue:</div>
+                <div class="detail-value"><strong>${order.cakeModel}</strong></div>
+              </div>
+              
+              <div class="detail-row">
+                <div class="detail-label">Base Cake:</div>
+                <div class="detail-value"><strong>${order.cakeBase}</strong></div>
+              </div>
+
+              ${order.mixBase ? `
+              <div class="detail-row">
+                <div class="detail-label">Mix dengan:</div>
+                <div class="detail-value">${order.mixBase}</div>
+              </div>
+              ` : ''}
+              
+              ${order.cakeFlavor ? `
+              <div class="detail-row">
+                <div class="detail-label">Rasa:</div>
+                <div class="detail-value">${order.cakeFlavor}</div>
+              </div>
+              ` : ''}
+
+              ${order.cakeFilling ? `
+              <div class="detail-row">
+                <div class="detail-label">Filling:</div>
+                <div class="detail-value">${order.cakeFilling}</div>
+              </div>
+              ` : ''}
+              
+              <div class="detail-row">
+                <div class="detail-label">Tingkat Kue:</div>
+                <div class="detail-value">${order.cakeTiers} tingkat</div>
+              </div>
+              
+              <div class="detail-row">
+                <div class="detail-label">Diameter:</div>
+                <div class="detail-value">${order.cakeDiameter}</div>
+              </div>
+              
+              ${order.cakeText ? `
+              <div class="detail-row">
+                <div class="detail-label">Tulisan di Kue:</div>
+                <div class="detail-value">${order.cakeText}</div>
+              </div>
+              ` : ''}
+              
+              ${order.age ? `
+              <div class="detail-row">
+                <div class="detail-label">Umur:</div>
+                <div class="detail-value">${order.age} tahun</div>
+              </div>
+              ` : ''}
+            </div>
+            
+            <div class="footer">
+              <p>Silakan segera hubungi customer untuk konfirmasi harga dan detail pengiriman.</p>
+              <p style="font-size: 12px; color: #adb5bd;">Notifikasi otomatis dari Custom Cake Order System</p>
+            </div>
+          </div>
+        </div>
+      </body>
+      </html>
+    `
+  };
+
+  const result = await sendEmail(mailOptions);
+  if (result) {
+    console.log(`✅ Email order baru berhasil dikirim untuk Order #${order._id}`);
+  }
+  return result;
 }
 
 /**
  * Kirim email reminder H-1 pengiriman
- * @param {Object} order - Data order dari MongoDB
  */
 async function sendDeliveryReminderEmail(order) {
-  const transport = getTransporter();
-  if (!transport) {
-    console.log('⚠️  Email service tidak aktif. Lewati pengiriman email.');
-    return false;
-  }
+  console.log('📧 Mempersiapkan email reminder H-1...');
+  
+  const fromEmail = emailConfig.provider === 'resend' 
+    ? `${emailConfig.fromName} <${emailConfig.resend.fromEmail}>`
+    : `"${emailConfig.fromName}" <${emailConfig.smtp.auth.user}>`;
 
   const mailOptions = {
-    from: `"${emailConfig.fromName}" <${emailConfig.smtp.auth.user}>`,
+    from: fromEmail,
     to: emailConfig.sellerEmail,
     subject: `⏰ REMINDER: Pengiriman Besok - ${order.customerName}`,
     html: `
@@ -249,7 +292,7 @@ async function sendDeliveryReminderEmail(order) {
           
           <div class="content">
             <div class="highlight">
-              🚚 PENGIRIMAN: ${formatDate(order.deliveryDate)}
+              🚚 PENGIRIMAN: ${formatDate(order.deliveryDate)} - ${order.deliveryTime}
             </div>
             
             <div class="urgent-box">
@@ -271,18 +314,18 @@ async function sendDeliveryReminderEmail(order) {
               </div>
               
               <div class="detail-row">
-                <div class="detail-label">Jenis Kue:</div>
-                <div class="detail-value">${order.cakeType}${order.cakeFlavor ? ' - ' + order.cakeFlavor : ''}</div>
+                <div class="detail-label">Model Kue:</div>
+                <div class="detail-value">${order.cakeModel}</div>
+              </div>
+              
+              <div class="detail-row">
+                <div class="detail-label">Base:</div>
+                <div class="detail-value">${order.cakeBase}${order.cakeFlavor ? ' - ' + order.cakeFlavor : ''}</div>
               </div>
               
               <div class="detail-row">
                 <div class="detail-label">Ukuran:</div>
-                <div class="detail-value">${order.cakeSize}</div>
-              </div>
-              
-              <div class="detail-row">
-                <div class="detail-label">Tema:</div>
-                <div class="detail-value">${order.themeDescription}</div>
+                <div class="detail-value">${order.cakeTiers} tingkat - ${order.cakeDiameter}</div>
               </div>
             </div>
             
@@ -299,7 +342,7 @@ async function sendDeliveryReminderEmail(order) {
           </div>
           
           <div class="footer">
-            <p><strong>Jangan lupa update status order ke "In Progress" atau "Done"!</strong></p>
+            <p><strong>Jangan lupa update status order!</strong></p>
             <p style="font-size: 12px; color: #adb5bd;">Reminder otomatis dari Custom Cake Order System</p>
           </div>
         </div>
@@ -308,42 +351,39 @@ async function sendDeliveryReminderEmail(order) {
     `
   };
 
-  try {
-    await transport.sendMail(mailOptions);
+  const result = await sendEmail(mailOptions);
+  if (result) {
     console.log(`✅ Email reminder berhasil dikirim untuk Order #${order._id}`);
-    return true;
-  } catch (error) {
-    console.error(`❌ Gagal mengirim email reminder:`, error.message);
-    return false;
   }
+  return result;
 }
 
 /**
  * Kirim email notifikasi saat status order berubah
- * @param {Object} order - Data order yang sudah diupdate
- * @param {String} oldStatus - Status sebelumnya
  */
 async function sendStatusChangeEmail(order, oldStatus) {
-  const transport = getTransporter();
-  if (!transport) {
-    console.log('⚠️  Email service tidak aktif. Lewati pengiriman email.');
-    return false;
-  }
+  console.log('📧 Mempersiapkan email status change...');
+  
+  const fromEmail = emailConfig.provider === 'resend' 
+    ? `${emailConfig.fromName} <${emailConfig.resend.fromEmail}>`
+    : `"${emailConfig.fromName}" <${emailConfig.smtp.auth.user}>`;
 
   // Tentukan warna dan emoji berdasarkan status
   const statusConfig = {
     'Pending': { color: '#ffc107', emoji: '⏳', bgColor: '#fff3cd' },
     'Confirmed': { color: '#28a745', emoji: '✅', bgColor: '#d4edda' },
     'In Progress': { color: '#17a2b8', emoji: '🔨', bgColor: '#d1ecf1' },
-    'Done': { color: '#6f42c1', emoji: '🎉', bgColor: '#e2d9f3' }
+    'Ready': { color: '#6f42c1', emoji: '🎁', bgColor: '#e2d9f3' },
+    'Delivered': { color: '#28a745', emoji: '🎉', bgColor: '#d4edda' },
+    'Cancelled': { color: '#dc3545', emoji: '❌', bgColor: '#f8d7da' }
   };
 
-  const config = statusConfig[order.status] || statusConfig['Pending'];
+  const config = statusConfig[order.orderStatus] || statusConfig['Pending'];
 
   const mailOptions = {
-    from: `"${emailConfig.fromName}" <${emailConfig.smtp.auth.user}>`,
+    from: fromEmail,
     to: emailConfig.sellerEmail,
-    subject: `${config.emoji} Status Berubah: ${oldStatus} → ${order.status}`,
+    subject: `${config.emoji} Status Berubah: ${oldStatus} → ${order.orderStatus}`,
     html: `
       <!DOCTYPE html>
       <html>
@@ -379,7 +419,7 @@ async function sendStatusChangeEmail(order, oldStatus) {
               <div class="status-flow">
                 <span class="old-status">${oldStatus}</span>
                 <span class="arrow">→</span>
-                <span class="new-status">${order.status}</span>
+                <span class="new-status">${order.orderStatus}</span>
               </div>
             </div>
             
@@ -397,8 +437,8 @@ async function sendStatusChangeEmail(order, oldStatus) {
               </div>
               
               <div class="detail-row">
-                <div class="detail-label">Jenis Kue:</div>
-                <div class="detail-value">${order.cakeType}</div>
+                <div class="detail-label">Model Kue:</div>
+                <div class="detail-value">${order.cakeModel}</div>
               </div>
               
               <div class="detail-row">
@@ -417,14 +457,11 @@ async function sendStatusChangeEmail(order, oldStatus) {
     `
   };
 
-  try {
-    await transport.sendMail(mailOptions);
+  const result = await sendEmail(mailOptions);
+  if (result) {
     console.log(`✅ Email status change berhasil dikirim untuk Order #${order._id}`);
-    return true;
-  } catch (error) {
-    console.error(`❌ Gagal mengirim email status change:`, error.message);
-    return false;
   }
+  return result;
 }
 
 module.exports = {
