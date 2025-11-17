@@ -21,7 +21,6 @@ async function createOrder(req, res, body) {
       deliveryTime,
       cakeTiers,
       cakeDiameter,
-      cakeSize,
       deliveryAddress,
       customerName,
       customerPhone
