@@ -16,7 +16,7 @@ const CallToAction: React.FC = () => {
               Lihat Galeri Kami
           </Link>
           <Link href="/order" className="btn btn-primary btn-lg" style={{ padding: '0.75rem 2rem' }} >
-              Pesan Sekarang
+              Konsultasikan Sekarang
           </Link>
         </div>
       </div>

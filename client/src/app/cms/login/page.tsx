@@ -17,7 +17,7 @@ export default function CmsLoginPage() {
     
     try {
       // Panggil backend /api/auth/login
-      const { data } = await api.post('/api/auth/login', {
+      const { data } = await api.post('https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/auth/login', {
         username: email, 
         password: password 
       });

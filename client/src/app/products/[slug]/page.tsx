@@ -85,15 +85,15 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
           <div className="col-md-6 text-center text-md-start">
             <h1 className="fw-bold mb-3">{product.name}</h1>
             <h4 className="text-muted mb-4">
-              {new Intl.NumberFormat('id-ID', {
-                style: 'currency',
-                currency: 'IDR',
-                minimumFractionDigits: 2,
-              }).format(product.startPrice)}
+              Mulai dari {new Intl.NumberFormat('id-ID', {
+                            style: 'currency',
+                            currency: 'IDR',
+                            minimumFractionDigits: 2,
+                          }).format(product.startPrice)}
             </h4>
             <p className="mb-4">{product.description}</p>
             <a href="/order" className="btn btn-primary btn-lg">
-              Pesan Sekarang
+              Konsultasikan Sekarang
             </a>
           </div>
         </div>
