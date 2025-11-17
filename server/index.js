@@ -31,13 +31,22 @@ async function handleProtectedRoute(req, res, handler, ...args) {
 // 3. Buat Server
 const server = http.createServer(async(req, res) => {
   const { url, method } = req;
-
+  
   // ===== CORS =====
   if (method === 'OPTIONS') {
     return handleOptions(req, res);
   }
 
   // ===== PUBLIC ROUTES =====
+  
+  // GET / - Health Check Endpoint
+  if (url === '/' && method === 'GET') {
+    // Kirim respons 200 OK sederhana
+    return sendJSON(res, 200, { 
+      status: 'OK', 
+      message: 'Welcome to Custom Cake Order API' 
+    });
+  }
   
   // GET /api/products - Ambil semua produk (untuk galeri)
   if (url === '/api/products' && method === 'GET') {
