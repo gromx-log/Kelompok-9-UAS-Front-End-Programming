@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import ProductImages from "../../../components/ProductImages";
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import Navbar from '../../../components/navbar';
@@ -59,45 +60,62 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
     <>
       <Navbar />
       <div
-        className="container d-flex align-items-center justify-content-center"
+        className="container"
         style={{
-          minHeight: '100vh',
-          paddingTop: '6rem',
-          paddingBottom: '2rem',
+          paddingTop: "8rem",
+          paddingBottom: "4rem",
+          maxWidth: "1200px",
         }}
       >
-        <div className="row align-items-center w-100">
-          <div className="col-md-6 text-center mb-4 mb-md-0">
-            <Image
-              src={product.images?.[0] ?? '/images/cake-placeholder.jpg'}
-              alt={product.name}
-              width={500}
-              height={350}
-              style={{
-                objectFit: 'cover',
-                width: '100%',
-                height: 'auto',
-                borderRadius: '12px',
-              }}
-            />
+        <div className="row g-5 align-items-start">
+          
+          <div className="col-md-6">
+            <ProductImages images={product.images} />
           </div>
 
-          <div className="col-md-6 text-center text-md-start">
-            <h1 className="fw-bold mb-3">{product.name}</h1>
-            <h4 className="text-muted mb-4">
-              Mulai dari {new Intl.NumberFormat('id-ID', {
-                            style: 'currency',
-                            currency: 'IDR',
-                            minimumFractionDigits: 2,
-                          }).format(product.startPrice)}
-            </h4>
-            <p className="mb-4">{product.description}</p>
-            <a href="/order" className="btn btn-primary btn-lg">
-              Konsultasikan Sekarang
-            </a>
+          <div className="col-md-6">
+            <div
+              className="p-4"
+              style={{
+                background: "var(--color-bg-light)",
+                borderRadius: "16px",
+                boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
+              }}
+            >
+              <h1 className="fw-bold mb-3">{product.name}</h1>
+
+              <div className="mb-3">
+                <small className="text-muted d-block">Mulai dari</small>
+                <span
+                  className="fw-bold"
+                  style={{ fontSize: "1.7rem", lineHeight: "1" }}
+                >
+                  {new Intl.NumberFormat("id-ID", {
+                    style: "currency",
+                    currency: "IDR",
+                    minimumFractionDigits: 2,
+                  }).format(product.startPrice)}
+                </span>
+              </div>
+
+              <p
+                className="text-muted mb-4"
+                style={{ fontSize: "1.05rem", lineHeight: "1.6" }}
+              >
+                {product.description}
+              </p>
+
+              <a
+                href="/order"
+                className="btn btn-primary btn-lg w-100"
+              >
+                Konsultasikan Sekarang
+              </a>
+            </div>
           </div>
         </div>
       </div>
+
       <CTA />
       <Footer />
     </>

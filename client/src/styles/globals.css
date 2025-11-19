@@ -547,3 +547,10 @@ a {
 tr:hover .price-edit-btn {
   opacity: 1;
 }
+
+.modal-open,
+body.modal-open .navbar {
+  padding-right: 0 !important;
+  overflow-y: visible !important;
+}
+

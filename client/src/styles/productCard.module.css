@@ -1,4 +1,44 @@
+/* Slide-in animation (right direction) */
+.slideInRight {
+  animation: slideRight 0.35s ease-out;
+}
+
+@keyframes slideRight {
+  from {
+    transform: translateX(40px);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Slide-in animation (left direction) */
+.slideInLeft {
+  animation: slideLeft 0.35s ease-out;
+}
+
+@keyframes slideLeft {
+  from {
+    transform: translateX(-40px);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Card hover scale */
 .productCard:hover {
-    transform: scale(1.03);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  transform: scale(1.03);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* Fixed image container */
+.imageContainer {
+  width: 100%;
+  height: 300px;
+  position: relative;
+  overflow: hidden;
+  background: white;
+  border-top-left-radius: 0.375rem;
+  border-top-right-radius: 0.375rem;
 }
