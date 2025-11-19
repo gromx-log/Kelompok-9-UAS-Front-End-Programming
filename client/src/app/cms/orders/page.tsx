@@ -6,35 +6,44 @@ import api from '../../../lib/api';
 import { FaCheck, FaTimes, FaPencilAlt } from 'react-icons/fa';
 
 interface Order {
+  age: any;
   _id: string;
   customerName: string; 
-  status: string; 
-  createdAt: string;
-  totalPrice: number;
-  paymentStatus: string;
+  customerPhone: string;
+  deliveryAddress: string;
   deliveryDate: string; 
+  deliveryTime: string;
+  cakeModel: string;
+  cakeBase: string;
+  mixBase?: string;
+  cakeFlavor?: string;
+  cakeFilling?: string;
+  cakeSize?: string; 
+  cakeTiers: number;
+  cakeDiameter: string;
+  cakeText: string;
+  totalPrice: number;
+  paymentStatus: 'Unpaid' | 'DP' | 'Paid'; 
+  orderStatus: string; 
+  createdAt: string;
 }
 
-// Opsi dropdown untuk Status Order
 const STATUS_OPTIONS = [
   'Pending', 
   'Confirmed', 
   'In Progress', 
-  'Shipped', 
-  'Done', 
+  'Ready', 
+  'Delivered', 
   'Cancelled' 
 ];
 
-// Opsi dropdown untuk Status Pembayaran 
-const PAYMENT_STATUS_OPTIONS = ['Belum Bayar', 'DP', 'Lunas'];
-
-// Mapping Tab 
+const PAYMENT_STATUS_OPTIONS = ['Unpaid', 'DP', 'Paid'];
 const TABS = [
-  { label: 'Semua', filterValues: ['Semua'] },
-  { label: 'Perlu Diproses', filterValues: ['Pending', 'Confirmed', 'In Progress'] },
-  { label: 'Dikirim', filterValues: ['Shipped'] },
-  { label: 'Selesai', filterValues: ['Done'] },
-  { label: 'Dibatalkan', filterValues: ['Cancelled'] }
+{ label: 'Semua', filterValues: ['Semua'] },
+{ label: 'Perlu Diproses', filterValues: ['Pending', 'Confirmed', 'In Progress'] },
+{ label: 'Perlu Dikirim', filterValues: ['Ready'] },
+{ label: 'Selesai', filterValues: ['Delivered'] },
+{ label: 'Dibatalkan', filterValues: ['Cancelled'] }
 ];
 
 export default function CmsOrdersPage() {
@@ -42,259 +51,292 @@ export default function CmsOrdersPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('Perlu Diproses'); 
   
-  // State untuk menyimpan perubahan harga sementara
-  const [tempPrices, setTempPrices] = useState<{ [key: string]: number }>({});
+  // State untuk menyimpan nilai sementara saat mode edit aktif
+  // Kita gunakan tipe 'any' sementara agar fleksibel untuk harga (number) atau tanggal (string)
+  const [tempValues, setTempValues] = useState<{ [key: string]: any }>({});
   
-  // State baru untuk melacak ID baris yang harganya sedang diedit
+  // Melacak ID baris mana yang sedang diedit
   const [editingOrderId, setEditingOrderId] = useState<string | null>(null);
 
-  // Ambil data pesanan
+  // FETCH DATA
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const { data } = await api.get('https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/orders');
-        setOrders(data);
-      } catch (error) {
-        console.error("Gagal mengambil data pesanan:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchOrders();
-  }, []);
+      const fetchOrders = async () => {
+        try {
+          const { data } = await api.get('https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/orders');
+          setOrders(data);
+        } catch (error) {
+          console.error("Gagal mengambil data pesanan:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchOrders();
+    }, []);
 
-  // Handler untuk STATUS ORDER
-  const handleStatusChange = async (id: string, newStatus: string) => {
-    try {
-      // Panggil endpoint /status
-      await api.put(`https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/orders/${id}/status`, { status: newStatus });
-      setOrders(orders.map(order => 
-        order._id === id ? { ...order, status: newStatus } : order
-      ));
-    } catch (error: any) {
-      alert(`Gagal update status: ${error.response?.data?.message || 'Error'}`);
-    }
-  };
 
-  // handler untuk detail lainnya (Tgl Kirim, Status Bayar, Harga)
-  const handleDetailChange = async (id: string, field: string, value: string | number) => {
-    try {
-      // Panggil endpoint general PUT /api/orders/:id
-      const { data } = await api.put(`https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/orders/${id}`, { [field]: value });
-      
-      // Update state lokal dengan data terbaru dari server
-      setOrders(orders.map(order => 
-        order._id === id ? data : order
-      ));
-    } catch (error: any) {
-      alert(`Gagal update ${field}: ${error.response?.data?.message || 'Error'}`);
-      // Jika gagal, muat ulang data untuk membatalkan perubahan
-      const { data } = await api.get('https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/orders');
-      setOrders(data);
-    }
-  };
-  
-  // Handler saat tombol "Edit" harga diklik
+  // HANDLER EDIT 
   const handleEditClick = (order: Order) => {
     setEditingOrderId(order._id);
-    // Masukkan harga saat ini ke dalam state temporer
-    setTempPrices(prev => ({ ...prev, [order._id]: order.totalPrice }));
-  };
-
-  // Handler saat tombol "Batal" (X) diklik
-  const handleCancelClick = () => {
-    setEditingOrderId(null);
-    // Hapus harga temporer
-    setTempPrices(prev => {
-      const newState = { ...prev };
-      if (editingOrderId) {
-        delete newState[editingOrderId];
-      }
-      return newState;
+    // Simpan nilai awal ke temp state
+    setTempValues({
+      [`price-${order._id}`]: order.totalPrice,
+      [`date-${order._id}`]: order.deliveryDate,
+      [`time-${order._id}`]: order.deliveryTime
     });
   };
 
-  // Handler saat tombol "Simpan" (Centang) diklik
-  const handleConfirmClick = async (orderId: string) => {
-    const newPrice = tempPrices[orderId];
-    if (newPrice !== undefined && !isNaN(newPrice)) {
-      // Panggil API untuk update harga
-      await handleDetailChange(orderId, 'totalPrice', newPrice);
-    }
-    // Keluar dari mode edit
+  // Batal Edit
+  const handleCancelClick = () => {
     setEditingOrderId(null);
+    setTempValues({});
   };
 
-  // Handler untuk menyimpan perubahan harga di state sementara saat diketik
-  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>, orderId: string) => {
-    setTempPrices(prev => ({ ...prev, [orderId]: parseFloat(e.target.value) || 0 }));
+  // Simpan Perubahan (Harga/Tanggal)
+  const handleConfirmClick = async (orderId: string) => {
+    const newPrice = tempValues[`price-${orderId}`];
+    const newDate = tempValues[`date-${orderId}`];
+    const newTime = tempValues[`time-${orderId}`];
+
+    try {
+      // kirim semua data yang mungkin berubah
+      const payload: any = {};
+      if (newPrice !== undefined) payload.totalPrice = newPrice;
+      if (newDate !== undefined) payload.deliveryDate = newDate;
+      if (newTime !== undefined) payload.deliveryTime = newTime;
+
+      const { data } = await api.put(`/api/orders/${orderId}`, payload);
+      
+      // Update state utama agar tabel berubah tanpa refresh
+      setOrders(prev => prev.map(o => o._id === orderId ? { ...o, ...data } : o));
+      setEditingOrderId(null);
+    } catch (error: any) {
+      alert(`Gagal update: ${error.response?.data?.message || 'Error'}`);
+    }
   };
 
-  // Helper untuk memformat tanggal ke YYYY-MM-DD
+  // Handle Perubahan Input Sementara
+  const handleTempChange = (key: string, value: any) => {
+    setTempValues(prev => ({ ...prev, [key]: value }));
+  };
+
+  // Handle Perubahan Dropdown 
+  const handleDropdownChange = async (id: string, field: string, value: string) => {
+    try {
+      // Jika mengubah status order, gunakan endpoint khusus status jika ada, 
+      // atau gunakan endpoint general update
+      let endpoint = `/api/orders/${id}`;
+      if (field === 'orderStatus') endpoint = `/api/orders/${id}/status`;
+      
+      const payload = { [field]: value };
+      const { data } = await api.put(endpoint, payload);
+
+      // Update state lokal
+      setOrders(prev => prev.map(o => o._id === id ? (field === 'orderStatus' ? { ...o, orderStatus: value } : { ...o, ...data }) : o));
+    } catch (error: any) {
+      alert(`Gagal update ${field}: ${error.response?.data?.message || 'Error'}`);
+      // remove automatic rollback to prevent overwriting local changes on tab switch
+    }
+  };
+
+  // Helper format tanggal untuk input type="date"
   const formatDateForInput = (dateString: string) => {
     if (!dateString) return '';
     return new Date(dateString).toISOString().split('T')[0];
   };
 
-  // Logika filter (tetap sama)
+  // Helper format tanggal untuk tampilan tabel
+  const formatDateDisplay = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('id-ID', {
+       day: 'numeric', month: 'short', year: 'numeric'
+    });
+  };
+
   const filteredOrders = orders.filter(order => {
     if (activeTab === 'Semua') return true;
     const currentTab = TABS.find(tab => tab.label === activeTab);
-    return currentTab?.filterValues.includes(order.status);
+    // Cek apakah status order ada di dalam list filterValues tab yang aktif
+    return currentTab?.filterValues.includes(order.orderStatus);
   });
 
   return (
-  <CmsLayout>
-    <Head>
-      <title>Manajemen Pesanan - KartiniAle CMS</title>
-      <meta name="robots" content="noindex, nofollow" />
-    </Head>
+    <CmsLayout>
+      <Head>
+        <title>Manajemen Pesanan - KartiniAle CMS</title>
+      </Head>
 
-    <div className="container-fluid p-4">
-      {/* Header */}
-      <h1 className="display-5 fw-bold mb-4" style={{ color: 'var(--color-text)' }}>
-        Pesanan Saya
-      </h1>
+      <div className="container-fluid p-4">
+        <h1 className="display-5 fw-bold mb-4" style={{ color: 'var(--color-text)' }}>
+          Pesanan Saya
+        </h1>
 
-      {/* Navigasi Tab */}
-      <ul className="nav nav-tabs cms-tabs mb-4">
-        {TABS.map(tab => (
-          <li className="nav-item" key={tab.label}>
-          <a 
-            className={`nav-link ${activeTab === tab.label ? 'active' : ''}`} 
-            href="#"
-            onClick={(e) => { e.preventDefault(); setActiveTab(tab.label); }}
-          >
-            {tab.label}
-          </a>
-          </li>
-        ))}
-      </ul>
+        {/* Navigasi Tab */}
+        <ul className="nav nav-tabs cms-tabs mb-4">
+          {TABS.map(tab => (
+            <li className="nav-item" key={tab.label}>
+              <a 
+                className={`nav-link ${activeTab === tab.label ? 'active' : ''}`} 
+                href="#"
+                onClick={(e) => { e.preventDefault(); setActiveTab(tab.label); }}
+              >
+                {tab.label}
+              </a>
+            </li>
+          ))}
+        </ul>
 
-      {/* Tabel Pesanan */}
-      <div className="card shadow-sm border-0">
-        <div className="card-body p-4">
-          <div className="table-responsive">
-            <table className="table table-hover align-middle" style={{ minWidth: '1000px' }}>
-              <thead className="table-light">
-                <tr>
-                  <th scope="col">ID Pesanan</th>
-                  <th scope="col">Customer</th>
-                  <th scope="col" style={{minWidth: '170px'}}>Tgl. Kirim (Edit)</th>
-                  <th scope="col" style={{minWidth: '220px'}}>Total Harga (Edit)</th>
-                  <th scope="col" style={{minWidth: '170px'}}>Status Bayar (Edit)</th>
-                  <th scope="col" style={{minWidth: '170px'}}>Status Order (Edit)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {loading ? (
-                  <tr><td colSpan={6} className="text-center p-5">Memuat data pesanan...</td></tr>
-                ) : (
-                  filteredOrders.map((order) => (
-                    <tr key={order._id}>
-                      <td className="fw-bold">...{order._id.slice(-6)}</td>
-                      <td>{order.customerName || 'N/A'}</td>
+        {/* Tabel Pesanan */}
+        <div className="card shadow-sm border-0">
+          <div className="card-body p-4">
+            <div className="table-responsive">
+              <table className="table table-hover align-middle" style={{ minWidth: '2000px' }}>
+                <thead className="table-light">
+                  <tr>
+                    <th scope="col" style={{width: '100px'}}>ID</th>
+                    <th scope="col" style={{minWidth: '150px'}}>Customer</th>
+                    <th scope="col" style={{minWidth: '120px'}}>Kontak</th>
+                    <th scope="col" style={{minWidth: '200px'}}>Detail Kue</th>
+                    <th scope="col" style={{minWidth: '150px'}}>Tulisan & Request</th>
+                    <th scope="col" style={{minWidth: '200px'}}>Pengiriman (Edit)</th>
+                    <th scope="col" style={{minWidth: '200px'}}>Total Harga (Edit)</th>
+                    <th scope="col" style={{minWidth: '150px'}}>Status Bayar (Edit)</th>
+                    <th scope="col" style={{minWidth: '180px'}}>Status Order (Edit)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loading ? (
+                    <tr><td colSpan={9} className="text-center p-5">Memuat data pesanan...</td></tr>
+                  ) : filteredOrders.length === 0 ? (
+                     <tr><td colSpan={9} className="text-center p-5">
+                        <span className="h1 d-block">📋</span>
+                        <span className="text-muted">Tidak ada pesanan di tab ini.</span>
+                     </td></tr>
+                  ) : (
+                    filteredOrders.map((order) => {
+                      const isEditing = editingOrderId === order._id;
                       
-                      {/* --- KOLOM TANGGAL KIRIM (EDITABLE) --- */}
-                      <td>
-                        <input
-                          type="date"
-                          className="form-control"
-                          value={formatDateForInput(order.deliveryDate)}
-                          onChange={(e) => handleDetailChange(order._id, 'deliveryDate', e.target.value)}
-                        />
-                      </td>
+                      return (
+                        <tr key={order._id}>
+                          <td className="fw-bold text-primary">#{order._id.slice(-6).toUpperCase()}</td>
+                          
+                          {/* Info Customer */}
+                          <td>
+                            <div className="fw-bold">{order.customerName}</div>
+                            <small className="text-muted" style={{fontSize: '0.75rem'}}>{order.deliveryAddress}</small>
+                          </td>
+                          
+                          {/* Kontak */}
+                          <td>{order.customerPhone}</td>
 
-                      {/* --- KOLOM HARGA (EDITABLE DENGAN TOMBOL) --- */}
-                      <td className="price-cell-hover"> 
-                        {editingOrderId === order._id ? (
-                          // Tampilan saat mode EDIT
-                          <div className="input-group">
-                            <span className="input-group-text">Rp</span>
-                            <input
-                              type="number"
-                              className="form-control"
-                              value={tempPrices[order._id] ?? 0}
-                              onChange={(e) => handlePriceChange(e, order._id)}
-                            />
-                            <button 
-                              className="btn btn-success" 
-                              type="button" 
-                              onClick={() => handleConfirmClick(order._id)}
-                              title="Simpan"
+                          {/* Detail Kue (Gabungan field model) */}
+                          <td>
+                            <div className="fw-bold">{order.cakeModel}</div>
+                            <small className="d-block">Base: {order.cakeBase} {order.mixBase ? `+ ${order.mixBase}` : ''}</small>
+                            <small className="d-block">Ukuran: {order.cakeDiameter} ({order.cakeTiers} Tier)</small>
+                            {order.cakeFlavor && <small className="d-block">Rasa: {order.cakeFlavor}</small>}
+                          </td>
+
+                          {/* Tulisan Kue */}
+                          <td>
+                            <div className="fst-italic">&quot;{order.cakeText}&quot;</div>
+                            {order.age && <small>Umur: {order.age}</small>}
+                          </td>
+
+                          {/* Tanggal & Jam Pengiriman (Editable) */}
+                          <td>
+                            {isEditing ? (
+                              <div className="d-flex flex-column gap-1">
+                                <input 
+                                  type="date" 
+                                  className="form-control form-control-sm"
+                                  value={tempValues[`date-${order._id}`] !== undefined ? formatDateForInput(tempValues[`date-${order._id}`]) : formatDateForInput(order.deliveryDate)}
+                                  onChange={(e) => handleTempChange(`date-${order._id}`, e.target.value)}
+                                />
+                                <input 
+                                  type="time" 
+                                  className="form-control form-control-sm"
+                                  value={tempValues[`time-${order._id}`] ?? order.deliveryTime}
+                                  onChange={(e) => handleTempChange(`time-${order._id}`, e.target.value)}
+                                />
+                              </div>
+                            ) : (
+                              <div>
+                                <div>{formatDateDisplay(order.deliveryDate)}</div>
+                                <small className="text-muted">{order.deliveryTime} WIB</small>
+                              </div>
+                            )}
+                          </td>
+
+                          {/* Harga (Editable) */}
+                          <td className="price-cell-hover">
+                            {isEditing ? (
+                              <div className="input-group input-group-sm">
+                                <span className="input-group-text">Rp</span>
+                                <input
+                                  type="number"
+                                  className="form-control"
+                                  value={tempValues[`price-${order._id}`] ?? order.totalPrice}
+                                  onChange={(e) => handleTempChange(`price-${order._id}`, parseFloat(e.target.value))}
+                                />
+                                <button className="btn btn-success" onClick={() => handleConfirmClick(order._id)}><FaCheck/></button>
+                                <button className="btn btn-secondary" onClick={handleCancelClick}><FaTimes/></button>
+                              </div>
+                            ) : (
+                              <div className="d-flex justify-content-between align-items-center">
+                                <span className="fw-bold text-success">
+                                  Rp {order.totalPrice?.toLocaleString('id-ID')}
+                                </span>
+                                <button 
+                                  className="btn btn-outline-secondary btn-sm ms-2 edit-price-btn"
+                                  onClick={() => handleEditClick(order)}
+                                  title="Edit Harga/Tanggal"
+                                >
+                                  <FaPencilAlt />
+                                </button>
+                              </div>
+                            )}
+                          </td>
+
+                          {/* Status Pembayaran (Dropdown Langsung) */}
+                          <td>
+                            <select 
+                              className={`form-select form-select-sm ${
+                                order.paymentStatus === 'Paid' ? 'border-success text-success' : 
+                                order.paymentStatus === 'DP' ? 'border-warning text-warning' : 'border-danger text-danger'
+                              }`}
+                              value={order.paymentStatus}
+                              onChange={(e) => handleDropdownChange(order._id, 'paymentStatus', e.target.value)}
                             >
-                              <FaCheck />
-                            </button>
-                            <button 
-                              className="btn btn-secondary" 
-                              type="button" 
-                              onClick={handleCancelClick}
-                              title="Batal"
+                              {PAYMENT_STATUS_OPTIONS.map(opt => (
+                                <option key={opt} value={opt}>{opt}</option>
+                              ))}
+                            </select>
+                          </td>
+
+                          {/* Status Order (Dropdown Langsung) */}
+                          <td>
+                            <select 
+                              className="form-select form-select-sm"
+                              value={order.orderStatus}
+                              onChange={(e) => handleDropdownChange(order._id, 'orderStatus', e.target.value)}
+                              style={{fontWeight: 'bold'}}
                             >
-                              <FaTimes />
-                            </button>
-                          </div>
-                        ) : (
-                          // Tampilan saat mode NORMAL
-                          <div className="d-flex justify-content-between align-items-center">
-                            <span>
-                              {order.totalPrice != null 
-                              ? `Rp ${order.totalPrice.toLocaleString('id-ID')}` 
-                              : 'N/A'}
-                            </span>
-                            <button 
-                              className="btn btn-outline-secondary btn-sm ms-2 edit-price-btn" 
-                              type="button"
-                              onClick={() => handleEditClick(order)}
-                              title="Edit Harga"
-                            >
-                              <FaPencilAlt />
-                            </button>
-                          </div>
-                        )}
-                      </td>
+                              {STATUS_OPTIONS.map(opt => (
+                                <option key={opt} value={opt}>{opt}</option>
+                              ))}
+                            </select>
+                          </td>
 
-                      {/* --- KOLOM STATUS BAYAR (EDITABLE) --- */}
-                      <td>
-                        <select 
-                          className="form-select" 
-                          value={order.paymentStatus || 'Belum Bayar'}
-                          onChange={(e) => handleDetailChange(order._id, 'paymentStatus', e.target.value)}
-                        >
-                          {PAYMENT_STATUS_OPTIONS.map(status => (
-                            <option key={status} value={status}>{status}</option>
-                          ))}
-                        </select>
-                      </td>
-
-                      {/* --- KOLOM STATUS ORDER (TETAP SAMA) --- */}
-                      <td>
-                        <select 
-                          className="form-select" 
-                          value={order.status} 
-                          onChange={(e) => handleStatusChange(order._id, e.target.value)}
-                        >
-                          {STATUS_OPTIONS.map(status => (
-                            <option key={status} value={status}>{status}</option>
-                          ))}
-                        </select>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          {!loading && filteredOrders.length === 0 && (
-            <div className="text-center p-5">
-              <span className="h1">📋</span>
-              <h5 className="mt-3">Belum ada pesanan di tab ini.</h5>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
             </div>
-          )}
+
+          </div>
         </div>
       </div>
-    </div>
-  </CmsLayout>
+    </CmsLayout>
   );
 }
