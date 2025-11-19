@@ -196,7 +196,6 @@ export default function CmsOrdersPage() {
             <th>Rasa Kue</th>
             <th>Ukuran Kue</th>
             <th>Deskripsi Tema</th>
-            <th>Gambar Contoh</th>
 
             <th>Status Order</th>
             <th>Dibuat Pada</th>
@@ -282,17 +281,6 @@ export default function CmsOrdersPage() {
                 {/* TEMA */}
                 <td style={{ maxWidth: "250px", whiteSpace: 'normal' }}>
                   {order.themeDescription}
-                </td>
-
-                {/* REFERENCE IMAGE */}
-                <td>
-                  {order.referenceImageUrl ? (
-                    <a href={order.referenceImageUrl} target="_blank" className="btn btn-sm btn-primary">
-                      Lihat
-                    </a>
-                  ) : (
-                    <span className="text-muted">Tidak ada</span>
-                  )}
                 </td>
 
                 {/* STATUS ORDER */}
