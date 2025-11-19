@@ -39,10 +39,11 @@ const STATUS_OPTIONS = [
 
 const PAYMENT_STATUS_OPTIONS = ['Unpaid', 'DP', 'Paid'];
 const TABS = [
-  { label: 'Semua', filterValues: ['Semua'] },
-  { label: 'Perlu Diproses', filterValues: ['Pending', 'Confirmed', 'In Progress'] },
-  { label: 'Siap/Dikirim', filterValues: ['Ready', 'Delivered'] }, 
-  { label: 'Dibatalkan', filterValues: ['Cancelled'] }
+{ label: 'Semua', filterValues: ['Semua'] },
+{ label: 'Perlu Diproses', filterValues: ['Pending', 'Confirmed', 'In Progress'] },
+{ label: 'Perlu Dikirim', filterValues: ['Ready'] },
+{ label: 'Selesai', filterValues: ['Delivered'] },
+{ label: 'Dibatalkan', filterValues: ['Cancelled'] }
 ];
 
 export default function CmsOrdersPage() {
@@ -61,16 +62,19 @@ export default function CmsOrdersPage() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const { data } = await api.get('/api/orders');
-        setOrders(data);
+        const res = await api.get('/api/orders');
+        
+        // FIX penting
+        setOrders(res.data.data); 
+
       } catch (error) {
-        console.error("Gagal mengambil data pesanan:", error);
-      } finally {
-        setLoading(false);
+        console.error("Error fetching orders:", error);
       }
     };
+
     fetchOrders();
   }, []);
+
 
   // HANDLER EDIT 
   const handleEditClick = (order: Order) => {
