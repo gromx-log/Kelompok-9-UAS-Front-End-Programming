@@ -1,13 +1,16 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
-import { FaChartBar, FaShoppingBag } from 'react-icons/fa';
+import { FaChartBar, FaShoppingBag, FaMoneyBillWave } from 'react-icons/fa';
 import CmsLayout from '../cmslayout';
-import api from '../../../lib/api'; 
+import api from '../../../lib/api';
 
+// Tipe data untuk Order di Dashboard 
 interface DashboardOrder {
   _id: string;
   customerName: string;
+  customerPhone: string; 
+  cakeType: string;     
   totalPrice: number;
   status: string;
   createdAt: string;
@@ -16,7 +19,7 @@ interface DashboardOrder {
 interface DashboardStats {
   newOrdersCount: number;
   totalProductsCount: number;
-  unreadMessagesCount: number;
+  totalRevenue: number; 
 }
 
 export default function CmsDashboardPage() {
@@ -24,7 +27,7 @@ export default function CmsDashboardPage() {
   const [stats, setStats] = useState<DashboardStats>({
     newOrdersCount: 0,
     totalProductsCount: 0,
-    unreadMessagesCount: 0,
+    totalRevenue: 0,
   });
   const [loading, setLoading] = useState(true);
 
@@ -39,19 +42,24 @@ export default function CmsDashboardPage() {
         oneDayAgo.setDate(oneDayAgo.getDate() - 1);
         const newOrders = ordersData.filter((order: any) => new Date(order.createdAt) > oneDayAgo);
 
+        // --- LOGIKA PENDAPATAN ---
+        // Hitung total dari order yang statusnya 'Done'
+        const revenue = ordersData
+          .filter((order: any) => order.status === 'Done')
+          .reduce((acc: number, curr: any) => acc + (curr.totalPrice || 0), 0);
+
         // Ambil 7 pesanan terbaru untuk tabel
         const latest7Orders = ordersData.slice(0, 7);
-
         setRecentOrders(latest7Orders);
         
-        // Ambil data produk (untuk statistik)
+        // Ambil data produk (untuk statistik Total Products)
         const { data: productsData } = await api.get('/api/products');
 
         // Update state statistik
         setStats({
           newOrdersCount: newOrders.length,
           totalProductsCount: productsData.length,
-          unreadMessagesCount: 3, 
+          totalRevenue: revenue, 
         });
 
       } catch (error) {
@@ -79,6 +87,8 @@ export default function CmsDashboardPage() {
 
         {/* Kartu Statistik */}
         <div className="row g-4 mb-5">
+          
+          {/* Pesanan Baru */}
           <div className="col-lg-4 col-md-6">
             <div className="card h-100 shadow-sm border-0">
               <div className="card-body d-flex align-items-center">
@@ -95,6 +105,7 @@ export default function CmsDashboardPage() {
             </div>
           </div>
 
+          {/* Total Produk */}
           <div className="col-lg-4 col-md-6">
             <div className="card h-100 shadow-sm border-0">
               <div className="card-body d-flex align-items-center">
@@ -111,21 +122,30 @@ export default function CmsDashboardPage() {
             </div>
           </div>
 
+          {/* Total Pendapatan (BARU) */}
           <div className="col-lg-4 col-md-6">
             <div className="card h-100 shadow-sm border-0">
               <div className="card-body d-flex align-items-center">
-                <span className="h2 me-3 mb-0" style={{ color: 'var(--color-accent)' }}>
-                  ✉️
+                <span className="me-3">
+                  <FaMoneyBillWave size={30} color="var(--color-accent)" />
                 </span>
                 <div>
-                  <h5 className="card-title text-muted mb-1">Pesan Masuk</h5>
-                  <p className="card-text h3 fw-bold">
-                    {loading ? '...' : stats.unreadMessagesCount}
+                  <h5 className="card-title text-muted mb-1">Total Pendapatan</h5>
+                  <p className="card-text h3 fw-bold text-success">
+                    {/* Format Rupiah */}
+                    {loading 
+                      ? '...' 
+                      : `Rp ${stats.totalRevenue.toLocaleString('id-ID')}`
+                    }
                   </p>
+                  <small className="text-muted" style={{ fontSize: '0.8rem' }}>
+                    (Dari pesanan selesai)
+                  </small>
                 </div>
               </div>
             </div>
           </div>
+
         </div>
 
         {/* Section Pesanan Terbaru */}
@@ -144,10 +164,11 @@ export default function CmsDashboardPage() {
                 <table className="table table-hover align-middle">
                   <thead className="table-light">
                     <tr>
-                      <th scope="col">ID Pesanan</th>
+                      <th scope="col">ID</th>
                       <th scope="col">Customer</th>
-                      <th scope="col">Total Harga</th>
-                      <th scope="col">Tanggal</th>
+                      <th scope="col">No. HP</th>
+                      <th scope="col">Kue</th>
+                      <th scope="col">Harga</th>
                       <th scope="col">Status</th>
                     </tr>
                   </thead>
@@ -158,15 +179,12 @@ export default function CmsDashboardPage() {
                           #{order._id.slice(-6).toUpperCase()}
                         </td>
                         <td>{order.customerName}</td>
+                        <td>{order.customerPhone}</td>
+                        <td>{order.cakeType}</td>
                         <td>
                           {order.totalPrice 
                             ? `Rp ${order.totalPrice.toLocaleString('id-ID')}` 
                             : '-'}
-                        </td>
-                        <td>
-                          {new Date(order.createdAt).toLocaleDateString('id-ID', {
-                            day: 'numeric', month: 'short', year: 'numeric'
-                          })}
                         </td>
                         <td>
                           <span className={`badge bg-${getStatusColor(order.status)}`}>
