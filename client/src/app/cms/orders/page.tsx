@@ -28,8 +28,8 @@ const STATUS_OPTIONS = [
 'Pending', 
 'Confirmed', 
 'In Progress', 
-'Shipped', 
-'Done', 
+'Ready', 
+'Delivered', 
 'Cancelled' 
 ];
 
