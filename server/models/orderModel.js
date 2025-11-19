@@ -15,9 +15,9 @@ const orderSchema = new mongoose.Schema({
   
   // URL Gambar Referensi (opsional)
   referenceImageUrl: {
-    type: String,
-    trim: true,
-  },
+  type: String,
+  trim: true,
+ },
 
   // Base kue (jenis kue)
   cakeBase: {
