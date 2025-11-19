@@ -48,7 +48,21 @@ const TABS = [
 export default function CmsOrdersPage() {
  const [orders, setOrders] = useState<Order[]>([]);
  const [loading, setLoading] = useState(true);
- const [activeTab, setActiveTab] = useState('Perlu Diproses'); 
+const [activeTab, setActiveTab] = useState('Perlu Diproses'); 
+
+// Gunakan useEffect untuk membaca dari localStorage saat halaman dimuat
+useEffect(() => {
+  const savedTab = localStorage.getItem('cms_orders_active_tab');
+  if (savedTab) {
+    setActiveTab(savedTab);
+  }
+}, []);
+
+// Fungsi helper untuk mengubah tab dan menyimpannya
+const changeTab = (tabLabel: string) => {
+  setActiveTab(tabLabel);
+  localStorage.setItem('cms_orders_active_tab', tabLabel);
+};
  
  // State untuk menyimpan perubahan harga sementara
  const [tempPrices, setTempPrices] = useState<{ [key: string]: number }>({});
@@ -171,7 +185,7 @@ export default function CmsOrdersPage() {
      <a 
       className={`nav-link ${activeTab === tab.label ? 'active' : ''}`} 
       href="#"
-      onClick={(e) => { e.preventDefault(); setActiveTab(tab.label); }}
+      onClick={(e) => { e.preventDefault(); changeTab(tab.label); }}
      >
       {tab.label}
      </a>
