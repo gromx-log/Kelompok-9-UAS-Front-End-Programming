@@ -50,7 +50,7 @@ export default function ProductList({ products }: { products: Product[] }) {
                   currency: 'IDR',
                   minimumFractionDigits: 2,
                 }).format(product.startPrice)}
-                imageUrl={product.images[0]}
+                images={product.images}
               />
             </div>
           ))

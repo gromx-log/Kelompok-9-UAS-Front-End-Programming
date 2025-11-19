@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import styles from '../styles/productCard.module.css';
@@ -11,64 +11,89 @@ interface ProductCardProps {
   title: string;
   description: string;
   price: string;
-  imageUrl?: string;
+  images?: string[];
 }
 
-export default function ProductCard({ slug, title, description, price, imageUrl }: ProductCardProps) {
+export default function ProductCard({
+  slug,
+  title,
+  description,
+  price,
+  images = [],
+}: ProductCardProps) {
   const router = useRouter();
+  const [index, setIndex] = useState(0);
+  const [slideClass, setSlideClass] = useState("");
 
-  const handleCardClick = () => {
-    router.push(`/products/${slug}`); 
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const hasImages = images.length > 0;
+
+  const handleMouseEnter = () => {
+    if (images.length <= 1) return;
+
+    intervalRef.current = setInterval(() => {
+      setSlideClass(styles.slideInRight); 
+
+      setIndex(prev => (prev + 1) % images.length);
+
+      setTimeout(() => setSlideClass(""), 350);
+    }, 1500);
   };
 
-  const handleButtonClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.stopPropagation(); 
+  const handleMouseLeave = () => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+
+    if (images.length > 1 && index !== 0) {
+      setSlideClass(styles.slideInLeft); 
+
+      setIndex(0);
+
+      setTimeout(() => setSlideClass(""), 350);
+    }
   };
 
   return (
-    <div 
-      className={`card h-100 shadow-sm border-0 ${styles.productCard}`} 
+    <div
+      className={`card h-100 shadow-sm border-0 ${styles.productCard}`}
+      onClick={() => router.push(`/products/${slug}`)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       style={{ backgroundColor: 'var(--color-bg-light)', cursor: 'pointer', transition: 'transform 0.3s ease, box-shadow 0.3s ease', }}
-      onClick={handleCardClick}
     >
-      <div
-        className="card-img-top d-flex align-items-center justify-content-center"
-        style={{
-          height: 300,
-          backgroundColor: 'white',
-          overflow: 'hidden',
-          borderTopLeftRadius: '0.375rem',
-          borderTopRightRadius: '0.375rem',
-        }}
-      >
-        {imageUrl ? (
+      <div className={styles.imageContainer}>
+        {hasImages && (
           <Image
-            src={imageUrl}
+            src={images[index]}
             alt={title}
-            width={400}
-            height={300}
-            style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+            fill
+            className={slideClass}
+            style={{ objectFit: 'cover' }}
           />
-        ) : (
-          <span className="text-muted">{title}</span>
         )}
       </div>
-      
+
       <div className="card-body d-flex flex-column">
         <h5 className="card-title">{title}</h5>
-        <h6 className="card-subtitle mb-2 fw-bold">Mulai dari {price}</h6>
-        <p className="card-text" style={{ color: 'var(--color-text-muted)' }}>
-          {description}
-        </p>
-        
-        <Link
-          href={`/order`} 
-          className="btn btn-primary w-100 mt-auto"
-          onClick={handleButtonClick}
-        >
+
+        <div className="d-flex align-items-center gap-2 mb-2">
+          <span className="badge" style={{ fontSize: "0.7rem", backgroundColor: 'var(--color-accent)', color: "white" }}>
+            Mulai dari
+          </span>
+          <span className="fw-bold" style={{ fontSize: "1.3rem" }}>
+            {price}
+          </span>
+        </div>
+
+        <p className="card-text text-muted">{description}</p>
+
+        <Link href="/order" className="btn btn-primary w-100 mt-auto">
           Konsultasikan Sekarang
         </Link>
       </div>
+
+
+      
     </div>
   );
 }
