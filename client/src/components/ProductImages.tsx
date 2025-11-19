@@ -68,7 +68,6 @@ export default function ProductImages({ images }: { images: string[] }) {
         )}
       </div>
 
-      {/* Modal (Bootstrap-controlled) */}
       <div
         className="modal fade"
         id="imageModal"

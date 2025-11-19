@@ -33,11 +33,10 @@ export default function ProductCard({
     if (images.length <= 1) return;
 
     intervalRef.current = setInterval(() => {
-      setSlideClass(styles.slideInRight); // animate right
+      setSlideClass(styles.slideInRight); 
 
       setIndex(prev => (prev + 1) % images.length);
 
-      // remove class after animation finishes
       setTimeout(() => setSlideClass(""), 350);
     }, 1500);
   };
@@ -46,7 +45,7 @@ export default function ProductCard({
     if (intervalRef.current) clearInterval(intervalRef.current);
 
     if (images.length > 1 && index !== 0) {
-      setSlideClass(styles.slideInLeft); // slide back left
+      setSlideClass(styles.slideInLeft); 
 
       setIndex(0);
 
