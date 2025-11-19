@@ -64,11 +64,11 @@ export default function CmsOrdersPage() {
       try {
         const res = await api.get('/api/orders');
 
-        setOrders(res.data.data);
+        setOrders(res.data);
       } catch (error) {
         console.error("Error fetching orders:", error);
       } finally {
-        setLoading(false); // ← WAJIB, kalau tidak tabel tidak akan pernah tampil di Vercel
+        setLoading(false); 
       }
     };
 
