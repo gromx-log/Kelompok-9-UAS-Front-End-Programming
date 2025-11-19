@@ -5,7 +5,8 @@ import CmsLayout from "../cmslayout";
 import axios from "axios";
 import { FaCheck, FaTimes, FaPencilAlt } from "react-icons/fa";
 
-const API = axios.create({
+// API instance
+const api = axios.create({
   baseURL: "https://kelompok-9-uas-front-end-programming-production.up.railway.app/api",
 });
 
@@ -59,14 +60,16 @@ export default function CmsOrdersPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [temp, setTemp] = useState<any>({});
 
-  // FETCH DATA
+  // FETCH (SESUI PERMINTAAN)
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const { data } = await API.get("/orders");
+        const { data } = await api.get(
+          "https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/orders"
+        );
         setOrders(data);
-      } catch (err) {
-        console.error("Gagal fetch orders:", err);
+      } catch (error) {
+        console.error("Gagal mengambil data pesanan:", error);
       } finally {
         setLoading(false);
       }
@@ -97,10 +100,10 @@ export default function CmsOrdersPage() {
       if (temp.date) payload.deliveryDate = temp.date;
       if (temp.time) payload.deliveryTime = temp.time;
 
-      const { data } = await API.put(`/orders/${id}`, payload);
+      const { data } = await api.put(`/orders/${id}`, payload);
 
       setOrders((prev) =>
-        prev.map((o) => (o._id === id ? { ...o, ...data } : o)),
+        prev.map((o) => (o._id === id ? { ...o, ...data } : o))
       );
 
       setEditingId(null);
@@ -113,7 +116,7 @@ export default function CmsOrdersPage() {
   const handleSelectUpdate = async (
     id: string,
     field: "paymentStatus" | "orderStatus",
-    value: string,
+    value: string
   ) => {
     try {
       let endpoint = `/orders/${id}`;
@@ -124,12 +127,10 @@ export default function CmsOrdersPage() {
         payload = { status: value };
       }
 
-      const { data } = await API.put(endpoint, payload);
+      const { data } = await api.put(endpoint, payload);
 
       setOrders((prev) =>
-        prev.map((o) =>
-          o._id === id ? { ...o, [field]: value, ...data } : o,
-        ),
+        prev.map((o) => (o._id === id ? { ...o, [field]: value } : o))
       );
     } catch (err: any) {
       alert(`Gagal update ${field}: ${err.response?.data?.message}`);
