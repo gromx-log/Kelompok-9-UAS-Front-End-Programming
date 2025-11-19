@@ -24,7 +24,7 @@ interface Order {
   cakeText: string;
   totalPrice: number;
   paymentStatus: 'Unpaid' | 'DP' | 'Paid'; 
-  status: string; 
+  orderStatus: string; 
   createdAt: string;
 }
 
@@ -123,18 +123,16 @@ export default function CmsOrdersPage() {
       // Jika mengubah status order, gunakan endpoint khusus status jika ada, 
       // atau gunakan endpoint general update
       let endpoint = `/api/orders/${id}`;
-      if (field === 'status') endpoint = `/api/orders/${id}/status`;
+      if (field === 'orderStatus') endpoint = `/api/orders/${id}/status`;
       
       const payload = { [field]: value };
       const { data } = await api.put(endpoint, payload);
 
       // Update state lokal
-      setOrders(prev => prev.map(o => o._id === id ? (field === 'status' ? { ...o, status: value } : { ...o, ...data }) : o));
+      setOrders(prev => prev.map(o => o._id === id ? (field === 'orderStatus' ? { ...o, orderStatus: value } : { ...o, ...data }) : o));
     } catch (error: any) {
       alert(`Gagal update ${field}: ${error.response?.data?.message || 'Error'}`);
-      // Rollback state dengan fetch ulang jika perlu
-      const { data } = await api.get('/api/orders');
-      setOrders(data);
+      // remove automatic rollback to prevent overwriting local changes on tab switch
     }
   };
 
@@ -155,7 +153,7 @@ export default function CmsOrdersPage() {
     if (activeTab === 'Semua') return true;
     const currentTab = TABS.find(tab => tab.label === activeTab);
     // Cek apakah status order ada di dalam list filterValues tab yang aktif
-    return currentTab?.filterValues.includes(order.status);
+    return currentTab?.filterValues.includes(order.orderStatus);
   });
 
   return (
@@ -316,8 +314,8 @@ export default function CmsOrdersPage() {
                           <td>
                             <select 
                               className="form-select form-select-sm"
-                              value={order.status}
-                              onChange={(e) => handleDropdownChange(order._id, 'status', e.target.value)}
+                              value={order.orderStatus}
+                              onChange={(e) => handleDropdownChange(order._id, 'orderStatus', e.target.value)}
                               style={{fontWeight: 'bold'}}
                             >
                               {STATUS_OPTIONS.map(opt => (
