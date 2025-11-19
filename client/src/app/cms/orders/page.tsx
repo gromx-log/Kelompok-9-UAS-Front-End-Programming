@@ -40,8 +40,8 @@ const PAYMENT_STATUS_OPTIONS = ['Belum Bayar', 'DP', 'Lunas'];
 const TABS = [
 { label: 'Semua', filterValues: ['Semua'] },
 { label: 'Perlu Diproses', filterValues: ['Pending', 'Confirmed', 'In Progress'] },
-{ label: 'Dikirim', filterValues: ['Shipped'] },
-{ label: 'Selesai', filterValues: ['Done'] },
+{ label: 'Perlu Dikirim', filterValues: ['Ready'] },
+{ label: 'Selesai', filterValues: ['Delivered'] },
 { label: 'Dibatalkan', filterValues: ['Cancelled'] }
 ];
 
