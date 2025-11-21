@@ -8,9 +8,10 @@ import Link from 'next/link';
 
 interface ProductForm {
  name: string;
- startPrice: number; 
+ startPrice: number;
  category: string;
  description: string;
+ images: string[];
 }
 
 export default function CmsEditProductPage() {
@@ -27,12 +28,13 @@ export default function CmsEditProductPage() {
   if (id) {
    const fetchProduct = async () => {
     try {
-     const { data } = await api.get(`https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/products/api/products/${id}`); 
+     const { data } = await api.get(`/api/products/${id}`);
      setFormData({
       name: data.name,
       startPrice: data.startPrice,
       category: data.category,
       description: data.description || '',
+      images: data.images || [],
      });
     } catch (err) {
      setError('Gagal mengambil data produk.');
