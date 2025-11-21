@@ -51,7 +51,9 @@ const PAYMENT_STATUS_OPTIONS = ['Unpaid', 'DP', 'Paid'];
 // Mapping Tab
 const TABS = [
   { label: 'Semua', filterValues: ['Semua'] },
-  { label: 'Perlu Diproses', filterValues: ['Pending', 'Confirmed', 'In Progress'] },
+  { label: 'Perlu Diproses', filterValues: ['Pending'] },
+  { label: 'Dikonfirmasi', filterValues: ['Confirmed']},
+  { label: 'Diproses', filterValues: ['In Progress']},
   { label: 'Siap Kirim', filterValues: ['Ready'] },
   { label: 'Dikirim', filterValues: ['Delivered'] },
   { label: 'Dibatalkan', filterValues: ['Cancelled'] }
