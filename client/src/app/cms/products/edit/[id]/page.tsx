@@ -79,14 +79,14 @@ export default function CmsEditProductPage() {
   const slug = formData.name.toLowerCase().replace(/\s+/g, '-');
   dataToSubmit.append('slug', slug);
 
-    // 2. Append file gambar HANYA jika ada file baru dipilih
+    // Append file gambar HANYA jika ada file baru dipilih
   if (imageFile) {
    dataToSubmit.append('images', imageFile);
   }
 
   try {
       // Panggil API dengan FormData
-   await api.put(`https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/products/api/products/${id}`, dataToSubmit); 
+   await api.put(`https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/products/${id}`, dataToSubmit); 
    alert('Produk berhasil diperbarui!');
    router.push('/cms/products'); 
   } catch (err: any) {
@@ -131,7 +131,7 @@ export default function CmsEditProductPage() {
            <option value="Anak">Anak</option> 
            <option value="Kue Ulang Tahun">Kue Ulang Tahun</option>
            <option value="Kue Kustom">Kue Kustom</option>
-                      <option value="Dessert Box">Dessert Box</option>
+           <option value="Dessert Box">Dessert Box</option>
           </select>
          </div>
          <div className="mb-3">
