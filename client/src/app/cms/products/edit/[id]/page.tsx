@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter, useParams } from 'next/navigation'; 
-import CmsLayout from '../../../cmslayout'; 
-import api from '../../../../../lib/api'; 
+import CmsLayout from '../../../cmslayout';
+import api from '../../../../../lib/api';
 import Link from 'next/link';
 
 interface ProductForm {
@@ -28,7 +28,7 @@ export default function CmsEditProductPage() {
   if (id) {
    const fetchProduct = async () => {
     try {
-     const { data } = await api.get(`/api/products/${id}`);
+     const { data } = await api.get(`https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/products/${id}`);
      setFormData({
       name: data.name,
       startPrice: data.startPrice,
