@@ -100,10 +100,10 @@ export default function CmsOrdersPage() {
     try {
       // Panggil endpoint general PUT /api/orders/:id
       const { data } = await api.put(`https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/orders/${id}`, { [field]: value });
-      
+
       // Update state lokal dengan data terbaru dari server
-      setOrders(orders.map(order => 
-        order._id === id ? data : order
+      setOrders(orders.map(order =>
+        order._id === id ? data.order : order
       ));
     } catch (error: any) {
       alert(`Gagal update ${field}: ${error.response?.data?.message || 'Error'}`);
