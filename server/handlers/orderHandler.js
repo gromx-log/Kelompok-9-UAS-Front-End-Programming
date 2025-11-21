@@ -86,7 +86,6 @@ async function createOrder(req, res, body) {
       deliveryAddress,
       customerName,
       customerPhone,
-      referenceImageUrl: referenceImageUrl || null,
 
       // Default values (akan diupdate admin)
       price: 0,

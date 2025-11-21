@@ -5,6 +5,7 @@ import Navbar from "../../components/navbar";
 import Footer from "../../components/footer";
 import CustomHeader from "../../components/customHeader";
 import styles from "./order.module.css";
+import { label } from "framer-motion/client";
 
 interface IFormData {
   customerName: string;
@@ -12,8 +13,8 @@ interface IFormData {
   deliveryDate: string;
   deliveryTime: string;
   deliveryAddress: string;
-  cakeBase: "Ogura" | "Lapis Surabaya" | "Dummy Cake" | "Dummy + Mix";
-  mixBase: "Ogura" | "Lapis Surabaya" | "";
+  cakeBase: "Ogura Cake" | "Lapis Surabaya" | "Dummy Cake" | "Dummy + Mix";
+  mixBase: "Ogura Cake" | "Lapis Surabaya" | "";
   cakeFlavor: string;
   cakeFilling: string;
   cakeDiameter: string;
@@ -33,7 +34,7 @@ export default function OrderPage() {
     deliveryDate: "",
     deliveryTime: "",
     deliveryAddress: "",
-    cakeBase: "Ogura",
+    cakeBase: "Ogura Cake",
     mixBase: "",
     cakeFlavor: "",
     cakeFilling: "",
@@ -110,7 +111,7 @@ export default function OrderPage() {
       console.log("Sukses:", data);
 
       const adminPhoneNumber = "6281211365855";
-      let message = `Hai sayang, saya mau pesan kue custom:\n\n`;
+      let message = `Hai Kartini Ale, saya mau pesan kue custom:\n\n`;
       message += `*1. DATA PEMESAN*\nNama: ${formData.customerName}\nNo. HP/WA: ${formData.customerPhone}\nAlamat Pengiriman:\n${formData.deliveryAddress}\n\n`;
       message += `*2. JADWAL PENGIRIMAN*\nTanggal: ${formData.deliveryDate}\nWaktu: ${formData.deliveryTime}\n\n`;
       message += `*3. DETAIL KUE*\nModel/Tema: ${formData.cakeModel}\nBase Cake: ${formData.cakeBase}\n`;
@@ -132,7 +133,7 @@ export default function OrderPage() {
         deliveryDate: "",
         deliveryTime: "",
         deliveryAddress: "",
-        cakeBase: "Ogura",
+        cakeBase: "Ogura Cake",
         mixBase: "",
         cakeFlavor: "",
         cakeFilling: "",
@@ -154,7 +155,7 @@ export default function OrderPage() {
   return (
     <>
       <Navbar />
-      <CustomHeader title="Pesan Kue Custom" />
+      <CustomHeader title="Pesan Kue Custom" subtitle='Wujudkan kue impian anda bersama Kartini Ale'/>
       <div className="container py-5">
         <div className="row justify-content-center">
           <div className="col-lg-8">
@@ -162,8 +163,8 @@ export default function OrderPage() {
               <form onSubmit={handleSubmit}>
 
                 {/* 1. Data Diri */}
-                <div className="mb-5 sectionFadeIn">
-                  <h3 className="h4 mb-4">1. Data Diri Anda</h3>
+                <div className={`mb-5 sectionFadeIn`}>
+                  <h3 className={styles.sectionHeader}>1. Data Diri Anda</h3>
                   <div className="form-floating mb-3">
                     <input type="text" className="form-control" name="customerName" value={formData.customerName} onChange={handleChange} placeholder="Nama Lengkap" required />
                     <label>Nama Lengkap</label>
@@ -179,8 +180,8 @@ export default function OrderPage() {
                 </div>
 
                 {/* 2. Detail Pesanan */}
-                <div className="mb-5 sectionFadeIn">
-                  <h3 className="h4 mb-4">2. Detail Pesanan</h3>
+                <div className={`mb-5 sectionFadeIn`}>
+                  <h3 className={styles.sectionHeader}>2. Detail Pesanan</h3>
                   <div className="row g-3 mb-3">
                     <div className="col-md-6">
                       <label className="form-label fw-600">Tanggal Pengiriman</label>
@@ -196,7 +197,7 @@ export default function OrderPage() {
                     <div className="col-md-6">
                       <label className="form-label fw-600">Base Cake</label>
                       <select className="form-select" name="cakeBase" value={formData.cakeBase} onChange={handleChange}>
-                        <option value="Ogura">Ogura</option>
+                        <option value="Ogura Cake">Ogura</option>
                         <option value="Lapis Surabaya">Lapis Surabaya</option>
                         <option value="Dummy Cake">Dummy Cake</option>
                         <option value="Dummy + Mix">Dummy + Mix</option>
@@ -208,7 +209,7 @@ export default function OrderPage() {
                         <label className="form-label fw-600">Mix dengan Base</label>
                         <select className="form-select" name="mixBase" value={formData.mixBase} onChange={handleChange}>
                           <option value="">Pilih Mix Base</option>
-                          <option value="Ogura">Ogura</option>
+                          <option value="Ogura Cake">Ogura</option>
                           <option value="Lapis Surabaya">Lapis Surabaya</option>
                         </select>
                       </div>
@@ -242,13 +243,29 @@ export default function OrderPage() {
                   <div className="row g-3">
                     <div className="col-md-8">
                       <div className="form-floating">
-                        <input type="number" className="form-control" name="cakeDiameter" value={formData.cakeDiameter} onChange={handleChange} placeholder="Contoh: 20cm" required />
+                        <input type="number" 
+                        className="form-control" 
+                        name="cakeDiameter" 
+                        value={formData.cakeDiameter} 
+                        onChange={handleChange} 
+                        placeholder="Contoh: 20cm" 
+                        required 
+                        min={1}
+                        max={30}
+                        />
                         <label>Diameter Kue</label>
                       </div>
                     </div>
                     <div className="col-md-4">
                       <div className="form-floating">
-                        <input type="number" className="form-control" name="cakeTiers" value={formData.cakeTiers} onChange={handleChange} min={1} max={10} placeholder="Tingkat" required />
+                        <input type="number" 
+                        className="form-control" 
+                        name="cakeTiers" 
+                        value={formData.cakeTiers} 
+                        onChange={handleChange} 
+                        min={1} max={10} 
+                        placeholder="Tingkat" 
+                        required />
                         <label>Jumlah Tingkat</label>
                       </div>
                     </div>
@@ -256,8 +273,8 @@ export default function OrderPage() {
                 </div>
 
                 {/* 3. Desain & Tulisan */}
-                <div className="mb-5 sectionFadeIn">
-                  <h3 className="h4 mb-4">3. Desain & Tulisan</h3>
+                <div className={`mb-5 sectionFadeIn`}>
+                  <h3 className={styles.sectionHeader}>3. Desain & Tulisan</h3>
                   <div className="form-floating mb-3">
                     <textarea className="form-control" name="cakeModel" value={formData.cakeModel} onChange={handleChange} rows={5} placeholder="Deskripsi desain kue" required></textarea>
                     <label>Model Kue / Tema</label>
@@ -276,17 +293,6 @@ export default function OrderPage() {
                         <label>Umur (Opsional)</label>
                       </div>
                     </div>
-                  </div>
-                  <div className="form-floating mb-3">
-                    <input
-                      type="url"
-                      className="form-control"
-                      name="referenceImageUrl"
-                      value={formData.referenceImageUrl}
-                      onChange={handleChange}
-                      placeholder="Link gambar referensi (Opsional)"
-                    />
-                    <label>Link Gambar Referensi (Opsional)</label>
                   </div>
                 </div>
 
