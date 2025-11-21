@@ -212,6 +212,18 @@ async function updateOrder(req, res, id, body) {
       return sendError(res, 400, 'Jumlah DP tidak boleh melebihi total harga');
     }
 
+    // Validasi deliveryDate jika diupdate
+    if (body.deliveryDate) {
+      const deliveryDateObj = new Date(body.deliveryDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      if (deliveryDateObj < today) {
+        return sendError(res, 400, 'Tanggal pengiriman tidak boleh di masa lalu');
+      }
+      order.deliveryDate = deliveryDateObj;
+    }
+
     const updatedOrder = await order.save();
 
     // Kirim email jika status berubah

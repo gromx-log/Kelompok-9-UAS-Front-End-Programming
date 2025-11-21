@@ -38,22 +38,22 @@ interface Order {
 }
 
 const STATUS_OPTIONS = [
-  'Pending', 
-  'Confirmed', 
-  'In Progress', 
-  'Shipped', 
-  'Done', 
-  'Cancelled' 
+  'Pending',
+  'Confirmed',
+  'In Progress',
+  'Ready',
+  'Delivered',
+  'Cancelled'
 ];
 
-const PAYMENT_STATUS_OPTIONS = ['Belum Bayar', 'DP', 'Lunas'];
+const PAYMENT_STATUS_OPTIONS = ['Unpaid', 'DP', 'Paid'];
 
-// Mapping Tab 
+// Mapping Tab
 const TABS = [
   { label: 'Semua', filterValues: ['Semua'] },
   { label: 'Perlu Diproses', filterValues: ['Pending', 'Confirmed', 'In Progress'] },
-  { label: 'Dikirim', filterValues: ['Shipped'] },
-  { label: 'Selesai', filterValues: ['Done'] },
+  { label: 'Siap Kirim', filterValues: ['Ready'] },
+  { label: 'Dikirim', filterValues: ['Delivered'] },
   { label: 'Dibatalkan', filterValues: ['Cancelled'] }
 ];
 
@@ -87,8 +87,8 @@ export default function CmsOrdersPage() {
     try {
       // Panggil endpoint /status
       await api.put(`https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/orders/${id}/status`, { status: newStatus });
-      setOrders(orders.map(order => 
-        order._id === id ? { ...order, status: newStatus } : order
+      setOrders(orders.map(order =>
+        order._id === id ? { ...order, orderStatus: newStatus } : order
       ));
     } catch (error: any) {
       alert(`Gagal update status: ${error.response?.data?.message || 'Error'}`);
