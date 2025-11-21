@@ -42,6 +42,7 @@ export default function CmsEditProductPage() {
       description: data.description || '',
       images: data.images || [],
      });
+     setExistingImages((data.images || []).map((url: string) => ({ url })));
     } catch (err) {
      setError('Gagal mengambil data produk.');
     } finally {
