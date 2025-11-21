@@ -233,8 +233,8 @@ export default function CmsOrdersPage() {
                           <td>{order.customerPhone || 'N/A'}</td>
 
                           {/* Detail Kue */}
-                          <td>
-                            <div className="fw-bold">{order.cakeModel}</div>
+                          <td>t
+                            <div className="fw-bold">{order.cakeModelt}</div>
                             <small className="d-block">Rasa: {order.cakeFlavor || '-'}</small>
                             <small className="d-block">Ukuran: {order.cakeSize || '-'}</small>
                           </td>
