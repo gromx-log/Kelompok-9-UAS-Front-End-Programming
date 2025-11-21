@@ -9,10 +9,10 @@ import api from '../../../lib/api';
 interface DashboardOrder {
   _id: string;
   customerName: string;
-  customerPhone: string; 
-  cakeType: string;     
+  customerPhone: string;
+  cakeModel: string;
   totalPrice: number;
-  status: string;
+  orderStatus: string;
   createdAt: string;
 }
 
@@ -35,31 +35,31 @@ export default function CmsDashboardPage() {
     const fetchData = async () => {
       try {
         // Ambil data pesanan
-        const { data: ordersData } = await api.get('https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/products/api/orders');
-        
-        // Filter pesanan 24 jam terakhir 
+        const { data: ordersData } = await api.get('https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/orders');
+
+        // Filter pesanan 24 jam terakhir
         const oneDayAgo = new Date();
         oneDayAgo.setDate(oneDayAgo.getDate() - 1);
         const newOrders = ordersData.filter((order: any) => new Date(order.createdAt) > oneDayAgo);
 
         // --- LOGIKA PENDAPATAN ---
-        // Hitung total dari order yang statusnya 'Done'
+        // Hitung total dari order yang statusnya 'Delivered'
         const revenue = ordersData
-          .filter((order: any) => order.status === 'Done')
+          .filter((order: any) => order.orderStatus === 'Delivered')
           .reduce((acc: number, curr: any) => acc + (curr.totalPrice || 0), 0);
 
         // Ambil 7 pesanan terbaru untuk tabel
         const latest7Orders = ordersData.slice(0, 7);
         setRecentOrders(latest7Orders);
-        
+
         // Ambil data produk (untuk statistik Total Products)
-        const { data: productsData } = await api.get('https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/products/api/products');
+        const { data: productsData } = await api.get('https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/products');
 
         // Update state statistik
         setStats({
           newOrdersCount: newOrders.length,
           totalProductsCount: productsData.length,
-          totalRevenue: revenue, 
+          totalRevenue: revenue,
         });
 
       } catch (error) {
@@ -180,15 +180,15 @@ export default function CmsDashboardPage() {
                         </td>
                         <td>{order.customerName}</td>
                         <td>{order.customerPhone}</td>
-                        <td>{order.cakeType}</td>
+                        <td>{order.cakeModel}</td>
                         <td>
                           {order.totalPrice 
                             ? `Rp ${order.totalPrice.toLocaleString('id-ID')}` 
                             : '-'}
                         </td>
                         <td>
-                          <span className={`badge bg-${getStatusColor(order.status)}`}>
-                            {order.status}
+                          <span className={`badge bg-${getStatusColor(order.orderStatus)}`}>
+                            {order.orderStatus}
                           </span>
                         </td>
                       </tr>
