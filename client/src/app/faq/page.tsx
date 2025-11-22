@@ -1,7 +1,7 @@
 import React from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import Image from 'next/image'; // Tetap di-import, meskipun tidak dipakai di Q&A baru
+import Image from 'next/image'; 
 import styles from './faq.module.css';
 import Navbar from '../../components/navbar';
 import CTA from '../../components/callToAction';
@@ -13,9 +13,12 @@ export const metadata = {
 };
 
 export default function FaqPage() {
+  const whatsappNumber = "6281211365855";
+  const whatsappMessage = encodeURIComponent("Halo Kartini Ale, saya ingin konsultasi tentang pemesanan kue custom.");
+  const whatsappLink = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
+
   return (
     <>
-
       <Navbar/>
       {/* === Banner Halaman Baru === */}
       <section className={styles.pageHeader}>
@@ -31,7 +34,7 @@ export default function FaqPage() {
               id="faqAccordion"
               style={{ borderRadius: '0.5rem', overflow: 'hidden' }}
             >
-              {/* === Pertanyaan 1: Pricelist === (KONTEN BARU) */}
+              {/* === Pertanyaan 1: Pricelist === */}
               <div className="accordion-item">
                 <h2 className="accordion-header" id="headingOne">
                   <button
@@ -60,12 +63,16 @@ export default function FaqPage() {
                     <br /><br />
                     Untuk mendapatkan gambaran harga dan inspirasi desain, silakan kunjungi halaman 
                     <Link href="/products"> Galeri</Link> untuk melihat berbagai contoh karya kami.  
-                    Jika Anda sudah memiliki konsep atau ide tertentu, anda dapat mengisi <Link href="/order"> Form Pemesanan </Link> 
+                    <br /><br />
+                    Jika Anda sudah memiliki konsep atau ide tertentu, Anda bisa melakukan 
+                    <a href={whatsappLink} target="_blank" rel="noopener noreferrer"> konsultasi dengan kami</a> terlebih dahulu. 
+                    Setelah detail pesanan sudah fix dan jelas, Anda dapat mengisi <Link href="/order">Form Pemesanan</Link> kami 
+                    agar kami dapat memproses pesanan Anda dengan lebih cepat dan akurat.
                   </div>
                 </div>
               </div>
 
-              {/* === Pertanyaan 2: Pengiriman === (KONTEN BARU) */}
+              {/* === Pertanyaan 2: Pengiriman === */}
               <div className="accordion-item">
                 <h2 className="accordion-header" id="headingTwo">
                   <button
@@ -86,20 +93,21 @@ export default function FaqPage() {
                   data-bs-parent="#faqAccordion"
                 >
                   <div className="accordion-body">
-                    Pengiriman dilakukan dari <strong>  Jelambar, Jakarta Barat</strong>. 
+                    Pengiriman dilakukan dari <strong>Jelambar, Jakarta Barat</strong>. 
                     Karena setiap kue kami dibuat dengan detail dan dekorasi yang lembut, kami sangat menyarankan untuk menggunakan 
-                    <strong> jasa pengiriman khusus kue (mobil) </strong>agar kue tiba di lokasi dengan aman dan tetap dalam kondisi sempurna.  
+                    <strong> jasa pengiriman khusus kue menggunakan mobil</strong> agar kue tiba di lokasi dengan aman dan tetap dalam kondisi sempurna.  
                     <br /><br />
-                    Anda dapat mengatur pengiriman sendiri, namun kami juga dengan senang hati akan <strong> membantu memesankan layanan pengiriman </strong>
-                    melalui mitra logistik yang sudah berpengalaman menangani produk kue dan dessert.  
+                    Anda dapat mengatur pengiriman sendiri melalui layanan seperti <strong>GoCar, GrabCar, atau Lalamove</strong>, 
+                    namun kami juga dengan senang hati akan <strong>membantu memesankan layanan pengiriman</strong> untuk Anda 
+                    melalui mitra yang sudah berpengalaman menangani produk kue dan dessert.  
                     <br /><br />
-                    Biaya pengiriman akan menyesuaikan dengan jarak dan jenis kendaraan yang digunakan. 
+                    Biaya pengiriman akan menyesuaikan dengan jarak dan jenis layanan yang digunakan. 
                     Kami akan membantu memberikan estimasi dan memastikan kue Anda dikirim pada waktu yang tepat agar tetap segar saat diterima.
                   </div>
                 </div>
               </div>
 
-              {/* === Pertanyaan 3: Pilihan Kue === (KONTEN BARU) */}
+              {/* === Pertanyaan 3: Pilihan Kue === */}
               <div className="accordion-item">
                 <h2 className="accordion-header" id="headingThree">
                   <button
@@ -124,7 +132,7 @@ export default function FaqPage() {
                     <strong> Ogura Cake</strong> dan <strong> Lapis Surabaya Premium</strong>.  
                     <br /><br />
                     <strong>Ogura Cake</strong> memiliki tekstur yang sangat lembut, ringan, dan moist. Sangat cocok untuk Anda yang menyukai rasa manis yang halus dan tidak berlebihan.  
-                    Sementara itu, <strong>Lapis Surabaya Premium</strong> menawarkan sensasi padat, kaya rasa, dan lebih “buttery”, sempurna untuk desain kue yang ingin tampil elegan dan klasik.  
+                    Sementara itu, <strong>Lapis Surabaya Premium</strong> menawarkan sensasi padat, kaya rasa, dan lebih "buttery", sempurna untuk desain kue yang ingin tampil elegan dan klasik.  
                     <br /><br />
                     Anda dapat melihat penjelasan lebih detail beserta foto potongan kue di halaman 
                     <Link href="/our-cakes"> Tentang Kue Kami</Link> untuk membantu memilih base cake yang paling sesuai dengan selera dan konsep acara Anda.
@@ -132,7 +140,7 @@ export default function FaqPage() {
                 </div>
               </div>
 
-              {/* === Pertanyaan 4: Cara Pesan === (KONTEN BARU) */}
+              {/* === Pertanyaan 4: Cara Pesan === */}
               <div className="accordion-item">
                 <h2 className="accordion-header" id="headingFour">
                   <button
@@ -153,15 +161,18 @@ export default function FaqPage() {
                   data-bs-parent="#faqAccordion"
                 >
                   <div className="accordion-body">
-                    Untuk melakukan pemesanan, silakan isi form di halaman <Link href="/order">Konsultasikan Sekarang</Link>. 
+                    Untuk melakukan pemesanan, silakan isi form di halaman <Link href="/order">Pesan Sekarang</Link>. 
                     Lengkapi semua detail yang dibutuhkan, seperti ukuran, jenis kue, tema desain, dan tanggal acara, 
                     agar kami dapat memahami kebutuhan Anda dengan lebih baik.  
                     <br /><br />
-                    Setelah form dikirim, Anda akan langsung terhubung ke <strong> WhatsApp kami </strong> untuk proses konsultasi. 
-                    Di sana, tim kami akan membantu memberikan rekomendasi, menyesuaikan desain jika diperlukan, 
-                    serta memberikan <strong> estimasi harga dan jadwal produksi </strong> sesuai dengan permintaan Anda.  
+                    Namun, jika Anda masih belum yakin dengan detail pesanan atau ingin mendiskusikan konsep terlebih dahulu, 
+                    silakan <a href={whatsappLink} target="_blank" rel="noopener noreferrer"><strong>Konsultasi Sekarang</strong></a> dengan kami. 
+                    Tim kami akan dengan senang hati membantu memberikan rekomendasi terkait ukuran, desain, base cake yang sesuai, 
+                    serta memberikan <strong>estimasi harga dan jadwal produksi</strong> sesuai dengan kebutuhan acara Anda.  
                     <br /><br />
-                    Jangan ragu untuk bertanya atau berdiskusi. Kartini Ale dengan senang hati akan membantu Anda untuk membuat kue sesuai dengan keinginan Anda.
+                    Setelah semua detail sudah jelas dan Anda merasa yakin, barulah Anda dapat mengisi form pemesanan 
+                    agar kami dapat segera memproses pesanan dengan lebih cepat dan akurat. 
+                    Jangan ragu untuk bertanya—Kartini Ale siap membantu mewujudkan kue impian Anda!
                   </div>
                 </div>
               </div>
@@ -172,7 +183,6 @@ export default function FaqPage() {
 
       <CTA/>
       <Footer/>
-
     </>
   );
 }
