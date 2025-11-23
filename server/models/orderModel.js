@@ -12,12 +12,6 @@ const orderSchema = new mongoose.Schema({
     trim: true
     // Contoh: "Unicorn", "SpongeBob", "Frozen", "Simple Elegant"
   },
-  
-  // URL Gambar Referensi (opsional)
-  referenceImageUrl: {
-  type: String,
-  trim: true,
- },
 
   // Base kue (jenis kue)
   cakeBase: {
