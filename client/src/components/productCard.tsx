@@ -87,8 +87,8 @@ export default function ProductCard({
 
         <p className="card-text text-muted">{description}</p>
 
-        <Link href="/order" className="btn btn-primary w-100 mt-auto">
-          Konsultasikan Sekarang
+        <Link href="#" className="btn btn-primary w-100 mt-auto">
+          Lihat Referensi Lain
         </Link>
       </div>
 
