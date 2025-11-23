@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import React from 'react';
-import { FaFacebookF, FaYoutube, FaInstagram, FaWhatsapp } from 'react-icons/fa';
+import { FaYoutube, FaInstagram, FaWhatsapp, FaTiktok } from 'react-icons/fa';
 
 export default function Footer() {
   return (
@@ -17,16 +17,16 @@ export default function Footer() {
             </p>
             <h6 className="footer-heading">Ikuti Kami</h6>
             <div className="d-flex gap-3">
-              <a href="#" className="social-icon" aria-label="Facebook">
-                <FaFacebookF />
-              </a>
-              <a href="#" className="social-icon" aria-label="YouTube">
-                <FaYoutube />
-              </a>
-              <a href="#" className="social-icon" aria-label="Instagram">
+              <a href="https://www.instagram.com/kartiniale" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Instagram">
                 <FaInstagram />
               </a>
-              <a href="#" className="social-icon" aria-label="Whatsapp">
+              <a href="https://www.youtube.com/@rracake" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="YouTube">
+                <FaYoutube />
+              </a>
+              <a href="https://www.tiktok.com/@kartiniale" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="TikTok">
+                <FaTiktok/>
+              </a>
+              <a href="https://api.whatsapp.com/send/?phone=6282111078050&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Whatsapp">
                 <FaWhatsapp />
               </a>
             </div>
