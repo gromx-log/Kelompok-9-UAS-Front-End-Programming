@@ -67,7 +67,7 @@ export default function Home() {
               <h2 className="display-5 fw-bold mb-3">Base Cake Premium</h2>
               <p className="lead fs-5 mb-4" style={{ color: 'var(--color-text-muted)' }}>
                 Kami percaya rasa adalah fondasi utama. Semua kue kami dibuat
-                *fresh to order* menggunakan bahan terbaik:
+                fresh to order menggunakan bahan terbaik:
               </p>
               <ul className="list-unstyled fs-5 value-prop-list">
                 <li>
@@ -155,8 +155,8 @@ export default function Home() {
             <div className="col-lg-6 fade-in-up delay-1">
               <h2 className="display-5 fw-bold mb-3">Dekorasi Fondant Handmade</h2>
               <p className="lead fs-5 mb-4" style={{ color: 'var(--color-text-muted)' }}>
-                Setiap figurin dan hiasan kami buat 100% dengan tangan (*handmade*).
-                Kami tidak menggunakan *topper* mainan, memastikan seluruh kue Anda
+                Setiap figurin dan hiasan kami buat 100% dengan tangan (handmade).
+                Kami tidak menggunakan topper mainan, memastikan seluruh kue Anda
                 adalah karya seni yang personal.
               </p>
               {/* Tombol CTA untuk ke galeri */}
