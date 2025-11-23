@@ -3,6 +3,9 @@ import React from 'react';
 import Link from 'next/link';
 
 const CallToAction: React.FC = () => {
+  const whatsappNumber = "6281211365855";
+  const whatsappMessage = encodeURIComponent("Halo Kartini Ale, saya ingin konsultasi tentang pemesanan kue custom.");
+  const whatsappLink = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
   return (
     <section className="call-to-action-section py-5 text-center">
       <div className="container">
@@ -16,9 +19,9 @@ const CallToAction: React.FC = () => {
           <Link href="/products" className="btn btn-outline-primary btn-lg btn-lg-custom">
               Lihat Galeri Kami
           </Link>
-          <Link href="/order" className="btn btn-primary btn-lg btn-lg-custom">
+          <a href={whatsappLink} className="btn btn-primary btn-lg" style={{ padding: '0.75rem 2rem' }} >
               Konsultasikan Sekarang
-          </Link>
+          </a>
         </div>
       </div>
     </section>
