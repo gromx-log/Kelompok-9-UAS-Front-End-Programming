@@ -30,28 +30,53 @@ a {
 }
 
 /* Bootstrap  */
+/* Primary Button */
 .btn-primary {
   background-color: var(--color-accent);
   border-color: var(--color-accent);
-  color: var(--color-bg-light); 
+  color: var(--color-bg-light);
   font-weight: 600;
+  transition: all 0.3s ease-out;
 }
 
 .btn-primary:hover {
-  background-color: #f79b9b; 
+  background-color: #f79b9b;
   border-color: #f79b9b;
   color: var(--color-bg-light);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 15px var(--color-accent);
 }
 
+/* Pressed / Active */
+.btn-primary:active {
+  background-color: #e26e6e !important;   
+  border-color: #e26e6e !important;
+  transform: translateY(-3px);               
+  box-shadow: 0 4px 15px var(--color-accent);
+}
+
+/* Outline Button */
 .btn-outline-primary {
   color: var(--color-accent);
   border-color: var(--color-accent);
+  transition: all 0.3s ease-out;
 }
 
 .btn-outline-primary:hover {
   background-color: var(--color-accent);
   border-color: var(--color-accent);
-  color: var(--color-bg-light); 
+  color: var(--color-bg-light);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 15px var(--color-accent);
+}
+
+/* Pressed / Active */
+.btn-outline-primary:active {
+  background-color: #e26e6e !important;
+  border-color: #e26e6e !important;
+  color: var(--color-bg-light) !important;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 15px var(--color-accent);
 }
 
 /* Transisi untuk Navbar */
@@ -386,26 +411,6 @@ a {
 
 .hero-illustration-section img:hover {
   transform: scale(1.05);
-}
-
-.btn-primary,
-.btn-outline-primary,
-.btn-light {
-  transition: all 0.3s ease-out;
-}
-
-.btn-primary:hover,
-.btn-outline-primary:hover,
-.btn-light:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-
-.btn-primary:hover {
-  box-shadow: 0 4px 15px var(--color-accent);
-}
-.btn-outline-primary:hover {
-  box-shadow: 0 4px 15px var(--color-accent);
 }
 
 .flip-card-container,

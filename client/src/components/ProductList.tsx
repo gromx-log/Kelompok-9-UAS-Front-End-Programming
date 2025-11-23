@@ -1,6 +1,7 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ProductCard from './productCard';
+import { useSearchParams, useRouter } from 'next/navigation';
 
 interface Product {
   slug: string;
@@ -12,9 +13,30 @@ interface Product {
 }
 
 export default function ProductList({ products }: { products: Product[] }) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const urlCategory = searchParams.get('category');
+
+  const categories = ['All', 'Anak', 'Dewasa','Hobby', 'Lainnya'];
+
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
 
-  const categories = ['All', 'Anak', 'Dewasa', 'Olahraga', 'Musik', 'Lainnya'];
+  useEffect(() => {
+    if (urlCategory && categories.includes(urlCategory)) {
+      setSelectedCategory(urlCategory);
+    }
+  }, [urlCategory]);
+
+  const handleCategoryClick = (cat: string) => {
+    setSelectedCategory(cat);
+
+    if (cat === 'All') {
+      router.push('/products');
+    } else {
+      router.push(`/products?category=${cat}`);
+    }
+  };
 
   const filteredProducts =
     selectedCategory === 'All'
@@ -30,7 +52,7 @@ export default function ProductList({ products }: { products: Product[] }) {
             className={`btn ${
               selectedCategory === cat ? 'btn-primary' : 'btn-outline-primary'
             }`}
-            onClick={() => setSelectedCategory(cat)}
+            onClick={() => handleCategoryClick(cat)}
           >
             {cat}
           </button>
