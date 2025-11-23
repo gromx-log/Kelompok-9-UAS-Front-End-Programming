@@ -7,8 +7,8 @@ import CTA from '../../components/callToAction';
 import Footer from '../../components/footer';
 import CustomHeader from '../../components/customHeader';
 
-const oguraImage = "/images/placeholder-ogura.jpg";
-const lapisImage = "/images/placeholder-lapis.jpg";
+const oguraImage = "https://res.cloudinary.com/drb9yajiy/image/upload/v1763866544/IMG_6125_s5syns.jpg";
+const lapisImage = "https://res.cloudinary.com/drb9yajiy/image/upload/v1763866544/PhotoRoom_20231114_215014_yrkqni.jpg";
 const damiImage = "/images/placeholder-dami.jpg";
 
 export const metadata = {
@@ -81,7 +81,7 @@ export default function OurCakesPage() {
                 aria-selected="false"
               >
                 <i className="bi bi-image-fill"></i>
-                <span className="tab-text"> Dami Cake (Opsi Foto)</span>
+                <span className="tab-text"> Dummy Cake</span>
               </button>
             </li>
           </ul>
@@ -117,8 +117,10 @@ export default function OurCakesPage() {
                   <h5 className="fw-bold">Pilihan Rasa Tersedia:</h5>
                   <ul className="list-unstyled fs-5" style={{ color: 'var(--color-text)' }}>
                     <li><i className="bi bi-check-circle-fill me-2" style={{ color: 'var(--color-accent)' }}></i> Coklat</li>
-                    <li><i className="bi bi-check-circle-fill me-2" style={{ color: 'var(--color-accent)' }}></i> Keju</li>
                     <li><i className="bi bi-check-circle-fill me-2" style={{ color: 'var(--color-accent)' }}></i> Mocca</li>
+                    <li><i className="bi bi-check-circle-fill me-2" style={{ color: 'var(--color-accent)' }}></i> Keju</li>
+                    <li><i className="bi bi-check-circle-fill me-2" style={{ color: 'var(--color-accent)' }}></i> Vanilla</li>
+                    <li><i className="bi bi-check-circle-fill me-2" style={{ color: 'var(--color-accent)' }}></i> Pandan</li>
                   </ul>
                 </div>
               </div>
@@ -174,12 +176,12 @@ export default function OurCakesPage() {
                   />
                 </div>
                 <div className="col-lg-6">
-                  <h2 className="display-5 fw-bold mb-3">Opsi &ldquo;Dami Cake&quot;</h2>
+                  <h2 className="display-5 fw-bold mb-3"> Dummy Cake</h2>
                   <p className="lead fs-5 mb-4" style={{ color: 'var(--color-text-muted)' }}>
                     Butuh kue yang cantik hanya untuk keperluan foto? Kami punya solusi hemat.
                   </p>
                   <p className="fs-5" style={{ color: 'var(--color-text)' }}>
-                    Kami menyediakan opsi &ldquo;Dami Cake&quot;, yaitu kue palsu dari styrofoam
+                    Kami menyediakan opsi Dummy Cake, yaitu kue palsu dari styrofoam
                     yang kami hias secantik mungkin, disajikan dengan kue potong asli
                     secara terpisah. Lebih hemat dan bisa Anda simpan sebagai kenang-kenangan.
                   </p>

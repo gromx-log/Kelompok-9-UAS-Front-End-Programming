@@ -1,16 +1,22 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter, useParams } from 'next/navigation'; 
-import CmsLayout from '../../../cmslayout'; 
-import api from '../../../../../lib/api'; 
+import CmsLayout from '../../../cmslayout';
+import api from '../../../../../lib/api';
 import Link from 'next/link';
 
 interface ProductForm {
  name: string;
- startPrice: number; 
+ startPrice: number;
  category: string;
  description: string;
+ images: string[];
+}
+
+interface ExistingImage {
+ url: string;
 }
 
 export default function CmsEditProductPage() {
@@ -19,7 +25,8 @@ export default function CmsEditProductPage() {
  const id = Array.isArray(params.id) ? params.id[0] : params.id; 
  
  const [formData, setFormData] = useState<ProductForm | null>(null);
- const [imageFile, setImageFile] = useState<File | null>(null); 
+ const [existingImages, setExistingImages] = useState<ExistingImage[]>([]);
+ const [imageFile, setImageFile] = useState<File | null>(null);
  const [loading, setLoading] = useState(true);
  const [error, setError] = useState('');
 
@@ -27,13 +34,15 @@ export default function CmsEditProductPage() {
   if (id) {
    const fetchProduct = async () => {
     try {
-     const { data } = await api.get(`https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/products/api/products/${id}`); 
+     const { data } = await api.get(`https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/products/${id}`);
      setFormData({
       name: data.name,
       startPrice: data.startPrice,
       category: data.category,
       description: data.description || '',
+      images: data.images || [],
      });
+     setExistingImages((data.images || []).map((url: string) => ({ url })));
     } catch (err) {
      setError('Gagal mengambil data produk.');
     } finally {
@@ -66,25 +75,28 @@ export default function CmsEditProductPage() {
   if (!formData) return;
 
   const dataToSubmit = new FormData();
- 
+
     // Append data teks
   dataToSubmit.append('name', formData.name);
   dataToSubmit.append('category', formData.category);
   dataToSubmit.append('startPrice', formData.startPrice.toString());
   dataToSubmit.append('description', formData.description);
-  
+
     // 'slug' opsional di update, tapi kita update juga agar konsisten
   const slug = formData.name.toLowerCase().replace(/\s+/g, '-');
   dataToSubmit.append('slug', slug);
 
-    // 2. Append file gambar HANYA jika ada file baru dipilih
+    // Append existingImages sebagai JSON string
+  dataToSubmit.append('existingImages', JSON.stringify(existingImages.map(img => img.url)));
+
+    // Append file gambar HANYA jika ada file baru dipilih
   if (imageFile) {
    dataToSubmit.append('images', imageFile);
   }
 
   try {
       // Panggil API dengan FormData
-   await api.put(`https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/products/api/products/${id}`, dataToSubmit); 
+   await api.put(`https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/products/${id}`, dataToSubmit); 
    alert('Produk berhasil diperbarui!');
    router.push('/cms/products'); 
   } catch (err: any) {
@@ -129,7 +141,7 @@ export default function CmsEditProductPage() {
            <option value="Anak">Anak</option> 
            <option value="Kue Ulang Tahun">Kue Ulang Tahun</option>
            <option value="Kue Kustom">Kue Kustom</option>
-                      <option value="Dessert Box">Dessert Box</option>
+           <option value="Dessert Box">Dessert Box</option>
           </select>
          </div>
          <div className="mb-3">
@@ -153,12 +165,39 @@ export default function CmsEditProductPage() {
       <div className="col-lg-4">
        <div className="card shadow-sm border-0 mb-4">
         <div className="card-header bg-transparent border-0 pt-4 px-4">
-         <h3 className="fw-bold">Ganti Gambar (Opsional)</h3>
+         <h3 className="fw-bold">Gambar Produk</h3>
         </div>
         <div className="card-body p-4">
-         <p className="text-muted">Jika Anda mengupload gambar baru, gambar lama akan dihapus dan diganti.</p>
-         <input 
-          type="file" 
+         {/* Tampilkan gambar yang sudah ada */}
+         {existingImages.length > 0 && (
+          <div className="mb-3">
+           <h5>Gambar Saat Ini:</h5>
+           <div className="d-flex flex-wrap gap-2">
+            {existingImages.map((img, index) => (
+             <div key={index} className="position-relative">
+              <img
+               src={img.url}
+               alt={`Gambar ${index + 1}`}
+               style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '4px' }}
+              />
+              <button
+               type="button"
+               className="btn btn-sm btn-danger position-absolute top-0 end-0"
+               style={{ fontSize: '10px', padding: '2px 4px' }}
+               onClick={() => setExistingImages(existingImages.filter((_, i) => i !== index))}
+              >
+               ×
+              </button>
+             </div>
+            ))}
+           </div>
+          </div>
+         )}
+
+         <h5>Tambah Gambar Baru (Opsional):</h5>
+         <p className="text-muted">Upload gambar baru untuk menambah atau mengganti gambar yang ada.</p>
+         <input
+          type="file"
           className="form-control"
           id="images"
           name="images"

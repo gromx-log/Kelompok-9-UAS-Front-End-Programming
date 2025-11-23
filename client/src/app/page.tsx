@@ -67,7 +67,7 @@ export default function Home() {
               <h2 className="display-5 fw-bold mb-3">Base Cake Premium</h2>
               <p className="lead fs-5 mb-4" style={{ color: 'var(--color-text-muted)' }}>
                 Kami percaya rasa adalah fondasi utama. Semua kue kami dibuat
-                *fresh to order* menggunakan bahan terbaik:
+                <i> fresh to order</i> menggunakan bahan terbaik:
               </p>
               <ul className="list-unstyled fs-5 value-prop-list">
                 <li>
@@ -90,7 +90,7 @@ export default function Home() {
                   {/* Sisi Depan (Ogura) */}
                   <div className="flip-card-front">
                     <Image 
-                      src="https://picsum.photos/seed/ogura/600/500" // foto ogura
+                      src="https://res.cloudinary.com/drb9yajiy/image/upload/v1763873640/IMG_1984_ectwa7.jpg"
                       width={600} 
                       height={500} 
                       className="img-fluid" 
@@ -102,7 +102,7 @@ export default function Home() {
                   {/* Sisi Belakang (Lapis Surabaya) */}
                   <div className="flip-card-back">
                     <Image 
-                      src="https://picsum.photos/seed/lapis/600/500" // foto lapis surabaya
+                      src="https://res.cloudinary.com/drb9yajiy/image/upload/v1763866544/PhotoRoom_20231114_215014_yrkqni.jpg"
                       width={600} 
                       height={500} 
                       className="img-fluid" 
@@ -130,7 +130,7 @@ export default function Home() {
               <div className="row g-3">
                 <div className="col-6">
                   <Image 
-                    src="https://picsum.photos/seed/figurine1/400/400" 
+                    src="https://res.cloudinary.com/drb9yajiy/image/upload/v1763283856/PhotoRoom_20230927_195253_ngurch.jpg" 
                     width={400} 
                     height={400} 
                     className="img-fluid rounded shadow-sm" 
@@ -140,7 +140,7 @@ export default function Home() {
                 </div>
                 <div className="col-6">
                   <Image 
-                    src="https://picsum.photos/seed/figurine2/400/400" 
+                    src="https://res.cloudinary.com/drb9yajiy/image/upload/v1763283852/5d1170fb-5f06-418a-b9f8-197a9baab761_f1rftk.jpg" 
                     width={400} 
                     height={400} 
                     className="img-fluid rounded shadow-sm" 
@@ -155,8 +155,8 @@ export default function Home() {
             <div className="col-lg-6 fade-in-up delay-1">
               <h2 className="display-5 fw-bold mb-3">Dekorasi Fondant Handmade</h2>
               <p className="lead fs-5 mb-4" style={{ color: 'var(--color-text-muted)' }}>
-                Setiap figurin dan hiasan kami buat 100% dengan tangan (*handmade*).
-                Kami tidak menggunakan *topper* mainan, memastikan seluruh kue Anda
+                Setiap figurin dan hiasan kami buat 100% dengan tangan <i>(handmade)</i>.
+                Kami tidak menggunakan topper mainan, memastikan seluruh kue Anda
                 adalah karya seni yang personal.
               </p>
               {/* Tombol CTA untuk ke galeri */}
