@@ -237,8 +237,12 @@ export default function CmsOrdersPage() {
                           {/* Detail Kue */}
                           <td>
                             <div className="fw-bold">{order.cakeModel}</div>
+                            <small className="d-block">Base: {order.cakeBase || '-'}</small>
+                            {order.mixBase && <small className="d-block">Mix Base: {order.mixBase}</small>}
                             <small className="d-block">Rasa: {order.cakeFlavor || '-'}</small>
-                            <small className="d-block">Ukuran: {order.cakeSize || '-'}</small>
+                            <small className="d-block">Filling: {order.cakeFilling || '-'}</small>
+                            <small className="d-block">Tingkat: {order.cakeTiers}</small>
+                            <small className="d-block">Diameter: {order.cakeDiameter}</small>
                           </td>
 
                           {/* Tulisan & Request */}
@@ -257,6 +261,12 @@ export default function CmsOrdersPage() {
                               value={formatDateForInput(order.deliveryDate)}
                               onChange={(e) => handleDetailChange(order._id, 'deliveryDate', e.target.value)}
                             />
+                            <input
+                              type="time"
+                              className="form-control mt-2"
+                              value={order.deliveryTime || ''}
+                              onChange={(e) => handleDetailChange(order._id, 'deliveryTime', e.target.value)}
+                            />
                           </td>
 
                           {/* Kolom Harga (Editable dengan tombol) */}
@@ -266,9 +276,14 @@ export default function CmsOrdersPage() {
                                 <span className="input-group-text">Rp</span>
                                 <input
                                   type="number"
+                                  min={0}
                                   className="form-control"
                                   value={tempPrices[order._id] ?? 0}
-                                  onChange={(e) => handlePriceChange(e, order._id)}
+                                  onChange={(e) => {
+                                    let val = parseFloat(e.target.value);
+                                    if (isNaN(val) || val < 0) val = 0;
+                                    setTempPrices(prev => ({ ...prev, [order._id]: val }));
+                                  }}
                                 />
                                 <button className="btn btn-success" onClick={() => handleConfirmClick(order._id)}>
                                   <FaCheck />
@@ -278,14 +293,17 @@ export default function CmsOrdersPage() {
                                 </button>
                               </div>
                             ) : (
-                              <div className="d-flex justify-content-between align-items-center">
+                              <div className="d-flex flex-column">
                                 <span className="fw-bold text-success">
                                   {order.totalPrice != null 
                                     ? `Rp ${order.totalPrice.toLocaleString('id-ID')}` 
                                     : 'N/A'}
                                 </span>
+                                <small>
+                                  Sisa Bayar: Rp {order.remainingPayment.toLocaleString('id-ID')}
+                                </small>
                                 <button 
-                                  className="btn btn-outline-secondary btn-sm ms-2 edit-price-btn" 
+                                  className="btn btn-outline-secondary btn-sm mt-1 edit-price-btn" 
                                   type="button"
                                   onClick={() => handleEditClick(order)}
                                   title="Edit Harga"
@@ -294,6 +312,21 @@ export default function CmsOrdersPage() {
                                 </button>
                               </div>
                             )}
+                          </td>
+
+                          {/* Kolom Admin Notes / DP Amount */}
+                          <td>
+                            <input
+                              type="number"
+                              min={0}
+                              className="form-control form-control-sm"
+                              value={order.dpAmount || 0}
+                              onChange={(e) => {
+                                const val = Math.max(0, parseFloat(e.target.value) || 0);
+                                handleDetailChange(order._id, 'dpAmount', val);
+                              }}
+                            />
+                            <small className="text-muted">Jumlah DP yang sudah dibayar</small>
                           </td>
 
                           {/* Kolom Status Bayar (Editable) */}

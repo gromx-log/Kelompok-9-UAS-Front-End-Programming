@@ -193,7 +193,8 @@ async function updateOrder(req, res, id, body) {
       'dpAmount',
       'adminNotes',
       'referenceImageUrl',
-      'deliveryDate'
+      'deliveryDate',
+      'deliveryTime'
     ];
 
     allowedUpdates.forEach(field => {
