@@ -1,9 +1,21 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
 
 const CallToAction: React.FC = () => {
   return (
     <section className="py-5 text-center" style={{ backgroundColor: 'var(--color-bg-light)' }}>
+      <style jsx>{`
+        .btn-primary:hover, .btn-outline-primary:hover {
+          background-image: none !important;
+          background-color: #f79b9b !important;
+          border-color: #f79b9b !important;
+          color: var(--color-bg-light) !important;
+          box-shadow: 0 4px 15px var(--color-accent) !important;
+          transform: translateY(-3px) !important;
+        }
+      `}</style>
       <div className="container">
         <h2 className="fw-bold h1 mb-4 fade-in-up">
           Tertarik dengan Kualitas Kami?

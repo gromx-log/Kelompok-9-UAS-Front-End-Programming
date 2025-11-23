@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import React from 'react';
-import { FaFacebookF, FaYoutube, FaInstagram, FaWhatsapp } from 'react-icons/fa';
+import { FaYoutube, FaInstagram, FaWhatsapp, FaTiktok } from 'react-icons/fa';
 
 export default function Footer() {
   return (
@@ -17,16 +17,16 @@ export default function Footer() {
             </p>
             <h6 className="footer-heading">Ikuti Kami</h6>
             <div className="d-flex gap-3">
-              <a href="#" className="social-icon" aria-label="Facebook">
-                <FaFacebookF />
-              </a>
-              <a href="#" className="social-icon" aria-label="YouTube">
-                <FaYoutube />
-              </a>
-              <a href="#" className="social-icon" aria-label="Instagram">
+              <a href="https://www.instagram.com/kartiniale" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Instagram">
                 <FaInstagram />
               </a>
-              <a href="#" className="social-icon" aria-label="Whatsapp">
+              <a href="https://www.youtube.com/@rracake" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="YouTube">
+                <FaYoutube />
+              </a>
+              <a href="https://www.tiktok.com/@kartiniale" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="TikTok">
+                <FaTiktok/>
+              </a>
+              <a href="https://api.whatsapp.com/send/?phone=6282111078050&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer" className="social-icon" aria-label="Whatsapp">
                 <FaWhatsapp />
               </a>
             </div>
@@ -48,12 +48,11 @@ export default function Footer() {
           <div className="col-lg-4 col-md-6">
             <h6 className="footer-heading">Quick Links</h6>
             <ul className="footer-links-list">
-              <li><Link href="/about">Tentang Kami</Link></li>
-              <li><Link href="/contact">Kontak</Link></li>
-              <li><Link href="/how-to-order">Cara Pesan</Link></li>
+              <li><Link href="/">Home</Link></li>
+              <li><Link href="/products">Produk</Link></li>
+              <li><Link href="/our-cakes">Tentang Kue Kami</Link></li>
               <li><Link href="/faq">FAQ</Link></li>
-              <li><Link href="/login">Login / Daftar</Link></li>
-              <li><Link href="/cart">Keranjang</Link></li>
+              <li><Link href="/order">Pesan Sekarang</Link></li>
             </ul>
           </div>
 
