@@ -264,8 +264,11 @@ export default function CmsOrdersPage() {
                             <input
                               type="time"
                               className="form-control mt-2"
-                              value={order.deliveryTime || ''}
-                              onChange={(e) => handleDetailChange(order._id, 'deliveryTime', e.target.value)}
+                              value={order.deliveryTime ?? ''}
+                              onChange={(e) => {
+                                const val: string | number = e.target.value === '' ? '' : e.target.value;
+                                handleDetailChange(order._id, 'deliveryTime', val);
+                              }}
                             />
                           </td>
 
@@ -278,10 +281,16 @@ export default function CmsOrdersPage() {
                                   type="number"
                                   min={0}
                                   className="form-control"
-                                  value={tempPrices[order._id] ?? 0}
+                                  value={tempPrices[order._id] === 0 ? '' : tempPrices[order._id] ?? ''}
                                   onChange={(e) => {
-                                    let val = parseFloat(e.target.value);
-                                    if (isNaN(val) || val < 0) val = 0;
+                                    const inputVal = e.target.value;
+                                    let val: number | '' = '';
+                                    if (inputVal === '') {
+                                      val = NaN;  // prevent entering empty string as number
+                                    } else {
+                                      val = parseFloat(inputVal);
+                                      if (isNaN(val) || val < 0) val = 0;
+                                    }
                                     setTempPrices(prev => ({ ...prev, [order._id]: val }));
                                   }}
                                 />
@@ -320,9 +329,16 @@ export default function CmsOrdersPage() {
                               type="number"
                               min={0}
                               className="form-control form-control-sm"
-                              value={order.dpAmount || 0}
+                              value={order.dpAmount === 0 ? '' : order.dpAmount ?? ''}
                               onChange={(e) => {
-                                const val = Math.max(0, parseFloat(e.target.value) || 0);
+                                const inputVal = e.target.value;
+                                let val: number | '' = '';
+                                if (inputVal === '') {
+                                  val = NaN;
+                                } else {
+                                  val = Math.max(0, parseFloat(inputVal));
+                                  if (isNaN(val)) val = 0;
+                                }
                                 handleDetailChange(order._id, 'dpAmount', val);
                               }}
                             />
