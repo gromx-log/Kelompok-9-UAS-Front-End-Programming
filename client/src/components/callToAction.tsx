@@ -19,7 +19,7 @@ const CallToAction: React.FC = () => {
           <Link href="/products" className="btn btn-outline-primary btn-lg btn-lg-custom">
               Lihat Galeri Kami
           </Link>
-          <a href={whatsappLink} className="btn btn-primary btn-lg" style={{ padding: '0.75rem 2rem' }} >
+          <a href={whatsappLink}  target="_blank" className="btn btn-primary btn-lg" style={{ padding: '0.75rem 2rem' }}>
               Konsultasikan Sekarang
           </a>
         </div>
