@@ -36,11 +36,10 @@ export default function Footer() {
           <div className="col-lg-4 col-md-6">
             <h6 className="footer-heading">Kategori Kue</h6>
             <ul className="footer-links-list">
-              <li><Link href="/products/">Kue Anak</Link></li>
-              <li><Link href="/products/">Kue Dewasa</Link></li>
-              <li><Link href="/products/">Kue Olahraga</Link></li>
-              <li><Link href="/products/">Kue Musik</Link></li>
-              <li><Link href="/products/">Lainnya</Link></li>
+              <li><Link href="/products?category=Anak">Kue Anak</Link></li>
+              <li><Link href="/products?category=Dewasa">Kue Dewasa</Link></li>
+              <li><Link href="/products?category=Hobby">Kue Hobby</Link></li>
+              <li><Link href="/products?category=Lainnya">Lainnya</Link></li>
             </ul>
           </div>
 
@@ -48,11 +47,9 @@ export default function Footer() {
           <div className="col-lg-4 col-md-6">
             <h6 className="footer-heading">Quick Links</h6>
             <ul className="footer-links-list">
-              <li><Link href="/">Home</Link></li>
-              <li><Link href="/products">Produk</Link></li>
               <li><Link href="/our-cakes">Tentang Kue Kami</Link></li>
               <li><Link href="/faq">FAQ</Link></li>
-              <li><Link href="/order">Pesan Sekarang</Link></li>
+              <li><Link href="/order">Pesan</Link></li>
             </ul>
           </div>
 
