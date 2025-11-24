@@ -139,9 +139,9 @@ export default function CmsEditProductPage() {
             value={formData?.category || ''} onChange={handleChange} required>
            <option value="">Pilih Kategori...</option>
            <option value="Anak">Anak</option> 
-           <option value="Kue Ulang Tahun">Kue Ulang Tahun</option>
-           <option value="Kue Kustom">Kue Kustom</option>
-           <option value="Dessert Box">Dessert Box</option>
+           <option value="Kue Ulang Tahun">Dewasa</option>
+           <option value="Kue Kustom">Hobby</option>
+           <option value="Dessert Box">Lainnya</option>
           </select>
          </div>
          <div className="mb-3">
