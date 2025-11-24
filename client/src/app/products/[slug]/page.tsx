@@ -7,6 +7,9 @@ import CTA from '../../../components/callToAction';
 import Footer from '../../../components/footer';
 
 const API_URL = 'https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/products';
+const whatsappNumber = "6281211365855";
+const whatsappMessage = encodeURIComponent("Halo Kartini Ale, saya ingin konsultasi tentang pemesanan kue custom.");
+const whatsappLink = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
 
 // Fetch all products
 async function getProducts() {
@@ -106,7 +109,8 @@ export default async function ProductDetailPage({ params }: { params: { slug: st
               </p>
 
               <a
-                href="/order"
+                href={whatsappLink}
+                target="_blank"
                 className="btn btn-primary btn-lg w-100"
               >
                 Konsultasikan Sekarang
