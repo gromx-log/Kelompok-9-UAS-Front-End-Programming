@@ -2,6 +2,9 @@
 import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { FaChartBar, FaShoppingBag, FaMoneyBillWave } from 'react-icons/fa';
+import { 
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, TooltipProps
+} from 'recharts';
 import CmsLayout from '../cmslayout';
 import api from '../../../lib/api';
 
@@ -19,7 +22,13 @@ interface DashboardOrder {
 interface DashboardStats {
   newOrdersCount: number;
   totalProductsCount: number;
-  totalRevenue: number; 
+  totalRevenue: number;
+}
+
+interface ChartDataItem {
+  name: string;
+  orders: number;
+  date: string;
 }
 
 export default function CmsDashboardPage() {
@@ -29,6 +38,7 @@ export default function CmsDashboardPage() {
     totalProductsCount: 0,
     totalRevenue: 0,
   });
+  const [chartData, setChartData] = useState<ChartDataItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -54,6 +64,10 @@ export default function CmsDashboardPage() {
 
         // Ambil data produk (untuk statistik Total Products)
         const { data: productsData } = await api.get('https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/products');
+
+        // Generate chart data untuk 7 hari terakhir
+        const chartData = generateChartData(ordersData);
+        setChartData(chartData);
 
         // Update state statistik
         setStats({
@@ -148,6 +162,47 @@ export default function CmsDashboardPage() {
 
         </div>
 
+        {/* Chart Section */}
+        <div className="card shadow-sm border-0 mb-5">
+          <div className="card-header bg-transparent border-0 pt-4 px-4">
+            <h3 className="fw-bold mb-0">Order Harian (7 Hari Terakhir)</h3>
+            <small className="text-muted">Jumlah pesanan per hari</small>
+          </div>
+          <div className="card-body p-4">
+            {loading ? (
+              <div className="text-center py-5">
+                <div className="spinner-border text-primary" role="status">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+                <p className="mt-2">Memuat data chart...</p>
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="name"
+                    tick={{ fontSize: 12 }}
+                    angle={-45}
+                    textAnchor="end"
+                    height={80}
+                  />
+                  <YAxis />
+                  <Tooltip
+                    formatter={(value: any) => [`${value} pesanan`, 'Jumlah Order']}
+                    labelStyle={{ color: '#000' }}
+                  />
+                  <Bar
+                    dataKey="orders"
+                    fill="var(--color-accent)"
+                    radius={[4, 4, 0, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </div>
+        </div>
+
         {/* Section Pesanan Terbaru */}
         <div className="card shadow-sm border-0">
           <div className="card-header bg-transparent border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
@@ -215,4 +270,37 @@ function getStatusColor(status: string) {
     case 'Cancelled': return 'danger';
     default: return 'secondary';
   }
+}
+
+// Helper function untuk generate chart data 7 hari terakhir
+function generateChartData(orders: any[]): ChartDataItem[] {
+  const data: ChartDataItem[] = [];
+  const today = new Date();
+
+  for (let i = 6; i >= 0; i--) {
+    const date = new Date(today);
+    date.setDate(today.getDate() - i);
+
+    const dayStart = new Date(date);
+    dayStart.setHours(0, 0, 0, 0);
+
+    const dayEnd = new Date(date);
+    dayEnd.setHours(23, 59, 59, 999);
+
+    const dayOrders = orders.filter(order => {
+      const orderDate = new Date(order.createdAt);
+      return orderDate >= dayStart && orderDate <= dayEnd;
+    });
+
+    const dayName = date.toLocaleDateString('id-ID', { weekday: 'short' });
+    const dateStr = date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+
+    data.push({
+      name: `${dayName}, ${dateStr}`,
+      orders: dayOrders.length,
+      date: date.toISOString().split('T')[0]
+    });
+  }
+
+  return data;
 }
