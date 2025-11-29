@@ -18,11 +18,13 @@ interface Product {
 export default function CmsProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState('name-asc');
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const { data } = await api.get('https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/products'); 
+        const { data } = await api.get('https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/products');
         setProducts(data);
       } catch (error) {
         console.error("Gagal mengambil data produk:", error);
@@ -44,6 +46,25 @@ export default function CmsProductsPage() {
     }
   };
 
+  // Filter and sort products
+  const filteredProducts = products
+    .filter((product) =>
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.category.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .sort((a, b) => {
+      if (sortBy === 'name-asc') {
+        return a.name.localeCompare(b.name);
+      } else if (sortBy === 'name-desc') {
+        return b.name.localeCompare(a.name);
+      } else if (sortBy === 'price-asc') {
+        return a.startPrice - b.startPrice;
+      } else if (sortBy === 'price-desc') {
+        return b.startPrice - a.startPrice;
+      }
+      return 0;
+    });
+
   return (
     <CmsLayout>
       <Head>
@@ -63,10 +84,37 @@ export default function CmsProductsPage() {
           </Link>
         </div>
 
+        {/* Search Input */}
+        <div className="row mb-4">
+          <div className="col-md-8">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Cari produk berdasarkan nama atau kategori..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+
+          {/* Sort */}
+          <div className="col-md-4">
+            <select
+              className="form-select"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+            >
+              <option value="name-asc">Nama A-Z</option>
+              <option value="name-desc">Nama Z-A</option>
+              <option value="price-asc">Harga Terendah</option>
+              <option value="price-desc">Harga Tertinggi</option>
+            </select>
+          </div>
+        </div>
+
         {/* Nav Tab */}
         <ul className="nav nav-tabs cms-tabs mb-4">
           <li className="nav-item">
-            <a className="nav-link active" href="#">Semua ({products.length})</a>
+            <a className="nav-link active" href="#">Semua ({filteredProducts.length})</a>
           </li>
         </ul>
 
@@ -81,7 +129,7 @@ export default function CmsProductsPage() {
                   {loading ? (
                     <tr><td colSpan={5} className="text-center p-5">Memuat data produk...</td></tr>
                   ) : (
-                    products.map((product) => (
+                    filteredProducts.map((product) => (
                       <tr key={product._id}>
                         <td>
                           <Image

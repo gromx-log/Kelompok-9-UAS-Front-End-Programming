@@ -47,6 +47,7 @@ export default function Footer() {
           <div className="col-lg-4 col-md-6">
             <h6 className="footer-heading">Quick Links</h6>
             <ul className="footer-links-list">
+              <li><Link href="/products">Produk</Link></li>
               <li><Link href="/our-cakes">Tentang Kue Kami</Link></li>
               <li><Link href="/faq">FAQ</Link></li>
               <li><Link href="/order">Pesan</Link></li>
