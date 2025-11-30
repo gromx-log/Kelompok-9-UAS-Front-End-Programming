@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
 const { sendError } = require('./responseHelper');
 
-// This middleware will protect the admin route
+// Middleware ini berguna untuk protected route
+// Yakni route yang hanya bisa diakses admin
 function protect(req, res, next) {
   try {
     const authHeader = req.headers.authorization;
