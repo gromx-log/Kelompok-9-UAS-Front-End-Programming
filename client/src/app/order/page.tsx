@@ -5,6 +5,7 @@ import Navbar from "../../components/navbar";
 import Footer from "../../components/footer";
 import CustomHeader from "../../components/customHeader";
 import styles from "./order.module.css";
+import { FaClock } from "react-icons/fa";
 
 interface IFormData {
   customerName: string;
@@ -275,7 +276,17 @@ export default function OrderPage() {
                     </div>
                     <div className="col-md-6">
                       <label className="form-label fw-600">Waktu Pengiriman</label>
-                      <div className="input-group">
+                      <div className="position-relative">
+                        <FaClock 
+                          className="text-muted"
+                          style={{
+                            position: "absolute",
+                            right: "12px",
+                            top: "50%",
+                            transform: "translateY(-50%)",
+                            pointerEvents: "none"
+                          }}
+                        />
                         <input
                           type="time"
                           className="form-control"
@@ -283,20 +294,10 @@ export default function OrderPage() {
                           value={formData.deliveryTime}
                           onChange={handleChange}
                           required
+                          style={{ paddingRight: "38px" }}
                         />
-                        <button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          onClick={() => {
-                            const now = new Date();
-                            const timeString = now.toTimeString().slice(0, 5); // HH:MM format
-                            setFormData(prev => ({ ...prev, deliveryTime: timeString }));
-                          }}
-                          title="Set ke waktu sekarang"
-                        >
-                          Sekarang
-                        </button>
                       </div>
+
                     </div>
                   </div>
 
