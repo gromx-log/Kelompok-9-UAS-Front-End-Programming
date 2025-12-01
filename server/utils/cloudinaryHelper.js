@@ -1,15 +1,14 @@
 const cloudinary = require('cloudinary').v2;
 const { sendError } = require('./responseHelper');
 
-// This will be used to upload an image to Cloudinary
-// Eventually making it possible to add a new product to gallery
-// While also being able to upload an image.
+// File ini akan diguanakn untuk mengupload image ke Cloudinary
+// Sehingga kita bisa menambahkan foto produk ke galeri atau halaman "Product"
 
 if (!process.env.CLOUDINARY_URL) {
   throw new Error('CLOUDINARY_URL tidak ditemukan di .env');
 }
 
-// Upload single image to Cloudinary
+// Upload single image ke Cloudinary
 async function uploadToCloudinary(fileBuffer, folder = 'cakes') {
   try {
     return new Promise((resolve, reject) => {
@@ -30,7 +29,7 @@ async function uploadToCloudinary(fileBuffer, folder = 'cakes') {
   }
 }
 
-// Delete Image (If product were to be deleted)
+// Delete Image (Jika ada gambar produk yang ingin dihapus)
 async function deleteFromCloudinary(imageUrl) {
   try {
     // Extract public_id dari URL Cloudinary

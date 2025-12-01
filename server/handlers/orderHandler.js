@@ -259,6 +259,10 @@ async function updateOrderStatus(req, res, id, body) {
   try {
     const { status } = body;
 
+    if (!status) {
+      return sendError(res, 400, 'Field status wajib diisi');
+    }
+
     const validStatuses = ['Pending', 'Confirmed', 'In Progress', 'Ready', 'Delivered', 'Cancelled'];
     if (!validStatuses.includes(status)) {
       return sendError(res, 400, 'Status tidak valid');
@@ -271,26 +275,33 @@ async function updateOrderStatus(req, res, id, body) {
 
     const oldStatus = oldOrder.orderStatus;
 
-    // ✅ FIX: Gunakan findByIdAndUpdate dengan {new: true}
-    // Tidak perlu .save() lagi karena sudah auto-save
-    const order = await Order.findByIdAndUpdate(
+    const updatedOrder = await Order.findByIdAndUpdate(
       id,
       { orderStatus: status },
-      { new: true }
+      { 
+        new: true,        
+        runValidators: true 
+      }
     );
 
-    // Kirim email jika status berubah
+    if (!updatedOrder) {
+      return sendError(res, 404, 'Order tidak ditemukan setelah update');
+    }
+
     if (oldStatus !== status) {
-      sendStatusChangeEmail(order, oldStatus).catch(err => {
+      sendStatusChangeEmail(updatedOrder, oldStatus).catch(err => {
         console.error('❌ Error mengirim email status change:', err.message);
       });
       
-      console.log(`✅ Status order #${order._id} berubah: ${oldStatus} → ${status}`);
+      console.log(`✅ Status order #${updatedOrder._id} berubah: ${oldStatus} → ${status}`);
       console.log(`📧 Email notifikasi status change sedang dikirim...`);
     }
 
-    // ✅ FIX: Langsung return order, HAPUS baris .save()
-    sendJSON(res, 200, order);
+    sendJSON(res, 200, {
+      success: true,
+      message: 'Status order berhasil diupdate',
+      order: updatedOrder
+    });
 
   } catch (error) {
     console.error('❌ Error update order status:', error);
