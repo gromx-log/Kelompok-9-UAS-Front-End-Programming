@@ -68,6 +68,10 @@ export default function CmsOrdersPage() {
   const [tempPrices, setTempPrices] = useState<{ [key: string]: number }>({});
   const [editingOrderId, setEditingOrderId] = useState<string | null>(null);
 
+  // State untuk edit delivery time
+  const [editingDeliveryOrderId, setEditingDeliveryOrderId] = useState<string | null>(null);
+  const [tempDelivery, setTempDelivery] = useState<{ [key: string]: { date: string, time: string } }>({});
+
   // FETCH DATA
   useEffect(() => {
       const fetchOrders = async () => {
@@ -151,6 +155,57 @@ export default function CmsOrdersPage() {
     setTempPrices(prev => ({ ...prev, [orderId]: parseFloat(e.target.value) || 0 }));
   };
 
+  // Handler saat tombol "Edit" delivery time diklik
+  const handleEditDeliveryClick = (order: Order) => {
+    setEditingDeliveryOrderId(order._id);
+    // Masukkan delivery time saat ini ke dalam state temporer
+    setTempDelivery(prev => ({
+      ...prev,
+      [order._id]: {
+        date: formatDateForInput(order.deliveryDate),
+        time: order.deliveryTime ?? ''
+      }
+    }));
+  };
+
+  // Handler saat tombol "Batal" delivery time diklik
+  const handleCancelDeliveryClick = () => {
+    setEditingDeliveryOrderId(null);
+    // Hapus delivery time temporer
+    setTempDelivery(prev => {
+      const newState = { ...prev };
+      if (editingDeliveryOrderId) {
+        delete newState[editingDeliveryOrderId];
+      }
+      return newState;
+    });
+  };
+
+  // Handler saat tombol "Simpan" delivery time diklik
+  const handleConfirmDeliveryClick = async (orderId: string) => {
+    const tempData = tempDelivery[orderId];
+    if (tempData) {
+      // Update deliveryDate dan deliveryTime
+      await handleDetailChange(orderId, 'deliveryDate', tempData.date);
+      if (tempData.time.trim() !== '') {
+        await handleDetailChange(orderId, 'deliveryTime', tempData.time);
+      }
+    }
+    // Keluar dari mode edit
+    setEditingDeliveryOrderId(null);
+  };
+
+  // Handler untuk menyimpan perubahan delivery time di state sementara saat diketik
+  const handleDeliveryChange = (e: React.ChangeEvent<HTMLInputElement>, orderId: string, field: 'date' | 'time') => {
+    setTempDelivery(prev => ({
+      ...prev,
+      [orderId]: {
+        ...prev[orderId],
+        [field]: e.target.value
+      }
+    }));
+  };
+
   // Helper untuk memformat tanggal ke YYYY-MM-DD
   const formatDateForInput = (dateString: string) => {
     if (!dateString) return '';
@@ -219,7 +274,8 @@ export default function CmsOrdersPage() {
                   ) : (
                     filteredOrders.map((order) => {
                       const isEditing = editingOrderId === order._id;
-                      
+                      const isEditingDelivery = editingDeliveryOrderId === order._id;
+
                       return (
                         <tr key={order._id}>
                           {/* ID Pesanan */}
