@@ -277,16 +277,28 @@ export default function OrderPage() {
                     <div className="col-md-6">
                       <label className="form-label fw-600">Waktu Pengiriman</label>
                       <div className="position-relative">
-                        <FaClock 
+                        <FaClock
                           className="text-muted"
                           style={{
                             position: "absolute",
                             right: "12px",
                             top: "50%",
                             transform: "translateY(-50%)",
-                            pointerEvents: "none"
+                            cursor: "pointer",
+                            pointerEvents: "auto",
+                          }}
+                          onClick={() => {
+                            const input = document.querySelector<HTMLInputElement>('input[name="deliveryTime"]');
+                            if (!input) return;
+
+                            input.focus();
+                            const maybeShowPicker = (input as any).showPicker;
+                            if (typeof maybeShowPicker === "function") {
+                              maybeShowPicker.call(input);
+                            }
                           }}
                         />
+
                         <input
                           type="time"
                           className="form-control"
@@ -297,7 +309,6 @@ export default function OrderPage() {
                           style={{ paddingRight: "38px" }}
                         />
                       </div>
-
                     </div>
                   </div>
 
