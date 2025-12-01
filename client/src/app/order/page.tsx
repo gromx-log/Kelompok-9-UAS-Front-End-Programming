@@ -275,28 +275,14 @@ export default function OrderPage() {
                     </div>
                     <div className="col-md-6">
                       <label className="form-label fw-600">Waktu Pengiriman</label>
-                      <div className="input-group">
-                        <input
-                          type="time"
-                          className="form-control"
-                          name="deliveryTime"
-                          value={formData.deliveryTime}
-                          onChange={handleChange}
-                          required
-                        />
-                        <button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          onClick={() => {
-                            const now = new Date();
-                            const timeString = now.toTimeString().slice(0, 5); // HH:MM format
-                            setFormData(prev => ({ ...prev, deliveryTime: timeString }));
-                          }}
-                          title="Set ke waktu sekarang"
-                        >
-                          Sekarang
-                        </button>
-                      </div>
+                      <input
+                        type="time"
+                        className="form-control"
+                        name="deliveryTime"
+                        value={formData.deliveryTime}
+                        onChange={handleChange}
+                        required
+                      />
                     </div>
                   </div>
 
