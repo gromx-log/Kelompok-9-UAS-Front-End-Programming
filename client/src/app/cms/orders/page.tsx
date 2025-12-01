@@ -267,19 +267,28 @@ export default function CmsOrdersPage() {
                                 onChange={(e) => handleDetailChange(order._id, 'deliveryDate', e.target.value)}
                               />
                             </div>
-                            <div className="d-flex align-items-center mt-2">
+
+                            {/* Kolom waktu pengiriman (editable) */}
+                            <div className="position-relative mt-2">
+                              <FaClock 
+                                className="text-muted"
+                                style={{
+                                  position: "absolute",
+                                  right: "10px",
+                                  top: "50%",
+                                  transform: "translateY(-50%)"
+                                }}
+                              />
                               <input
                                 type="time"
                                 className="form-control"
+                                style={{ paddingRight: "35px" }}
                                 value={order.deliveryTime ?? ''}
                                 onChange={(e) => {
                                   const val = e.target.value;
-                                  if (val.trim() !== '') {
-                                    handleDetailChange(order._id, 'deliveryTime', val);
-                                  }
+                                  if (val.trim() !== '') handleDetailChange(order._id, "deliveryTime", val);
                                 }}
                               />
-                              <FaClock className="ms-2 text-muted" style={{ fontSize: '1rem' }} />
                             </div>
                           </td>
 

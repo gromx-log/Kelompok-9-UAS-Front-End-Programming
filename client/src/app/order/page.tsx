@@ -5,6 +5,7 @@ import Navbar from "../../components/navbar";
 import Footer from "../../components/footer";
 import CustomHeader from "../../components/customHeader";
 import styles from "./order.module.css";
+import { FaClock } from "react-icons/fa";
 
 interface IFormData {
   customerName: string;
@@ -275,14 +276,28 @@ export default function OrderPage() {
                     </div>
                     <div className="col-md-6">
                       <label className="form-label fw-600">Waktu Pengiriman</label>
-                      <input
-                        type="time"
-                        className="form-control"
-                        name="deliveryTime"
-                        value={formData.deliveryTime}
-                        onChange={handleChange}
-                        required
-                      />
+                      <div className="position-relative">
+                        <FaClock 
+                          className="text-muted"
+                          style={{
+                            position: "absolute",
+                            right: "12px",
+                            top: "50%",
+                            transform: "translateY(-50%)",
+                            pointerEvents: "none"
+                          }}
+                        />
+                        <input
+                          type="time"
+                          className="form-control"
+                          name="deliveryTime"
+                          value={formData.deliveryTime}
+                          onChange={handleChange}
+                          required
+                          style={{ paddingRight: "38px" }}
+                        />
+                      </div>
+
                     </div>
                   </div>
 
