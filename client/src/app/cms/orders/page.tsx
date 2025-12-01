@@ -270,24 +270,37 @@ export default function CmsOrdersPage() {
 
                             {/* Kolom waktu pengiriman (editable) */}
                             <div className="position-relative mt-2">
-                              <FaClock 
+                              <FaClock
                                 className="text-muted"
                                 style={{
                                   position: "absolute",
                                   right: "10px",
                                   top: "50%",
-                                  transform: "translateY(-50%)"
+                                  transform: "translateY(-50%)",
+                                  cursor: "pointer",
+                                  pointerEvents: "auto",
+                                }}
+                                onClick={() => {
+                                  const selector = `input[data-time-input="${order._id}"]`;
+                                  const input = document.querySelector<HTMLInputElement>(selector);
+                                  if (!input) return;
+
+                                  input.focus();
+
+                                  const maybeShowPicker = (input as any).showPicker;
+                                  if (typeof maybeShowPicker === "function") {
+                                    maybeShowPicker.call(input);
+                                  }
                                 }}
                               />
+
                               <input
                                 type="time"
                                 className="form-control"
+                                data-time-input={order._id}
+                                value={order.deliveryTime ?? ""}
+                                onChange={(e) => handleDetailChange(order._id, "deliveryTime", e.target.value)}
                                 style={{ paddingRight: "35px" }}
-                                value={order.deliveryTime ?? ''}
-                                onChange={(e) => {
-                                  const val = e.target.value;
-                                  if (val.trim() !== '') handleDetailChange(order._id, "deliveryTime", val);
-                                }}
                               />
                             </div>
                           </td>
