@@ -266,8 +266,10 @@ export default function CmsOrdersPage() {
                               className="form-control mt-2"
                               value={order.deliveryTime ?? ''}
                               onChange={(e) => {
-                                const val: string | number = e.target.value === '' ? '' : e.target.value;
-                                handleDetailChange(order._id, 'deliveryTime', val);
+                                const val = e.target.value;
+                                if (val.trim() !== '') {
+                                  handleDetailChange(order._id, 'deliveryTime', val);
+                                }
                               }}
                             />
                           </td>

@@ -225,6 +225,11 @@ async function updateOrder(req, res, id, body) {
       order.deliveryDate = deliveryDateObj;
     }
 
+    // Validasi deliveryTime jika diupdate
+    if (body.deliveryTime !== undefined && !body.deliveryTime.trim()) {
+      return sendError(res, 400, 'Waktu pengiriman tidak boleh kosong');
+    }
+
     const updatedOrder = await order.save();
 
     // Kirim email jika status berubah
