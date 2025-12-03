@@ -48,6 +48,6 @@ _app.js adalah file global yang membungkus semua halaman, ideal untuk menempatka
 
 /styles: Folder ini berisi semua file styling. globals.css digunakan untuk gaya global yang berlaku di seluruh aplikasi, sementara CSS Modules (*.module.css) digunakan untuk gaya yang cakupannya hanya berlaku pada komponen tertentu.
 
-/lib atau /utils: Folder ini untuk menyimpan fungsi-fungsi non-UI (helper functions). Contohnya adalah fungsi untuk memformat tanggal, mengelola cookie, atau membuat satu file terpusat (api.js) yang berisi semua logika untuk melakukan panggilan ke backend API kita.
+/lib atau /utils: Folder ini untuk menyimpan fungsi-fungsi non-UI (helper functions). Contohnya adalah fungsi untuk memformat tanggal, mengelola cookie, atau membuat satu file terpusat (api.js) yang berisi semua logika untuk melakukan panggilan ke backend API kita. OK
 
 /public: Folder ini berada di luar /src dan berfungsi untuk menyimpan aset statis seperti gambar, ikon, dan font. File di sini dapat diakses langsung dari URL root website.
