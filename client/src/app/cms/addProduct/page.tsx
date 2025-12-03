@@ -139,10 +139,10 @@ export default function CmsAddProductPage() {
            required
           >
            <option value="">Pilih Kategori...</option>
-           <option value="Anak">Anak</option>
-           <option value="Kue Ulang Tahun">Kue Ulang Tahun</option>
-           <option value="Kue Kustom">Kue Kustom</option>
-           <option value="Dessert Box">Dessert Box</option>
+           <option value="Anak">Anak</option> 
+           <option value="Dewasa">Dewasa</option>
+           <option value="Hobby">Hobby</option>
+           <option value="Lainnya">Lainnya</option>
           </select>
          </div>
          <div className="mb-3">
