@@ -22,12 +22,12 @@ export default function CmsLoginPage() {
         password: password 
       });
 
-      if (data.token) {
-        // jika sukses simpan token ke localStorage
-        localStorage.setItem('token', data.token);
-        // Arahkan ke dashboard CMS
-        router.push('/cms/dashboard');
-      }
+    if (data.token) {
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('role', data.admin.role); // SIMPAN ROLE
+      router.push('/cms/dashboard');
+    }
+
     } catch (err: any) {
       setError(err.response?.data?.message || 'Login gagal!');
     }

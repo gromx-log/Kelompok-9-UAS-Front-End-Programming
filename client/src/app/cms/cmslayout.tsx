@@ -2,93 +2,89 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { FaTachometerAlt, FaShoppingBag, FaBoxOpen, FaUser } from 'react-icons/fa';
-import React, { useState, useEffect } from 'react'; // Impor hook
+import { FaTachometerAlt, FaShoppingBag, FaBoxOpen, FaUserShield } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
 
 export default function CmsLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(true); // state loading
+  const [isLoading, setIsLoading] = useState(true);
+  const [role, setRole] = useState<string | null>(null);
 
-  // Cek otentikasi
+  // Load token + role
   useEffect(() => {
-    // Halaman login adalah satu-satunya halaman yang bisa diakses tanpa token
     if (pathname === '/cms/login') {
       setIsLoading(false);
       return;
     }
-    
+
     const token = localStorage.getItem('token');
+    const userRole = localStorage.getItem('role');
+
     if (!token) {
       router.push('/cms/login');
-    } else {
-      setIsLoading(false); // Token ada, tampilkan halaman
+      return;
     }
-  }, [pathname, router]); // Jalankan ulang jika path berubah
 
-  // indikator loading
+    setRole(userRole);
+    setIsLoading(false);
+  }, [pathname, router]);
+
   if (isLoading) {
     return (
-      <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh', backgroundColor: 'var(--color-bg)' }}>
-        <div className="spinner-border" role="status" style={{ color: 'var(--color-accent)' }}>
-          <span className="visually-hidden">Loading...</span>
-        </div>
+      <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+        <div className="spinner-border" role="status"></div>
       </div>
     );
   }
 
-  // untuk halaman login jangan tampilkan sidebar/layout
-  if (pathname === '/cms/login') {
-    return <>{children}</>;
-  }
-  
-  // Determine active routes 
-  const isProductsActive =
-    pathname?.startsWith('/cms/products') || pathname?.startsWith('/cms/addProduct');
-  const isOrdersActive = pathname?.startsWith('/cms/orders');
+  if (pathname === '/cms/login') return <>{children}</>;
 
   const navItems = [
-    { name: 'Dashboard', href: '/cms/dashboard', icon: FaTachometerAlt, active: pathname === '/cms/dashboard' || pathname === '/cms' },
-    { name: 'Pesanan', href: '/cms/orders', icon: FaShoppingBag, active: isOrdersActive },
-    { name: 'Produk', href: '/cms/products', icon: FaBoxOpen, active: isProductsActive },
+    { name: 'Dashboard', href: '/cms/dashboard', icon: FaTachometerAlt },
+    { name: 'Pesanan', href: '/cms/orders', icon: FaShoppingBag },
+    { name: 'Produk', href: '/cms/products', icon: FaBoxOpen }
   ];
 
   return (
     <div className="cms-layout d-flex">
-      {/* === Sidebar === */}
+      {/* Sidebar */}
       <nav className="cms-sidebar">
         <div className="cms-sidebar-header">
-          <Link href="/" className="cms-brand">
-            KartiniAle
-          </Link>
+          <Link href="/" className="cms-brand">KartiniAle</Link>
         </div>
+
         <ul className="cms-nav-list list-unstyled">
           {navItems.map((item) => (
             <li key={item.name}>
-              <Link
-                href={item.href}
-                className={`cms-nav-link ${item.active ? 'active' : ''}`}
+              <Link 
+                href={item.href} 
+                className={`cms-nav-link ${pathname.startsWith(item.href) ? 'active' : ''}`}
               >
-                <span className="me-3">
-                  <item.icon />
-                </span>
+                <span className="me-3"><item.icon /></span>
                 <span>{item.name}</span>
               </Link>
             </li>
           ))}
+
+          {/* Hanya Owner yg bisa melihat menu ini */}
+          {role === 'owner' && (
+            <li>
+              <Link 
+                href="/cms/admins" 
+                className={`cms-nav-link ${pathname.startsWith('/cms/admins') ? 'active' : ''}`}
+              >
+                <span className="me-3"><FaUserShield /></span>
+                <span>Kelola Admin</span>
+              </Link>
+            </li>
+          )}
         </ul>
-        <div className="cms-sidebar-footer mt-auto">
-          <Link href="/" className="cms-nav-link">
-            <span className="me-3">
-              <FaUser />
-            </span>
-            <span>Admin</span>
-          </Link>
-        </div>
       </nav>
 
-      {/* === Main Content === */}
-      <main className="cms-main-content flex-grow-1">{children}</main>
+      <main className="cms-main-content flex-grow-1">
+        {children}
+      </main>
     </div>
   );
 }
