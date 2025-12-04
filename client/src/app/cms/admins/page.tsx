@@ -39,7 +39,7 @@ export default function CmsAdminsPage() {
           return;
         }
 
-        const { data } = await api.get('/api/admins');
+        const { data } = await api.get('https://kartini-ale-public.up.railway.app/api/admins');
         setAdmins(data);
       } catch (err: any) {
         console.error('Gagal mengambil data admin:', err);
@@ -68,7 +68,7 @@ export default function CmsAdminsPage() {
     }
 
     try {
-      await api.post('/api/admins', {
+      await api.post('https://kartini-ale-public.up.railway.app/api/admins', {
         username: newUsername,
         password: newPassword,
         name: newName
@@ -82,7 +82,7 @@ export default function CmsAdminsPage() {
       setNewName('');
       
       // Refresh data
-      const { data } = await api.get('/api/admins');
+      const { data } = await api.get('https://kartini-ale-public.up.railway.app/api/admins');
       setAdmins(data);
 
     } catch (err: any) {
@@ -97,7 +97,7 @@ export default function CmsAdminsPage() {
     if (!confirm('Yakin ingin menghapus admin ini?')) return;
 
     try {
-      await api.delete(`/api/admins/${id}`);
+      await api.delete(`https://kartini-ale-public.up.railway.app/api/admins/${id}`);
       setAdmins(admins.filter(admin => admin._id !== id));
     } catch (err: any) {
       alert(err.response?.data?.message || 'Gagal menghapus admin.');
