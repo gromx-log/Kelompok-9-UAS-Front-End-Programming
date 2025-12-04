@@ -2,6 +2,7 @@
 import React from 'react';
 import Link from 'next/link';
 
+// Call To Action yang muncul sebelum Footer
 const CallToAction: React.FC = () => {
   const whatsappNumber = "6281211365855";
   const whatsappMessage = encodeURIComponent("Halo Kartini Ale, saya ingin konsultasi tentang pemesanan kue custom.");

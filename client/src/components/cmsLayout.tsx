@@ -7,6 +7,7 @@ interface CmsLayoutProps {
   children: React.ReactNode;
 }
 
+// Layout yang digunakan saat CMS
 export default function CmsLayout({ children }: CmsLayoutProps) {
   const router = useRouter();
   const currentPath = router.pathname;

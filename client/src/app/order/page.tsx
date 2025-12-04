@@ -147,8 +147,6 @@ export default function OrderPage() {
         referenceImageUrl: formData.referenceImageUrl || null,
       };
 
-      console.log("📤 Payload being sent:", payload);
-
       const response = await fetch(
         "https://kartini-ale-public.up.railway.app/api/orders", {
         method: "POST",
@@ -165,8 +163,6 @@ export default function OrderPage() {
         console.error("❌ Server error:", data);
         throw new Error(data.message || "Gagal menyimpan pesanan");
       }
-
-      console.log("✅ Order created successfully:", data);
 
       // Create WhatsApp message
       const adminPhoneNumber = "6281211365855";

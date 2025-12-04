@@ -103,9 +103,6 @@ async function createOrder(req, res, body) {
       console.error('❌ Error mengirim email order baru:', err.message);
     });
     
-    console.log(`✅ Order baru berhasil dibuat: #${savedOrder._id}`);
-    console.log(`📧 Email notifikasi sedang dikirim ke penjual...`);
-    
     sendJSON(res, 201, {
       success: true,
       message: 'Order berhasil dibuat! Kami akan menghubungi Anda untuk konfirmasi harga.',
@@ -238,8 +235,6 @@ async function updateOrder(req, res, id, body) {
         console.error('❌ Error mengirim email status change:', err.message);
       });
       
-      console.log(`✅ Status order #${order._id} berubah: ${oldOrderStatus} → ${order.orderStatus}`);
-      console.log(`📧 Email notifikasi status change sedang dikirim...`);
     }
 
     sendJSON(res, 200, {
@@ -293,8 +288,6 @@ async function updateOrderStatus(req, res, id, body) {
         console.error('❌ Error mengirim email status change:', err.message);
       });
       
-      console.log(`✅ Status order #${updatedOrder._id} berubah: ${oldStatus} → ${status}`);
-      console.log(`📧 Email notifikasi status change sedang dikirim...`);
     }
 
     sendJSON(res, 200, {
@@ -317,8 +310,6 @@ async function deleteOrder(req, res, id) {
     if (!order) {
       return sendError(res, 404, 'Order tidak ditemukan');
     }
-    
-    console.log(`✅ Order #${id} berhasil dihapus`);
     
     sendJSON(res, 200, {
       success: true,

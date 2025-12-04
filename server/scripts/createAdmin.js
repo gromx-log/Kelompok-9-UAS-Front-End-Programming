@@ -8,12 +8,12 @@ async function createAdmin() {
   try {
     // 1. Connect ke database
     await mongoose.connect(process.env.MONGO_URI);
-    console.log('📦 Connected to MongoDB');
 
     // 2. Cek apakah admin sudah ada
     const existingAdmin = await Admin.findOne({ username: 'admin' });
+    
+    // Admin sudah ada! Username: admin
     if (existingAdmin) {
-      console.log('⚠️  Admin sudah ada! Username: admin');
       process.exit(0);
     }
 
@@ -28,12 +28,8 @@ async function createAdmin() {
       password: hashedPassword
     });
 
+    // Admin berhasil dibuat
     await newAdmin.save();
-    
-    console.log('✅ Admin berhasil dibuat!');
-    console.log('📌 Username: admin');
-    console.log('📌 Password: Kartini Ale Jaya');
-    console.log('⚠️  SEGERA GANTI PASSWORD SETELAH LOGIN PERTAMA KALI!');
 
     process.exit(0);
 

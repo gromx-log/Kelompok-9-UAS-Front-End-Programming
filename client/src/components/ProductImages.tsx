@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 
+// Digunakan Product Detail page untuk menunjukkan banyak gambar
 export default function ProductImages({ images }: { images: string[] }) {
   const [modalSrc, setModalSrc] = useState<string | null>(null);
 
@@ -67,7 +68,8 @@ export default function ProductImages({ images }: { images: string[] }) {
           </>
         )}
       </div>
-
+      
+      {/* Modal yang digunakan untuk menunjukkan gambar secara menyeluruh */}
       <div
         className="modal fade"
         id="imageModal"
