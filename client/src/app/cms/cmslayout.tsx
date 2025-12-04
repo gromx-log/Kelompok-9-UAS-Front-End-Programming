@@ -11,7 +11,6 @@ export default function CmsLayout({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [role, setRole] = useState<string | null>(null);
 
-  // Load token + role
   useEffect(() => {
     if (pathname === '/cms/login') {
       setIsLoading(false);
@@ -19,14 +18,17 @@ export default function CmsLayout({ children }: { children: React.ReactNode }) {
     }
 
     const token = localStorage.getItem('token');
-    const userRole = localStorage.getItem('role');
+    const savedRole = localStorage.getItem('role');
+
+    console.log("CMSLAYOUT → TOKEN:", token);
+    console.log("CMSLAYOUT → ROLE:", savedRole);
 
     if (!token) {
       router.push('/cms/login');
       return;
     }
 
-    setRole(userRole);
+    setRole(savedRole);
     setIsLoading(false);
   }, [pathname, router]);
 
@@ -48,10 +50,13 @@ export default function CmsLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="cms-layout d-flex">
-      {/* Sidebar */}
       <nav className="cms-sidebar">
         <div className="cms-sidebar-header">
           <Link href="/" className="cms-brand">KartiniAle</Link>
+        </div>
+
+        <div className="px-3 py-2 text-white small">
+          <strong>ROLE:</strong> {role}
         </div>
 
         <ul className="cms-nav-list list-unstyled">
@@ -67,7 +72,6 @@ export default function CmsLayout({ children }: { children: React.ReactNode }) {
             </li>
           ))}
 
-          {/* Hanya Owner yg bisa melihat menu ini */}
           {role === 'owner' && (
             <li>
               <Link 
