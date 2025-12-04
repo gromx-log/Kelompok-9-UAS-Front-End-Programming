@@ -74,7 +74,7 @@ export default function CmsOrdersPage() {
   useEffect(() => {
       const fetchOrders = async () => {
         try {
-          const { data } = await api.get('https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/orders');
+          const { data } = await api.get('https://kartini-ale-public.up.railway.app/api/orders');
           setOrders(data);
         } catch (error) {
           console.error("Gagal mengambil data pesanan:", error);
@@ -90,7 +90,7 @@ export default function CmsOrdersPage() {
   const handleStatusChange = async (id: string, newStatus: string) => {
     try {
       // Panggil endpoint /status
-      await api.put(`https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/orders/${id}/status`, { status: newStatus });
+      await api.put(`https://kartini-ale-public.up.railway.app/api/orders/${id}/status`, { status: newStatus });
       setOrders(orders.map(order =>
         order._id === id ? { ...order, orderStatus: newStatus } : order
       ));
@@ -103,7 +103,7 @@ export default function CmsOrdersPage() {
   const handleDetailChange = async (id: string, field: string, value: string | number) => {
     try {
       // Panggil endpoint general PUT /api/orders/:id
-      const { data } = await api.put(`https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/orders/${id}`, { [field]: value });
+      const { data } = await api.put(`https://kartini-ale-public.up.railway.app/api/orders/${id}`, { [field]: value });
 
       // Update state lokal dengan data terbaru dari server
       setOrders(orders.map(order =>
@@ -112,7 +112,7 @@ export default function CmsOrdersPage() {
     } catch (error: any) {
       alert(`Gagal update ${field}: ${error.response?.data?.message || 'Error'}`);
       // Jika gagal, muat ulang data untuk membatalkan perubahan
-      const { data } = await api.get('https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/orders');
+      const { data } = await api.get('https://kartini-ale-public.up.railway.app/api/orders');
       setOrders(data);
     }
   };

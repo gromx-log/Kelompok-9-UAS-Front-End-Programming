@@ -85,7 +85,7 @@ export default function CmsAddProductPage() {
 
   try {
    // Kirim FormData. Axios akan otomatis mengatur Content-Type.
-   await api.post('https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/products', dataToSubmit);
+   await api.post('https://kartini-ale-public.up.railway.app/api/products', dataToSubmit);
    
    alert('Produk baru berhasil ditambahkan!');
    router.push('/cms/products'); 

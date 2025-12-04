@@ -11,7 +11,7 @@ export const metadata = {
 
 export default async function ProductsPage() {
   const res = await fetch(
-    'https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/products',
+    'https://kartini-ale-public.up.railway.app/api/products',
     { cache: 'no-store' }
   );
 

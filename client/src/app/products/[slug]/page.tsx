@@ -6,7 +6,7 @@ import Navbar from '../../../components/navbar';
 import CTA from '../../../components/callToAction';
 import Footer from '../../../components/footer';
 
-const API_URL = 'https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/products';
+const API_URL = 'https://kartini-ale-public.up.railway.app/api/products';
 const whatsappNumber = "6281211365855";
 const whatsappMessage = encodeURIComponent("Halo Kartini Ale, saya ingin konsultasi tentang pemesanan kue custom.");
 const whatsappLink = `https://wa.me/${whatsappNumber}?text=${whatsappMessage}`;
