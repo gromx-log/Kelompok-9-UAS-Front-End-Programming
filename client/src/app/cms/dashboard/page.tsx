@@ -3,19 +3,19 @@ import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { FaChartBar, FaShoppingBag, FaMoneyBillWave } from 'react-icons/fa';
 import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, TooltipProps
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
 import CmsLayout from '../cmslayout';
 import api from '../../../lib/api';
 
-// Tipe data untuk Order di Dashboard 
+// Dashboard Types — disesuaikan dgn API kamu
 interface DashboardOrder {
   _id: string;
-  customerName: string;
-  customerPhone: string;
-  cakeModel: string;
-  totalPrice: number;
-  orderStatus: string;
+  name: string;
+  phone: string;
+  cakeModel?: string;
+  totalPrice?: number;
+  status: string;
   createdAt: string;
 }
 
@@ -44,32 +44,50 @@ export default function CmsDashboardPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Ambil data pesanan
-        const { data: ordersData } = await api.get('https://kartini-ale-public.up.railway.app/');
+        /*
+         * 1. GET ORDERS — PAKAI /api/orders
+         */
+        const { data: ordersRes } = await api.get('/api/orders');
+        const ordersData = ordersRes.orders ?? ordersRes ?? [];
 
-        // Filter pesanan 24 jam terakhir
+        /*
+         * Hitung pesanan 24 jam terakhir
+         */
         const oneDayAgo = new Date();
         oneDayAgo.setDate(oneDayAgo.getDate() - 1);
-        const newOrders = ordersData.filter((order: any) => new Date(order.createdAt) > oneDayAgo);
 
-        // --- LOGIKA PENDAPATAN ---
-        // Hitung total dari order yang statusnya 'Delivered'
+        const newOrders = ordersData.filter(
+          (o: any) => new Date(o.createdAt) > oneDayAgo
+        );
+
+        /*
+         * Hitung revenue pesanan selesai
+         */
         const revenue = ordersData
-          .filter((order: any) => order.orderStatus === 'Delivered')
-          .reduce((acc: number, curr: any) => acc + (curr.totalPrice || 0), 0);
+          .filter((o: any) => o.status === 'Done')
+          .reduce(
+            (acc: number, curr: any) => acc + (curr.totalPrice ?? 0),
+            0
+          );
 
-        // Ambil 7 pesanan terbaru untuk tabel
-        const latest7Orders = ordersData.slice(0, 7);
-        setRecentOrders(latest7Orders);
+        /*
+         * Tampilkan 7 pesanan terbaru
+         */
+        setRecentOrders(ordersData.slice(0, 7));
 
-        // Ambil data produk (untuk statistik Total Products)
-        const { data: productsData } = await api.get('https://kartini-ale-public.up.railway.app/api/products');
+        /*
+         * 2. GET PRODUCTS — PAKAI /api/products
+         */
+        const { data: productsData } = await api.get('/api/products');
 
-        // Generate chart data untuk 7 hari terakhir
-        const chartData = generateChartData(ordersData);
-        setChartData(chartData);
+        /*
+         * 3. Generate Chart Data
+         */
+        setChartData(generateChartData(ordersData));
 
-        // Update state statistik
+        /*
+         * Update Statistik
+         */
         setStats({
           newOrdersCount: newOrders.length,
           totalProductsCount: productsData.length,
@@ -90,30 +108,23 @@ export default function CmsDashboardPage() {
     <CmsLayout>
       <Head>
         <title>Dashboard - KartiniAle CMS</title>
-        <meta name="robots" content="noindex, nofollow" />
       </Head>
 
       <div className="container-fluid p-4">
-        {/* Header Dashboard */}
-        <h1 className="display-5 fw-bold mb-4" style={{ color: 'var(--color-text)' }}>
-          Dashboard
-        </h1>
 
-        {/* Kartu Statistik */}
+        <h1 className="display-5 fw-bold mb-4">Dashboard</h1>
+
+        {/* Cards */}
         <div className="row g-4 mb-5">
           
-          {/* Pesanan Baru */}
+          {/* Pesanan 24 Jam */}
           <div className="col-lg-4 col-md-6">
             <div className="card h-100 shadow-sm border-0">
               <div className="card-body d-flex align-items-center">
-                <span className="me-3">
-                  <FaShoppingBag size={30} color="var(--color-accent)" />
-                </span>
+                <FaShoppingBag size={30} className="me-3 text-primary" />
                 <div>
-                  <h5 className="card-title text-muted mb-1">Pesanan Baru (24 Jam)</h5>
-                  <p className="card-text h3 fw-bold">
-                    {loading ? '...' : stats.newOrdersCount}
-                  </p>
+                  <h5 className="text-muted mb-1">Pesanan Baru (24 Jam)</h5>
+                  <p className="h3 fw-bold">{loading ? '...' : stats.newOrdersCount}</p>
                 </div>
               </div>
             </div>
@@ -123,38 +134,25 @@ export default function CmsDashboardPage() {
           <div className="col-lg-4 col-md-6">
             <div className="card h-100 shadow-sm border-0">
               <div className="card-body d-flex align-items-center">
-                <span className="me-3">
-                  <FaChartBar size={30} color="var(--color-accent)" />
-                </span>
+                <FaChartBar size={30} className="me-3 text-primary" />
                 <div>
-                  <h5 className="card-title text-muted mb-1">Total Produk</h5>
-                  <p className="card-text h3 fw-bold">
-                    {loading ? '...' : stats.totalProductsCount}
-                  </p>
+                  <h5 className="text-muted mb-1">Total Produk</h5>
+                  <p className="h3 fw-bold">{loading ? '...' : stats.totalProductsCount}</p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Total Pendapatan (BARU) */}
+          {/* Revenue */}
           <div className="col-lg-4 col-md-6">
             <div className="card h-100 shadow-sm border-0">
               <div className="card-body d-flex align-items-center">
-                <span className="me-3">
-                  <FaMoneyBillWave size={30} color="var(--color-accent)" />
-                </span>
+                <FaMoneyBillWave size={30} className="me-3 text-success" />
                 <div>
-                  <h5 className="card-title text-muted mb-1">Total Pendapatan</h5>
-                  <p className="card-text h3 fw-bold text-success">
-                    {/* Format Rupiah */}
-                    {loading 
-                      ? '...' 
-                      : `Rp ${stats.totalRevenue.toLocaleString('id-ID')}`
-                    }
+                  <h5 className="text-muted mb-1">Total Pendapatan</h5>
+                  <p className="h3 fw-bold text-success">
+                    {loading ? '...' : `Rp ${stats.totalRevenue.toLocaleString('id-ID')}`}
                   </p>
-                  <small className="text-muted" style={{ fontSize: '0.8rem' }}>
-                    (Dari pesanan selesai)
-                  </small>
                 </div>
               </div>
             </div>
@@ -162,89 +160,68 @@ export default function CmsDashboardPage() {
 
         </div>
 
-        {/* Chart Section */}
+        {/* CHART */}
         <div className="card shadow-sm border-0 mb-5">
           <div className="card-header bg-transparent border-0 pt-4 px-4">
-            <h3 className="fw-bold mb-0">Order Harian (7 Hari Terakhir)</h3>
-            <small className="text-muted">Jumlah pesanan per hari</small>
+            <h3 className="fw-bold mb-0">Order Harian (7 Hari)</h3>
           </div>
           <div className="card-body p-4">
             {loading ? (
-              <div className="text-center py-5">
-                <div className="spinner-border text-primary" role="status">
-                  <span className="visually-hidden">Loading...</span>
-                </div>
-                <p className="mt-2">Memuat data chart...</p>
-              </div>
+              <p className="text-center py-3">Memuat data...</p>
             ) : (
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                <BarChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis
-                    dataKey="name"
-                    tick={{ fontSize: 12 }}
-                    angle={-45}
-                    textAnchor="end"
-                    height={80}
-                  />
+                  <XAxis dataKey="name" />
                   <YAxis />
-                  <Tooltip
-                    formatter={(value: any) => [`${value} pesanan`, 'Jumlah Order']}
-                    labelStyle={{ color: '#000' }}
-                  />
-                  <Bar
-                    dataKey="orders"
-                    fill="var(--color-accent)"
-                    radius={[4, 4, 0, 0]}
-                  />
+                  <Tooltip />
+                  <Bar dataKey="orders" fill="#007bff" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             )}
           </div>
         </div>
 
-        {/* Section Pesanan Terbaru */}
+        {/* Tabel Pesanan Terbaru */}
         <div className="card shadow-sm border-0">
-          <div className="card-header bg-transparent border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+          <div className="card-header bg-transparent border-0 pt-4 px-4 d-flex justify-content-between">
             <h3 className="fw-bold mb-0">Pesanan Terbaru</h3>
-            <small className="text-muted">7 Pesanan Terakhir</small>
+            <small className="text-muted">7 pesanan terakhir</small>
           </div>
           <div className="card-body p-4">
             {loading ? (
-              <p className="text-center py-3">Memuat data...</p>
+              <p>Memuat...</p>
             ) : recentOrders.length === 0 ? (
-              <p className="text-muted text-center py-3">Belum ada pesanan terbaru.</p>
+              <p className="text-muted">Belum ada pesanan.</p>
             ) : (
               <div className="table-responsive">
                 <table className="table table-hover align-middle">
-                  <thead className="table-light">
+                  <thead>
                     <tr>
-                      <th scope="col">ID</th>
-                      <th scope="col">Customer</th>
-                      <th scope="col">No. HP</th>
-                      <th scope="col">Kue</th>
-                      <th scope="col">Harga</th>
-                      <th scope="col">Status</th>
+                      <th>ID</th>
+                      <th>Nama</th>
+                      <th>No HP</th>
+                      <th>Model Kue</th>
+                      <th>Harga</th>
+                      <th>Status</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {recentOrders.map((order) => (
+                    {recentOrders.map(order => (
                       <tr key={order._id}>
                         <td className="fw-bold text-primary">
                           #{order._id.slice(-6).toUpperCase()}
                         </td>
-                        <td>{order.customerName}</td>
-                        <td>{order.customerPhone}</td>
-                        <td>{order.cakeModel}</td>
+                        <td>{order.name}</td>
+                        <td>{order.phone}</td>
+                        <td>{order.cakeModel ?? '-'}</td>
                         <td>
-                          {order.totalPrice 
-                            ? `Rp ${order.totalPrice.toLocaleString('id-ID')}` 
+                          {order.totalPrice
+                            ? `Rp ${order.totalPrice.toLocaleString('id-ID')}`
                             : '-'}
                         </td>
                         <td>
-                          <span className={`badge bg-${getStatusColor(order.orderStatus)}`}>
-                            {order.orderStatus}
-                          </span>
+                          <span className="badge bg-info">{order.status}</span>
                         </td>
                       </tr>
                     ))}
@@ -254,25 +231,12 @@ export default function CmsDashboardPage() {
             )}
           </div>
         </div>
+
       </div>
     </CmsLayout>
   );
 }
 
-// Helper function untuk warna badge status
-function getStatusColor(status: string) {
-  switch (status) {
-    case 'Pending': return 'warning';
-    case 'Confirmed': return 'info';
-    case 'In Progress': return 'primary';
-    case 'Shipped': return 'secondary';
-    case 'Done': return 'success';
-    case 'Cancelled': return 'danger';
-    default: return 'secondary';
-  }
-}
-
-// Helper function untuk generate chart data 7 hari terakhir
 function generateChartData(orders: any[]): ChartDataItem[] {
   const data: ChartDataItem[] = [];
   const today = new Date();
@@ -281,24 +245,15 @@ function generateChartData(orders: any[]): ChartDataItem[] {
     const date = new Date(today);
     date.setDate(today.getDate() - i);
 
-    const dayStart = new Date(date);
-    dayStart.setHours(0, 0, 0, 0);
-
-    const dayEnd = new Date(date);
-    dayEnd.setHours(23, 59, 59, 999);
-
-    const dayOrders = orders.filter(order => {
+    const dayOrders = orders.filter((order: any) => {
       const orderDate = new Date(order.createdAt);
-      return orderDate >= dayStart && orderDate <= dayEnd;
+      return orderDate.toDateString() === date.toDateString();
     });
 
-    const dayName = date.toLocaleDateString('id-ID', { weekday: 'short' });
-    const dateStr = date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
-
     data.push({
-      name: `${dayName}, ${dateStr}`,
+      name: date.toLocaleDateString('id-ID', { weekday: 'short' }),
       orders: dayOrders.length,
-      date: date.toISOString().split('T')[0]
+      date: date.toISOString(),
     });
   }
 
