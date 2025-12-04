@@ -16,17 +16,32 @@ export default function CmsLoginPage() {
     setError('');
     
     try {
-      // Panggil backend /api/auth/login
-      const { data } = await api.post('https://kartini-ale-public.up.railway.app/api/auth/login', {
-        username: email, 
-        password: password 
-      });
+      const response = await api.post(
+        'https://kartini-ale-public.up.railway.app/api/auth/login',
+        {
+          username: email,
+          password: password
+        }
+      );
 
-    if (data.token) {
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('role', data.admin?.role || data.data?.admin?.role);
-      router.push('/cms/dashboard');
-    }
+      const data = response.data;
+
+      console.log("=== LOGIN RESPONSE RAW ===", data);
+
+      // --- NORMALISASI RESPONSE ---
+      const token = data?.token || data?.data?.token;
+      const admin = data?.admin || data?.data?.admin;
+
+      console.log("TOKEN FIX:", token);
+      console.log("ADMIN FIX:", admin);
+
+      if (token && admin) {
+        localStorage.setItem('token', token);
+        localStorage.setItem('role', admin.role); 
+        router.push('/cms/dashboard');
+      } else {
+        setError("Login gagal: response tidak sesuai!");
+      }
 
     } catch (err: any) {
       setError(err.response?.data?.message || 'Login gagal!');
@@ -52,7 +67,7 @@ export default function CmsLoginPage() {
             </h2>
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
-                <label htmlFor="email" className="form-label fw-bold">Username (atau Email)</label>
+                <label htmlFor="email" className="form-label fw-bold">Username</label>
                 <input 
                   type="text" 
                   className="form-control" 
