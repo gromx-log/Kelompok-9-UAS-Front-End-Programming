@@ -18,15 +18,20 @@ export default function CmsAdminsPage() {
 
   const role = typeof window !== 'undefined' ? localStorage.getItem('role') : null;
 
-  // State untuk edit admin
+  // State edit admin
   const [editItem, setEditItem] = useState<Admin | null>(null);
   const [editFullName, setEditFullName] = useState('');
   const [editPassword, setEditPassword] = useState('');
 
-  // State untuk edit owner
+  // State owner profile
   const [ownerFullName, setOwnerFullName] = useState('');
   const [ownerUsername, setOwnerUsername] = useState('');
   const [ownerNewPassword, setOwnerNewPassword] = useState('');
+
+  // State tambah admin baru
+  const [newFullName, setNewFullName] = useState('');
+  const [newUsername, setNewUsername] = useState('');
+  const [newPassword, setNewPassword] = useState('');
 
   // LOAD DATA
   useEffect(() => {
@@ -37,7 +42,6 @@ export default function CmsAdminsPage() {
         const { data } = await api.get('/api/admins');
         setAdmins(data.admins || data);
 
-        // Load owner profile
         const owner = data.admins.find((a: Admin) => a.role === 'owner');
         if (owner) {
           setOwnerFullName(owner.fullName || '');
@@ -65,13 +69,40 @@ export default function CmsAdminsPage() {
 
       alert('Profil Owner berhasil diperbarui!');
 
-      // Jika username/password berubah → paksa login ulang
       localStorage.removeItem('token');
       localStorage.removeItem('role');
       window.location.href = '/cms/login';
     } catch (err) {
       console.error(err);
       alert('Gagal update profil owner');
+    }
+  };
+
+  // CREATE ADMIN BARU
+  const createNewAdmin = async () => {
+    if (!newFullName || !newUsername || !newPassword) {
+      alert("Semua field wajib diisi!");
+      return;
+    }
+
+    try {
+      await api.post('/api/admins', {
+        fullName: newFullName,
+        username: newUsername,
+        password: newPassword
+      });
+
+      alert("Admin baru berhasil dibuat!");
+
+      const { data } = await api.get('/api/admins');
+      setAdmins(data.admins || data);
+
+      setNewFullName('');
+      setNewUsername('');
+      setNewPassword('');
+    } catch (err) {
+      console.error(err);
+      alert("Gagal membuat admin");
     }
   };
 
@@ -100,7 +131,6 @@ export default function CmsAdminsPage() {
 
       alert('Admin diperbarui');
 
-      // Refresh list
       const { data } = await api.get('/api/admins');
       setAdmins(data.admins || data);
 
@@ -131,9 +161,9 @@ export default function CmsAdminsPage() {
       <div className="container p-4">
         <h2>Kelola Admin</h2>
 
-        {/* ========================= OWNER PROFILE SECTION ========================= */}
+        {/* OWNER PROFILE SECTION */}
         <div className="card p-4 my-4">
-          <h4>Profil Owner</h4>
+          <h4>Edit Profil Owner</h4>
 
           <label>Nama Lengkap</label>
           <input
@@ -162,7 +192,38 @@ export default function CmsAdminsPage() {
           </button>
         </div>
 
-        {/* ========================= ADMIN LIST TABLE ========================= */}
+        {/* NEW ADMIN FORM */}
+        <div className="card p-4 my-4">
+          <h4>Tambah Admin Baru</h4>
+
+          <label>Nama Lengkap</label>
+          <input
+            className="form-control mb-2"
+            value={newFullName}
+            onChange={(e) => setNewFullName(e.target.value)}
+          />
+
+          <label>Username</label>
+          <input
+            className="form-control mb-2"
+            value={newUsername}
+            onChange={(e) => setNewUsername(e.target.value)}
+          />
+
+          <label>Password</label>
+          <input
+            type="password"
+            className="form-control mb-2"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+          />
+
+          <button className="btn btn-success mt-2" onClick={createNewAdmin}>
+            Buat Admin
+          </button>
+        </div>
+
+        {/* ADMIN LIST TABLE */}
         <h4>Daftar Admin</h4>
 
         <table className="table table-striped mt-3">
@@ -183,7 +244,6 @@ export default function CmsAdminsPage() {
                 <td>
                   {admin.role !== 'owner' && (
                     <>
-                      {/* EDIT BUTTON */}
                       <button
                         className="btn btn-warning btn-sm me-2"
                         onClick={() => {
@@ -195,7 +255,6 @@ export default function CmsAdminsPage() {
                         <FaEdit />
                       </button>
 
-                      {/* DELETE BUTTON */}
                       <button
                         className="btn btn-danger btn-sm"
                         onClick={() => deleteAdmin(admin._id)}
@@ -210,7 +269,7 @@ export default function CmsAdminsPage() {
           </tbody>
         </table>
 
-        {/* ========================= EDIT MODAL ========================= */}
+        {/* EDIT MODAL */}
         {editItem && (
           <div
             className="modal fade show d-block"
