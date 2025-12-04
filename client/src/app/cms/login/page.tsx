@@ -17,17 +17,17 @@ export default function CmsLoginPage() {
     
     try {
       // Panggil backend /api/auth/login
-      const { data } = await api.post('https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/auth/login', {
+      const { data } = await api.post('https://kartini-ale-public.up.railway.app/api/auth/login', {
         username: email, 
         password: password 
       });
 
-      if (data.token) {
-        // jika sukses simpan token ke localStorage
-        localStorage.setItem('token', data.token);
-        // Arahkan ke dashboard CMS
-        router.push('/cms/dashboard');
-      }
+    if (data.token) {
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('role', data.admin.role); // SIMPAN ROLE
+      router.push('/cms/dashboard');
+    }
+
     } catch (err: any) {
       setError(err.response?.data?.message || 'Login gagal!');
     }

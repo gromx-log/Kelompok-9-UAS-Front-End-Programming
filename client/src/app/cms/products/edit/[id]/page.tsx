@@ -34,7 +34,7 @@ export default function CmsEditProductPage() {
   if (id) {
    const fetchProduct = async () => {
     try {
-     const { data } = await api.get(`https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/products/${id}`);
+     const { data } = await api.get(`https://kartini-ale-public.up.railway.app/api/products/${id}`);
      setFormData({
       name: data.name,
       startPrice: data.startPrice,
@@ -96,7 +96,7 @@ export default function CmsEditProductPage() {
 
   try {
       // Panggil API dengan FormData
-   await api.put(`https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/products/${id}`, dataToSubmit); 
+   await api.put(`https://kartini-ale-public.up.railway.app/api/products/${id}`, dataToSubmit); 
    alert('Produk berhasil diperbarui!');
    router.push('/cms/products'); 
   } catch (err: any) {

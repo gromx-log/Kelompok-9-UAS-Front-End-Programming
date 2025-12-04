@@ -45,7 +45,7 @@ export default function CmsDashboardPage() {
     const fetchData = async () => {
       try {
         // Ambil data pesanan
-        const { data: ordersData } = await api.get('https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/orders');
+        const { data: ordersData } = await api.get('https://kartini-ale-public.up.railway.app/');
 
         // Filter pesanan 24 jam terakhir
         const oneDayAgo = new Date();
@@ -63,7 +63,7 @@ export default function CmsDashboardPage() {
         setRecentOrders(latest7Orders);
 
         // Ambil data produk (untuk statistik Total Products)
-        const { data: productsData } = await api.get('https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/products');
+        const { data: productsData } = await api.get('https://kartini-ale-public.up.railway.app/api/products');
 
         // Generate chart data untuk 7 hari terakhir
         const chartData = generateChartData(ordersData);

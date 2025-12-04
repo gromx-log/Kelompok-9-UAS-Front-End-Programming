@@ -139,7 +139,7 @@ export default function OrderPage() {
       console.log("📤 Payload being sent:", payload);
 
       const response = await fetch(
-        "https://kelompok-9-uas-front-end-programming-production.up.railway.app/api/orders", {
+        "https://kartini-ale-public.up.railway.app/api/orders", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
