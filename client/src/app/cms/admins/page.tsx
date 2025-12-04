@@ -1,149 +1,257 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import Head from 'next/head';
-import { useRouter } from 'next/navigation';
-import CmsLayout from '../cmslayout';
+import React, { useEffect, useState } from 'react';
 import api from '../../../lib/api';
-import { FaUserPlus, FaTrash, FaUserShield } from 'react-icons/fa';
+import CmsLayout from '../cmslayout';
+import { FaTrash, FaEdit } from 'react-icons/fa';
 
 interface Admin {
   _id: string;
   username: string;
-  role: string;
-  name?: string;
-  createdAt: string;
+  fullName?: string;
+  role: 'owner' | 'admin';
 }
 
 export default function CmsAdminsPage() {
-  const router = useRouter();
   const [admins, setAdmins] = useState<Admin[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [newUsername, setNewUsername] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [newName, setNewName] = useState('');
+  const role = typeof window !== 'undefined' ? localStorage.getItem('role') : null;
 
+  // State untuk edit admin
+  const [editItem, setEditItem] = useState<Admin | null>(null);
+  const [editFullName, setEditFullName] = useState('');
+  const [editPassword, setEditPassword] = useState('');
+
+  // State untuk edit owner
+  const [ownerFullName, setOwnerFullName] = useState('');
+  const [ownerUsername, setOwnerUsername] = useState('');
+  const [ownerNewPassword, setOwnerNewPassword] = useState('');
+
+  // LOAD DATA
   useEffect(() => {
-    const fetchAdmins = async () => {
-      try {
-        const role = localStorage.getItem("role");
+    if (role !== 'owner') return;
 
-        if (role !== "owner") {
-          router.push("/cms/dashboard");
-          return;
+    const loadData = async () => {
+      try {
+        const { data } = await api.get('/api/admins');
+        setAdmins(data.admins || data);
+
+        // Load owner profile
+        const owner = data.admins.find((a: Admin) => a.role === 'owner');
+        if (owner) {
+          setOwnerFullName(owner.fullName || '');
+          setOwnerUsername(owner.username || '');
         }
 
-        const { data } = await api.get("/api/admins");
-        setAdmins(data.admins ?? data);
+        setLoading(false);
       } catch (err) {
         console.error(err);
-      } finally {
         setLoading(false);
       }
     };
 
-    fetchAdmins();
+    loadData();
   }, []);
 
-  const handleCreateAdmin = async (e: any) => {
-    e.preventDefault();
-
+  // UPDATE OWNER PROFILE
+  const saveOwnerProfile = async () => {
     try {
-      await api.post("/api/admins", {
-        username: newUsername,
-        password: newPassword,
-        name: newName,
+      await api.put('/api/owner/profile', {
+        fullName: ownerFullName,
+        username: ownerUsername,
+        password: ownerNewPassword || undefined
       });
 
-      const { data } = await api.get("/api/admins");
-      setAdmins(data.admins ?? data);
+      alert('Profil Owner berhasil diperbarui!');
 
-      setNewUsername('');
-      setNewPassword('');
-      setNewName('');
+      // Jika username/password berubah → paksa login ulang
+      localStorage.removeItem('token');
+      localStorage.removeItem('role');
+      window.location.href = '/cms/login';
     } catch (err) {
       console.error(err);
+      alert('Gagal update profil owner');
     }
   };
 
-  const handleDeleteAdmin = async (id: string) => {
-    await api.delete(`/api/admins/${id}`);
-    setAdmins((prev) => prev.filter((x) => x._id !== id));
+  // DELETE ADMIN
+  const deleteAdmin = async (id: string) => {
+    if (!confirm('Yakin ingin menghapus admin ini?')) return;
+
+    try {
+      await api.delete(`/api/admins/${id}`);
+      setAdmins(admins.filter(a => a._id !== id));
+    } catch (err) {
+      console.error(err);
+      alert('Gagal menghapus admin');
+    }
   };
+
+  // SAVE EDIT ADMIN
+  const saveEditAdmin = async () => {
+    if (!editItem) return;
+
+    try {
+      await api.put(`/api/admins/${editItem._id}`, {
+        fullName: editFullName,
+        password: editPassword || undefined,
+      });
+
+      alert('Admin diperbarui');
+
+      // Refresh list
+      const { data } = await api.get('/api/admins');
+      setAdmins(data.admins || data);
+
+      setEditItem(null);
+    } catch (err) {
+      console.error(err);
+      alert('Gagal update admin');
+    }
+  };
+
+  if (role !== 'owner') {
+    return (
+      <CmsLayout>
+        <div className="p-4">
+          <h3>Akses Ditolak</h3>
+          <p>Hanya OWNER yang dapat mengelola admin.</p>
+        </div>
+      </CmsLayout>
+    );
+  }
+
+  if (loading) {
+    return <CmsLayout><div className="p-4">Memuat data admin...</div></CmsLayout>;
+  }
 
   return (
     <CmsLayout>
-      <Head>
-        <title>Kelola Admin</title>
-      </Head>
-
       <div className="container p-4">
-        <h1>Kelola Admin</h1>
+        <h2>Kelola Admin</h2>
 
-        {loading ? (
-          <p>Memuat...</p>
-        ) : (
-          <table className="table mt-4">
-            <thead>
-              <tr>
-                <th>Username</th>
-                <th>Nama</th>
-                <th>Role</th>
-                <th>Dibuat</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {admins.map((admin) => (
-                <tr key={admin._id}>
-                  <td>{admin.username}</td>
-                  <td>{admin.name ?? '-'}</td>
-                  <td>{admin.role}</td>
-                  <td>{new Date(admin.createdAt).toLocaleDateString()}</td>
-                  <td>
-                    {admin.role !== "owner" && (
+        {/* ========================= OWNER PROFILE SECTION ========================= */}
+        <div className="card p-4 my-4">
+          <h4>Profil Owner</h4>
+
+          <label>Nama Lengkap</label>
+          <input
+            className="form-control mb-2"
+            value={ownerFullName}
+            onChange={(e) => setOwnerFullName(e.target.value)}
+          />
+
+          <label>Username</label>
+          <input
+            className="form-control mb-2"
+            value={ownerUsername}
+            onChange={(e) => setOwnerUsername(e.target.value)}
+          />
+
+          <label>Password Baru (opsional)</label>
+          <input
+            type="password"
+            className="form-control mb-2"
+            value={ownerNewPassword}
+            onChange={(e) => setOwnerNewPassword(e.target.value)}
+          />
+
+          <button className="btn btn-primary mt-2" onClick={saveOwnerProfile}>
+            Simpan Profil Owner
+          </button>
+        </div>
+
+        {/* ========================= ADMIN LIST TABLE ========================= */}
+        <h4>Daftar Admin</h4>
+
+        <table className="table table-striped mt-3">
+          <thead>
+            <tr>
+              <th>Nama</th>
+              <th>Username</th>
+              <th>Role</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {admins.map(admin => (
+              <tr key={admin._id}>
+                <td>{admin.fullName || '-'}</td>
+                <td>{admin.username}</td>
+                <td>{admin.role}</td>
+                <td>
+                  {admin.role !== 'owner' && (
+                    <>
+                      {/* EDIT BUTTON */}
+                      <button
+                        className="btn btn-warning btn-sm me-2"
+                        onClick={() => {
+                          setEditItem(admin);
+                          setEditFullName(admin.fullName || '');
+                          setEditPassword('');
+                        }}
+                      >
+                        <FaEdit />
+                      </button>
+
+                      {/* DELETE BUTTON */}
                       <button
                         className="btn btn-danger btn-sm"
-                        onClick={() => handleDeleteAdmin(admin._id)}
+                        onClick={() => deleteAdmin(admin._id)}
                       >
                         <FaTrash />
                       </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    </>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {/* ========================= EDIT MODAL ========================= */}
+        {editItem && (
+          <div
+            className="modal fade show d-block"
+            style={{ background: 'rgba(0,0,0,0.4)' }}
+          >
+            <div className="modal-dialog">
+              <div className="modal-content p-3">
+
+                <h4>Edit Admin: {editItem.username}</h4>
+
+                <label>Nama Lengkap</label>
+                <input
+                  className="form-control mb-2"
+                  value={editFullName}
+                  onChange={(e) => setEditFullName(e.target.value)}
+                />
+
+                <label>Password Baru (opsional)</label>
+                <input
+                  type="password"
+                  className="form-control mb-2"
+                  value={editPassword}
+                  onChange={(e) => setEditPassword(e.target.value)}
+                />
+
+                <div className="d-flex justify-content-end mt-3">
+                  <button
+                    className="btn btn-secondary me-2"
+                    onClick={() => setEditItem(null)}
+                  >
+                    Batal
+                  </button>
+                  <button className="btn btn-primary" onClick={saveEditAdmin}>
+                    Simpan Perubahan
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          </div>
         )}
-
-        <hr />
-
-        <h3>Tambah Admin Baru</h3>
-
-        <form onSubmit={handleCreateAdmin}>
-          <input
-            className="form-control mb-2"
-            placeholder="Username"
-            value={newUsername}
-            onChange={(e) => setNewUsername(e.target.value)}
-          />
-          <input
-            className="form-control mb-2"
-            placeholder="Nama"
-            value={newName}
-            onChange={(e) => setNewName(e.target.value)}
-          />
-          <input
-            className="form-control mb-2"
-            placeholder="Password"
-            type="password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-          />
-
-          <button className="btn btn-primary">Buat Admin</button>
-        </form>
       </div>
     </CmsLayout>
   );
