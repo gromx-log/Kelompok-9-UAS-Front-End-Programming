@@ -213,6 +213,7 @@ export default function CmsOrdersPage() {
                     <th scope="col" style={{minWidth: '150px'}}>Tulisan & Request</th>
                     <th scope="col" style={{minWidth: '180px'}}>Tgl. Kirim (Edit)</th>
                     <th scope="col" style={{minWidth: '220px'}}>Total Harga (Edit)</th>
+                    <th scope="col" style={{minWidth: '150px'}}>Status DP (edit)</th>
                     <th scope="col" style={{minWidth: '150px'}}>Status Bayar (Edit)</th>
                     <th scope="col" style={{minWidth: '180px'}}>Status Order (Edit)</th>
                   </tr>
