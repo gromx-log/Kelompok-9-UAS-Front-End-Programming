@@ -105,6 +105,17 @@ export default function OrderPage() {
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
+    
+    // Special handling for phone number - only allow digits, +, and spaces
+    if (name === "customerPhone") {
+      const phoneValue = value.replace(/[^\d+\s]/g, "");
+      setFormData((prev) => ({
+        ...prev,
+        [name]: phoneValue,
+      }));
+      return;
+    }
+    
     setFormData((prev) => ({
       ...prev,
       [name]: type === "number" ? (value === "" ? "" : Number(value)) : value,
