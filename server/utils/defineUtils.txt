@@ -1,5 +1,0 @@
-Tujuan Utama: Menyediakan Fungsi Perkakas (Helper/Utility) yang dapat digunakan kembali di seluruh aplikasi.
-
-Analoginya: "Kotak Perkakas" (Obeng, palu, dll. yang bisa dipakai kapan saja).
-
-Apa Isinya: Fungsi-fungsi teknis yang memecahkan masalah umum. Di kasus kita, yang paling penting adalah Body Parser (karena Node.js murni tidak bisa membaca JSON dari request secara otomatis) dan Response Helper.

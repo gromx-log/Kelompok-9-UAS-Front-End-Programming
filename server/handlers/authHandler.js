@@ -37,8 +37,6 @@ async function login(req, res, body) {
       { expiresIn: '7d' } 
     );
 
-    console.log(`✅ Login berhasil: ${admin.username} (${admin.role})`);
-
     sendJSON(res, 200, { 
       token,
       message: 'Login berhasil',

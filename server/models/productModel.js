@@ -9,7 +9,7 @@ const productSchema = new mongoose.Schema({
     category: {
         type: String,
         required: true,
-        // TODO: Kategori Kue: MOHON DIGANTI SESUAI KEBUTUHAN
+        // Kategori Kue, Diganti sesuai kebutuhan
         enum: ['Anak', 'Dewasa', 'Hobby','Lainnya']
     },
     description: { type: String, required: true },

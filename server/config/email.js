@@ -38,14 +38,12 @@ const emailConfig = {
         console.error('❌ Resend API key tidak ditemukan! Set RESEND_API_KEY di .env');
         return false;
       }
-      console.log('✅ Email provider: Resend');
       return true;
     } else {
       if (!this.smtp.auth.user || !this.smtp.auth.pass) {
         console.error('❌ SMTP credentials tidak lengkap! Set SMTP_USER dan SMTP_PASS di .env');
         return false;
       }
-      console.log('✅ Email provider: SMTP');
       return true;
     }
   }

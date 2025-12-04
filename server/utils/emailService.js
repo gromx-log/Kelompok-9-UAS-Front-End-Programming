@@ -42,46 +42,40 @@ function formatRupiah(amount) {
  */
 async function sendEmail(mailOptions) {
   const client = getEmailClient();
+  // Email service tidak aktif. Lewati pengiriman email.
   if (!client) {
-    console.log('⚠️  Email service tidak aktif. Lewati pengiriman email.');
     return false;
   }
 
   try {
     if (emailConfig.provider === 'resend') {
-      // ✅ PERBAIKAN: Resend API format - to harus array
       const toEmails = Array.isArray(mailOptions.to) 
         ? mailOptions.to 
         : [mailOptions.to];
 
       const result = await client.emails.send({
         from: mailOptions.from,
-        to: toEmails, // ✅ Ubah ke array
+        to: toEmails,
         subject: mailOptions.subject,
         html: mailOptions.html
       });
 
-      // ✅ PERBAIKAN: Cek result dengan lebih teliti
       if (result && result.data && result.data.id) {
-        console.log('✅ Email berhasil dikirim via Resend:', result.data.id);
         return true;
       } else if (result && result.id) {
-        console.log('✅ Email berhasil dikirim via Resend:', result.id);
         return true;
       } else {
-        console.warn('⚠️  Resend response tidak memiliki ID:', result);
         return false;
       }
     } else {
       // Nodemailer SMTP format
+      // Email berhasil dikirim via SMTP
       await client.sendMail(mailOptions);
-      console.log('✅ Email berhasil dikirim via SMTP');
       return true;
     }
   } catch (error) {
     console.error('❌ Gagal mengirim email:', error.message);
     
-    // ✅ PERBAIKAN: Tampilkan error detail dari Resend
     if (error.response) {
       console.error('Error response:', error.response);
     }
@@ -100,9 +94,7 @@ async function sendEmail(mailOptions) {
  * Kirim email notifikasi order baru ke penjual
  */
 async function sendNewOrderEmail(order) {
-  console.log('📧 Mempersiapkan email order baru...');
   
-  // ✅ PERBAIKAN: Pastikan format from email benar untuk Resend
   let fromEmail;
   if (emailConfig.provider === 'resend') {
     // Resend format: "Name <email@domain.com>"
@@ -267,9 +259,7 @@ async function sendNewOrderEmail(order) {
   };
 
   const result = await sendEmail(mailOptions);
-  if (result) {
-    console.log(`✅ Email order baru berhasil dikirim untuk Order #${order._id}`);
-  }
+  // Email order baru berhasil dikirim
   return result;
 }
 
@@ -277,7 +267,6 @@ async function sendNewOrderEmail(order) {
  * Kirim email reminder H-1 pengiriman
  */
 async function sendDeliveryReminderEmail(order) {
-  console.log('📧 Mempersiapkan email reminder H-1...');
   
   let fromEmail;
   if (emailConfig.provider === 'resend') {
@@ -382,9 +371,7 @@ async function sendDeliveryReminderEmail(order) {
   };
 
   const result = await sendEmail(mailOptions);
-  if (result) {
-    console.log(`✅ Email reminder berhasil dikirim untuk Order #${order._id}`);
-  }
+  //  Email reminder berhasil dikirim
   return result;
 }
 
@@ -392,7 +379,6 @@ async function sendDeliveryReminderEmail(order) {
  * Kirim email notifikasi saat status order berubah
  */
 async function sendStatusChangeEmail(order, oldStatus) {
-  console.log('📧 Mempersiapkan email status change...');
   
   let fromEmail;
   if (emailConfig.provider === 'resend') {
@@ -491,9 +477,7 @@ async function sendStatusChangeEmail(order, oldStatus) {
   };
 
   const result = await sendEmail(mailOptions);
-  if (result) {
-    console.log(`✅ Email status change berhasil dikirim untuk Order #${order._id}`);
-  }
+  // Email status change berhasil dikirim
   return result;
 }
 

@@ -9,7 +9,7 @@ import CustomHeader from '../../components/customHeader';
 
 const oguraImage = "https://res.cloudinary.com/drb9yajiy/image/upload/v1763866544/IMG_6125_s5syns.jpg";
 const lapisImage = "https://res.cloudinary.com/drb9yajiy/image/upload/v1763866544/PhotoRoom_20231114_215014_yrkqni.jpg";
-const damiImage = "/images/placeholder-dami.jpg";
+const damiImage = "https://res.cloudinary.com/drb9yajiy/image/upload/v1763870494/PhotoRoom_20230714_214628_fhnsgt.jpg";
 
 export const metadata = {
   title: 'Tentang Kue Kami - KartiniAle',

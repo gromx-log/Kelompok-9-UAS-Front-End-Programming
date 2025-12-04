@@ -7,6 +7,7 @@ interface HeaderProps {
   subtitle?: string;
 }
 
+// Header yang digunakan halaman-halaman utama
 export default function CustomHeader({title, subtitle}: HeaderProps) {
 
   return (

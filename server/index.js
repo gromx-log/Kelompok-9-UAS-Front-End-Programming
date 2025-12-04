@@ -11,7 +11,6 @@ const { getAllAdmins, createAdmin, getAdminById, updateAdmin, deleteAdmin, getOw
 // Import utils
 const { sendJSON, sendError, handleOptions } = require('./utils/responseHelper');
 const bodyParser = require('./utils/bodyParser');
-const { protect } = require('./utils/authMiddleware');
 const { ownerOnly, ownerOrAdmin } = require('./utils/roleMiddleware');
 const { matchRoute } = require('./utils/routeMatcher');
 
@@ -21,30 +20,21 @@ const { startReminderCron, runManualCheck } = require('./jobs/reminderCron');
 // 1. Hubungkan ke Database
 connectDB();
 
-// 2. Helper untuk handle protected routes
-async function handleProtectedRoute(req, res, handler, ...args) {
-  // Jalankan middleware protect dulu (cek JWT valid)
-  protect(req, res, () => {
-    // Jika lolos, jalankan handler
-    handler(req, res, ...args);
-  });
-}
-
-// 3. Helper untuk handle owner-only routes
+// 2. Helper untuk handle owner-only routes
 async function handleOwnerOnlyRoute(req, res, handler, ...args) {
   ownerOnly(req, res, () => {
     handler(req, res, ...args);
   });
 }
 
-// 4. Helper untuk handle owner or admin routes
+// 3. Helper untuk handle owner or admin routes
 async function handleOwnerOrAdminRoute(req, res, handler, ...args) {
   ownerOrAdmin(req, res, () => {
     handler(req, res, ...args);
   });
 }
 
-// 5. Buat Server
+// 4. Buat Server
 const server = http.createServer(async(req, res) => {
   const { url, method } = req;
   
@@ -230,78 +220,12 @@ const server = http.createServer(async(req, res) => {
   return sendError(res, 404, 'Endpoint Not Found');
 });
 
-// 6. Jalankan Server
+// 5. Jalankan Server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-  console.log('\n' + '='.repeat(70));
-  console.log('🎂 CUSTOM CAKE ORDER SYSTEM - CMS EDITION with RBAC');
-  console.log('='.repeat(70));
-  console.log(`✅ Server berjalan di port ${PORT}`);
-  console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🕐 Waktu server: ${new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })}`);
   
   // Start cron job untuk reminder
-  console.log('\n' + '-'.repeat(70));
-  console.log('⏰ CRON JOB CONFIGURATION');
-  console.log('-'.repeat(70));
-  
   const cronSchedule = process.env.REMINDER_CRON_SCHEDULE || '0 9 * * *';
   startReminderCron(cronSchedule);
   
-  console.log('-'.repeat(70));
-  
-  // Tampilkan endpoint yang tersedia
-  console.log('\n📌 AVAILABLE ENDPOINTS:');
-  console.log('-'.repeat(70));
-  console.log('🌐 Public Routes:');
-  console.log('  GET    /api/products              - List semua produk (galeri)');
-  console.log('  POST   /api/orders                - Buat order baru (+ email notif)');
-  console.log('  POST   /api/auth/login            - Admin/Owner login (get JWT token)');
-  
-  console.log('\n🔐 Protected Routes - Products (Owner/Admin):');
-  console.log('  GET    /api/products/:id          - Detail produk');
-  console.log('  POST   /api/products              - Tambah produk (+ upload gambar)');
-  console.log('  PUT    /api/products/:id          - Update produk');
-  console.log('  DELETE /api/products/:id          - Hapus produk');
-  
-  console.log('\n🔐 Protected Routes - Orders (Owner/Admin):');
-  console.log('  GET    /api/orders                - List semua order');
-  console.log('  GET    /api/orders/:id            - Detail satu order');
-  console.log('  PUT    /api/orders/:id/status     - Quick update status');
-  console.log('  PUT    /api/orders/:id            - Update order lengkap');
-  console.log('  DELETE /api/orders/:id            - Hapus order');
-  
-  console.log('\n👑 Owner Only Routes - Admin Management:');
-  console.log('  GET    /api/admins                - List semua admin');
-  console.log('  POST   /api/admins                - Buat admin baru');
-  console.log('  GET    /api/admins/:id            - Detail satu admin');
-  console.log('  PUT    /api/admins/:id            - Update admin (username/password)');
-  console.log('  DELETE /api/admins/:id            - Hapus admin');
-  
-  console.log('\n👑 Owner Self-Management:');
-  console.log('  GET    /api/owner/profile         - Lihat profil owner');
-  console.log('  PUT    /api/owner/profile         - Update profil owner sendiri');
-  
-  console.log('\n🧪 Testing Routes:');
-  console.log('  GET    /api/test-reminder         - Test cron job manual');
-  
-  console.log('-'.repeat(70));
-  
-  console.log('\n💡 TIPS:');
-  console.log('  - Jalankan script: npm run create-owner untuk membuat akun owner');
-  console.log('  - Owner dapat membuat akun admin melalui endpoint /api/admins');
-  console.log('  - Admin tidak bisa membuat admin lain atau mengakses endpoint owner');
-  console.log('  - JWT token mengandung role (owner/admin) untuk authorization');
-  
-  console.log('\n🔑 ROLE-BASED ACCESS CONTROL:');
-  console.log('  • OWNER: Full access ke semua endpoint');
-  console.log('           - Bisa CRUD products & orders');
-  console.log('           - Bisa CRUD admin accounts');
-  console.log('           - Bisa edit profil sendiri');
-  console.log('  • ADMIN: Limited access');
-  console.log('           - Bisa CRUD products & orders');
-  console.log('           - TIDAK bisa manage admin accounts');
-  console.log('           - TIDAK bisa edit owner profile');
-  
-  console.log('='.repeat(70) + '\n');
 });

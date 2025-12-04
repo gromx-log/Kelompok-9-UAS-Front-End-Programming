@@ -1,5 +1,0 @@
-Tujuan Utama: Mendefinisikan Cetak Biru (Blueprint) atau Schema untuk data kita di database MongoDB.
-
-Analoginya: "Cetak Biru Rumah"
-
-Apa Isinya: File-file di sini menggunakan Mongoose (sebuah ODM, bukan framework server) untuk menentukan struktur, tipe data, aturan validasi, dan nilai default untuk setiap koleksi di database.

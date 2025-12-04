@@ -12,6 +12,7 @@ interface Product {
   category: string;
 }
 
+// Membuat suatu grid productCard
 export default function ProductList({ products }: { products: Product[] }) {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -28,6 +29,7 @@ export default function ProductList({ products }: { products: Product[] }) {
     }
   }, [urlCategory]);
 
+  // Ubah filter
   const handleCategoryClick = (cat: string) => {
     setSelectedCategory(cat);
 
@@ -38,6 +40,7 @@ export default function ProductList({ products }: { products: Product[] }) {
     }
   };
 
+  // Filter produk sesuai filter
   const filteredProducts =
     selectedCategory === 'All'
       ? products

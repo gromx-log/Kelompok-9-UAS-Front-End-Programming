@@ -14,8 +14,6 @@ async function getAllAdmins(req, res) {
       .select('-password') // Jangan tampilkan password
       .sort({ createdAt: -1 });
     
-    console.log(`✅ Retrieved ${admins.length} admin accounts`);
-    
     sendJSON(res, 200, {
       success: true,
       count: admins.length,
@@ -60,8 +58,6 @@ async function createAdmin(req, res, body) {
     });
 
     await newAdmin.save();
-
-    console.log(`✅ Admin baru dibuat: ${username}`);
 
     // Kirim response tanpa password
     const adminResponse = {
@@ -149,8 +145,6 @@ async function updateAdmin(req, res, id, body) {
 
     await admin.save();
 
-    console.log(`✅ Admin berhasil diupdate: ${admin.username}`);
-
     // Kirim response tanpa password
     const adminResponse = {
       id: admin._id,
@@ -188,8 +182,6 @@ async function deleteAdmin(req, res, id) {
 
     const deletedUsername = admin.username;
     await Admin.findByIdAndDelete(id);
-
-    console.log(`✅ Admin berhasil dihapus: ${deletedUsername}`);
 
     sendJSON(res, 200, {
       success: true,
@@ -264,8 +256,6 @@ async function updateOwnerProfile(req, res, body) {
     }
 
     await owner.save();
-
-    console.log(`✅ Owner profile berhasil diupdate: ${owner.username}`);
 
     // Kirim response tanpa password
     const ownerResponse = {
