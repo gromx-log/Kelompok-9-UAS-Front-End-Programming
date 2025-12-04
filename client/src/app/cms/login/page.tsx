@@ -26,14 +26,13 @@ export default function CmsLoginPage() {
 
       const data = response.data;
 
-      console.log("=== LOGIN RESPONSE RAW ===", data);
+
 
       // --- NORMALISASI RESPONSE ---
       const token = data?.token || data?.data?.token;
       const admin = data?.admin || data?.data?.admin;
 
-      console.log("TOKEN FIX:", token);
-      console.log("ADMIN FIX:", admin);
+
 
       if (token && admin) {
         localStorage.setItem('token', token);

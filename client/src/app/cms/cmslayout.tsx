@@ -20,8 +20,7 @@ export default function CmsLayout({ children }: { children: React.ReactNode }) {
     const token = localStorage.getItem('token');
     const savedRole = localStorage.getItem('role');
 
-    console.log("CMSLAYOUT → TOKEN:", token);
-    console.log("CMSLAYOUT → ROLE:", savedRole);
+
 
     if (!token) {
       router.push('/cms/login');
