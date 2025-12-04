@@ -24,7 +24,7 @@ export default function CmsLoginPage() {
 
     if (data.token) {
       localStorage.setItem('token', data.token);
-      localStorage.setItem('role', data.admin.role); // SIMPAN ROLE
+      localStorage.setItem('role', data.admin?.role || data.data?.admin?.role);
       router.push('/cms/dashboard');
     }
 
