@@ -218,7 +218,7 @@ export default function CmsAdminsPage() {
             onChange={(e) => setNewPassword(e.target.value)}
           />
 
-          <button className="btn btn-success mt-2" onClick={createNewAdmin}>
+          <button className="btn btn-primary mt-2" onClick={createNewAdmin}>
             Buat Admin
           </button>
         </div>
@@ -269,7 +269,7 @@ export default function CmsAdminsPage() {
           </tbody>
         </table>
 
-        {/* EDIT MODAL */}
+        {/* EDIT MODAL  */}
         {editItem && (
           <div
             className="modal fade show d-block"
