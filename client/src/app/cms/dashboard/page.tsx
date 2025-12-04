@@ -1,21 +1,26 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import Head from 'next/head';
-import { FaChartBar, FaShoppingBag, FaMoneyBillWave } from 'react-icons/fa';
+import { FaChartLine, FaShoppingBag, FaMoneyBillWave } from 'react-icons/fa';
 import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
 import CmsLayout from '../cmslayout';
 import api from '../../../lib/api';
 
-// Dashboard Types — disesuaikan dgn API kamu
+// Dashboard Types
 interface DashboardOrder {
   _id: string;
-  name: string;
-  phone: string;
+  customerName?: string;
+  name?: string;
+  phone?: string;
+  customerPhone?: string;
   cakeModel?: string;
-  totalPrice?: number;
-  status: string;
+  totalPrice: number;
+  dpAmount: number;
+  remainingPayment: number;
+  paymentStatus: string;
+  orderStatus: string;
   createdAt: string;
 }
 
@@ -44,50 +49,37 @@ export default function CmsDashboardPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        /*
-         * 1. GET ORDERS — PAKAI /api/orders
-         */
-        const { data: ordersRes } = await api.get('/api/orders');
-        const ordersData = ordersRes.orders ?? ordersRes ?? [];
 
-        /*
-         * Hitung pesanan 24 jam terakhir
-         */
+        // GET ORDERS
+        const { data: ordersRes } = await api.get('/api/orders');
+        const ordersData: DashboardOrder[] = ordersRes.orders ?? ordersRes ?? [];
+
+        // Hitung pesanan 24 jam terakhir
         const oneDayAgo = new Date();
         oneDayAgo.setDate(oneDayAgo.getDate() - 1);
 
         const newOrders = ordersData.filter(
-          (o: any) => new Date(o.createdAt) > oneDayAgo
+          (o) => new Date(o.createdAt) > oneDayAgo
         );
 
-        /*
-         * Hitung revenue pesanan selesai
-         */
+        // **INILAH PERBAIKAN REVENUE**
         const revenue = ordersData
-          .filter((o: any) => o.status === 'Done')
-          .reduce(
-            (acc: number, curr: any) => acc + (curr.totalPrice ?? 0),
-            0
-          );
+          .filter(o => 
+            o.paymentStatus === 'Paid' && 
+            o.orderStatus === 'Delivered'
+          )
+          .reduce((acc, curr) => acc + (curr.totalPrice ?? 0), 0);
 
-        /*
-         * Tampilkan 7 pesanan terbaru
-         */
+        // Set 7 pesanan terbaru
         setRecentOrders(ordersData.slice(0, 7));
 
-        /*
-         * 2. GET PRODUCTS — PAKAI /api/products
-         */
+        // GET PRODUCTS
         const { data: productsData } = await api.get('/api/products');
 
-        /*
-         * 3. Generate Chart Data
-         */
+        // Generate Chart Data
         setChartData(generateChartData(ordersData));
 
-        /*
-         * Update Statistik
-         */
+        // Update Stats
         setStats({
           newOrdersCount: newOrders.length,
           totalProductsCount: productsData.length,
@@ -111,7 +103,6 @@ export default function CmsDashboardPage() {
       </Head>
 
       <div className="container-fluid p-4">
-
         <h1 className="display-5 fw-bold mb-4">Dashboard</h1>
 
         {/* Cards */}
@@ -134,7 +125,7 @@ export default function CmsDashboardPage() {
           <div className="col-lg-4 col-md-6">
             <div className="card h-100 shadow-sm border-0">
               <div className="card-body d-flex align-items-center">
-                <FaChartBar size={30} className="me-3 text-primary" />
+                <FaChartLine size={30} className="me-3 text-primary" />
                 <div>
                   <h5 className="text-muted mb-1">Total Produk</h5>
                   <p className="h3 fw-bold">{loading ? '...' : stats.totalProductsCount}</p>
@@ -149,7 +140,7 @@ export default function CmsDashboardPage() {
               <div className="card-body d-flex align-items-center">
                 <FaMoneyBillWave size={30} className="me-3 text-success" />
                 <div>
-                  <h5 className="text-muted mb-1">Total Pendapatan</h5>
+                  <h5 className="text-muted mb-1">Total Pendapatan (Paid + Delivered)</h5>
                   <p className="h3 fw-bold text-success">
                     {loading ? '...' : `Rp ${stats.totalRevenue.toLocaleString('id-ID')}`}
                   </p>
@@ -160,7 +151,7 @@ export default function CmsDashboardPage() {
 
         </div>
 
-        {/* CHART */}
+        {/* CHART (LINE) */}
         <div className="card shadow-sm border-0 mb-5">
           <div className="card-header bg-transparent border-0 pt-4 px-4">
             <h3 className="fw-bold mb-0">Order Harian (7 Hari)</h3>
@@ -170,13 +161,19 @@ export default function CmsDashboardPage() {
               <p className="text-center py-3">Memuat data...</p>
             ) : (
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={chartData}>
+                <LineChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
-                  <YAxis />
+                  <YAxis allowDecimals={false} />
                   <Tooltip />
-                  <Bar dataKey="orders" fill="#007bff" radius={[4, 4, 0, 0]} />
-                </BarChart>
+                  <Line 
+                    type="monotone" 
+                    dataKey="orders" 
+                    stroke="#007bff" 
+                    strokeWidth={3} 
+                    dot={{ r: 5, strokeWidth: 2 }} 
+                  />
+                </LineChart>
               </ResponsiveContainer>
             )}
           </div>
@@ -212,8 +209,8 @@ export default function CmsDashboardPage() {
                         <td className="fw-bold text-primary">
                           #{order._id.slice(-6).toUpperCase()}
                         </td>
-                        <td>{order.name}</td>
-                        <td>{order.phone}</td>
+                        <td>{order.customerName ?? order.name ?? '-'}</td>
+                        <td>{order.customerPhone ?? order.phone ?? '-'}</td>
                         <td>{order.cakeModel ?? '-'}</td>
                         <td>
                           {order.totalPrice
@@ -221,7 +218,7 @@ export default function CmsDashboardPage() {
                             : '-'}
                         </td>
                         <td>
-                          <span className="badge bg-info">{order.status}</span>
+                          <span className="badge bg-info">{order.orderStatus ?? '-'}</span>
                         </td>
                       </tr>
                     ))}
@@ -237,7 +234,7 @@ export default function CmsDashboardPage() {
   );
 }
 
-function generateChartData(orders: any[]): ChartDataItem[] {
+function generateChartData(orders: DashboardOrder[]): ChartDataItem[] {
   const data: ChartDataItem[] = [];
   const today = new Date();
 
