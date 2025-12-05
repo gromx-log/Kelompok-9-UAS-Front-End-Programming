@@ -11,8 +11,8 @@ Anggota-anggota Kelompok 9:
 - Grevano Geraldo / 535240030
 - Rafael Theng / 535240153
 
-Link Presentasi: https://www.youtube.com/watch?v=mbP4IEiWs8U
-Link Demonstrasi: https://www.youtube.com/watch?v=pq3gXjHqAgQ
+- Link Presentasi: https://www.youtube.com/watch?v=mbP4IEiWs8U
+- Link Demonstrasi: https://www.youtube.com/watch?v=pq3gXjHqAgQ
 
 ## Penjelasan Struktur Folder Backend (/server)
 Backend ini dirancang dengan pola yang memisahkan antara definisi rute (URL), logika bisnis, dan struktur data.
