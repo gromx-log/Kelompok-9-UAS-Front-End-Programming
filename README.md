@@ -3,6 +3,17 @@ Sebuah repository sederhana yang akan menyimpan hasil dari projek UTS mata kulia
 
 Berikut adalah penjelasan lengkap dan langsung mengenai fungsi setiap folder utama dalam struktur proyek kita.
 
+Ketua Kelompok 9:
+- Filbert Ferdinand / 535240135
+
+Anggota-anggota Kelompok 9:
+- Frederick Andy Junior / 535240010
+- Grevano Geraldo / 535240030
+- Rafael Theng / 535240153
+
+Link Presentasi: https://www.youtube.com/watch?v=mbP4IEiWs8U
+Link Demonstrasi: https://www.youtube.com/watch?v=pq3gXjHqAgQ
+
 ## Penjelasan Struktur Folder Backend (/server)
 Backend ini dirancang dengan pola yang memisahkan antara definisi rute (URL), logika bisnis, dan struktur data.
 
